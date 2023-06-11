@@ -82,16 +82,16 @@ module alu(bits_a, bits_b, func, out_bits, compare_val);
                 compare_val = not_equal;
             end
             `BLTU: begin
-                compare_val = not_equal & lesser;
+                compare_val = ~not_equal & lesser;
             end
             `BLT: begin
-                compare_val = not_equal & lesser;
+                compare_val = ~not_equal & lesser;
             end
             `BGE: begin
-                compare_val = ~not_equal | ~lesser;
+                compare_val = ~not_equal & ~lesser;
             end
             `BGETU: begin
-                compare_val = ~not_equal | ~lesser;
+                compare_val = ~not_equal & ~lesser;
             end
             default: begin
                 compare_val = not_equal;

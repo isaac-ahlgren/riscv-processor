@@ -3,8 +3,8 @@
 int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num);
 int main(void)__attribute__ ((section (".text.start")));
 
-uint32_t nums[] = {23, 56, 1, 81, 21, 9, 98, 43, 8, 12, 13, 67, 19, 38, 34, 2};
-uint32_t wk_array[16];
+uint32_t nums[] = {1, 2, 1, 81}; // 21, 9, 98, 43}; // 8, 12, 13, 67, 19, 38, 34, 2};
+uint32_t wk_array[4];
 
 uint32_t copy(uint32_t* src, uint32_t* dst, uint32_t size) {
     for (uint32_t i = 0; i < size; i++) {
@@ -13,6 +13,7 @@ uint32_t copy(uint32_t* src, uint32_t* dst, uint32_t size) {
     return 1;
 }
 
+// Biggest to smallest sort
 void sort(uint32_t* numbers, uint32_t* work_array, uint32_t num) {
     merge_sort(&numbers[0], &work_array[0], num/2);
     merge_sort(&numbers[num/2], &work_array[num/2], num/2);
@@ -30,7 +31,7 @@ void sort(uint32_t* numbers, uint32_t* work_array, uint32_t num) {
 }
 
 int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num) {
-    if (num == 0) {
+    if (num == 1) {
         return 1;
     }
     else {
@@ -41,6 +42,6 @@ int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num) {
 
 int main() {
     asm volatile ("lui sp, 0x8; addi sp,sp,-16; sw ra,12(sp); sw s0,8(sp)");
-    merge_sort(nums, wk_array, 16);
+    merge_sort(nums, wk_array, 4);
     return 0;
 } 

@@ -1,9 +1,8 @@
-CC := /home/ikey/repos/riscv-gnu-toolchain/build/bin/riscv32-unknown-elf-gcc
-OBJDUMP := /home/ikey/repos/riscv-gnu-toolchain/build/bin/riscv32-unknown-elf-objdump
-OBJCOPY := /home/ikey/repos/riscv-gnu-toolchain/build/bin/riscv32-unknown-elf-objcopy
-GDB := /home/ikey/repos/riscv-gnu-toolchain/build/bin/riscv32-unknown-elf-gdb
+CC := riscv32-unknown-elf-gcc
+OBJDUMP := riscv32-unknown-elf-objdump
+OBJCOPY := riscv32-unknown-elf-objcopy
 
-CFLAGS := -O0 -Xlinker -g -Trisc.ld -nostdlib -ffreestanding -fno-pie -fno-stack-protector -Wall -mno-fdiv
+CFLAGS := -O0 -Xlinker -g -Trisc.ld -nostdlib -ffreestanding -fno-pie -fno-stack-protector -Wall -mno-fdiv -march=rv32i -mabi=ilp32
 
 all:
 	$(CC) $(CFLAGS) risc_test.c start.s -o risc_test
@@ -12,9 +11,9 @@ all:
 	$(OBJCOPY) merge_sort -O verilog merge_sort_verilog
 
 dump:
-	$(OBJDUMP) -d merge_sort
+	$(OBJDUMP) -D merge_sort
 
 clean:
-	rm risc_test risc_verilog_test merge_sort_test merge_sort.img
+	rm risc_test risc_verilog_test merge_sort merge_sort_verilog
 	
 

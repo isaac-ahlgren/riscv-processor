@@ -1,2 +1,6 @@
 # riscv-processor
-Side project for writing a RISCV processor in verilog.
+RISCV processor in verilog.
+
+Made for educational purposes.
+
+Test programs are in risc\_test\_program.
