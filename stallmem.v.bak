@@ -42,10 +42,10 @@
 
 module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rst, err);
 
-   output  [15:0] data_out;
+   output  [31:0] data_out;
    output         ready;
-   input [15:0]   data_in;
-   input [15:0]   addr;
+   input [31:0]   data_in;
+   input [31:0]   addr;
    input          enable;
    input          wr;
    input          createdump;
@@ -53,7 +53,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    input          rst;
    output         err;
 
-   wire [15:0]    data_out;
+   wire [31:0]    data_out;
 
    reg [7:0]      mem [0:65535];
    reg            loaded;
@@ -65,9 +65,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
 
    assign         ready = enable & rand_pat[0];
    assign         err = ready & addr[0]; //word aligned; odd address is invalid
-   assign         data_out = err ? 
-			      ((ready & (~wr))? {mem[addr-8'h1],mem[addr]}: 0) :
-			      ((ready & (~wr))? {mem[addr],mem[addr+8'h1]}: 0);
+   assign         data_out = (enable & (~wr))? {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]}: 0;
    integer        seed;
    
    initial begin
@@ -75,7 +73,6 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
       largest = 0;
 //      rand_pat = 32'b01010010011000101001111000001010;
       seed = 0;
-      $value$plusargs("seed=%d", seed);
       $display("Using seed %d", seed);
       rand_pat = $random(seed);
       $display("rand_pat=%08x %32b", rand_pat, rand_pat);
@@ -89,14 +86,16 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    always @(posedge clk) begin
       if (rst) begin
          if (!loaded) begin
-            $readmemh("loadfile_all.img", mem);
+            $readmemh("merge_sort_verilog", mem);
             loaded = 1;
          end
       end
       else begin
          if (ready & wr & ~err) begin
-	        mem[addr] = data_in[15:8];       // The actual write
-	        mem[addr+1] = data_in[7:0];    // The actual write
+	        mem[addr+3] = data_in[31:24];  // The actual write
+	        mem[addr+2] = data_in[23:16];  // The actual write
+	        mem[addr+1] = data_in[15:8];   // The actual write
+	        mem[addr+0] = data_in[7:0];    // The actual write
             if ({1'b0, addr} > largest) largest = addr;  // avoid negative numbers
          end
          if (createdump) begin

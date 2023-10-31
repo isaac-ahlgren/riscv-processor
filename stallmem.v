@@ -53,7 +53,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    input          rst;
    output         err;
 
-   wire [15:0]    data_out;
+   wire [31:0]    data_out;
 
    reg [7:0]      mem [0:65535];
    reg            loaded;
@@ -73,7 +73,6 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
       largest = 0;
 //      rand_pat = 32'b01010010011000101001111000001010;
       seed = 0;
-      $value$plusargs("seed=%d", seed);
       $display("Using seed %d", seed);
       rand_pat = $random(seed);
       $display("rand_pat=%08x %32b", rand_pat, rand_pat);
@@ -87,7 +86,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    always @(posedge clk) begin
       if (rst) begin
          if (!loaded) begin
-            $readmemh("loadfile_all.img", mem);
+            $readmemh("risc_test_verilog", mem);
             loaded = 1;
          end
       end

@@ -11,7 +11,7 @@ all:
 	$(OBJCOPY) merge_sort -O verilog merge_sort_verilog
 
 dump:
-	$(OBJDUMP) -D merge_sort
+	$(OBJDUMP) -D risc_test
 
 clean:
 	rm risc_test risc_verilog_test merge_sort merge_sort_verilog
