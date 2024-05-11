@@ -63,16 +63,17 @@ module proc(clk, rst);
     wire [31:0] curr_addr_addval;
     wire [31:0] curr_addr;
     wire jump_taken;
-    wire data_stall;
+    wire icache_stall;
+    wire dcache_stall;
 
     assign enable = 1'b1;
     assign createdump_data = 1'b1;
-    assign data_stall = 1'b1;
+    assign dcache_stall = 1'b0;
 
     // Fetch Stage
     fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval), .curr_addr_out(curr_addr), 
-               .jump_taken(jump_taken), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
-               .en_reg_jmp(en_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .data_stall(data_stall), .clk(clk), 
+               .jump_taken(jump_taken), .stall_out(icache_stall), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .stall_in(stall), .clk(clk), 
                .rst(rst));
     // Decode Stage
     decode dec (.instr(instr), .a0(a0), .a1(a1), .a2(a2), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_imm(en_imm), .en_reg_wr(en_reg_wr), .en_mem_wr(en_mem_wr), .en_rel_reg_jmp(en_rel_reg_jmp), .ld_code(ld_code));

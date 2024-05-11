@@ -9,11 +9,13 @@ module latch (q, d, stall, clk, rst);
     input          rst;
 
     reg            state;
+    wire           dd;
 
     assign #(1) q = state;
+    assign dd = stall ? d : q;
 
     always @(posedge clk) begin
-      state = rst? 0 : (stall ? d : q);
+      state = rst? 0 : dd;
     end
 
 endmodule

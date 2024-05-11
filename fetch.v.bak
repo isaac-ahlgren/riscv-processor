@@ -4,8 +4,8 @@
 `define "latch.v"
 `define "dflop.v"
 
-module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, jump_taken, alu_bits, curr_addr_in, en_uncond_jmp, en_rel_reg_jmp, 
-              en_branch, en_jmp, imm, data_stall, clk, rst);
+module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, jump_taken, stall_out, alu_bits, curr_addr_in, en_uncond_jmp, en_rel_reg_jmp, 
+              en_branch, en_jmp, imm, stall_in, clk, rst);
    
     // Instruction from I-cache
     output wire [31:0] instr;
@@ -17,6 +17,8 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     output wire [31:0] curr_addr_addval_out;
     // Leaving Fetch Stage, signal that shows that a jump has been taken
     output wire jump_taken; 
+    // Leaving Fetch Stage, a signal that tells that a stall is occuring due to a instruction cache stall occuring at the same time as a jump
+    output wire stall_out;
 
     // From Execute, the address from the ALU
     input wire [31:0] alu_bits;
@@ -32,8 +34,8 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     input wire en_branch;
     // From Decode, the immediate value from the instruction
     input wire [31:0] imm;
-    // Signal that informs whether a stall is occuring because of data hazards
-    input wire data_stall; 
+    // Signal that informs whether a stall is occuring from the data cache
+    input wire stall_in; 
     // Clock and Reset 
     input wire clk, rst;
 
@@ -42,6 +44,7 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     wire err;
     wire createdump;
     wire imem_wr;
+    wire stall;
     wire [31:0] data_in; 
     // Instruction directly from cache
     wire [31:0] cache_instr;
@@ -49,7 +52,10 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     wire [31:0] curr_addr;
     // Current Address After 4 Byte Step
     wire [31:0] curr_addr_step;
+    // Current Address plus relative jump
+    wire [31:0] curr_addr_addval;
      
+
     // Instruction fetched from cache (could be NOP if cache stalls)
     reg  [31:0] fetched_instr;   
     // Next Address to be used put onto the cache
@@ -61,19 +67,23 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     stallmem icache (.data_out(cache_instr), .ready(ready), .data_in(data_in), .addr(curr_addr), .enable(enable), .wr(imem_wr), .createdump(createdump), .clk(clk), .rst(rst), .err(err));
     
     // Instruction Latch
-    latch instr_latch [31:0] (.q(instr), .d(fetched_instr), .stall(data_stall), .clk(clk), .rst(rst));
+    latch instr_latch [31:0] (.q(instr), .d(fetched_instr), .stall(stall), .clk(clk), .rst(rst));
     // Latch for the current address plus four bytes
-    latch curr_addr_step_latch [31:0] (.q(curr_addr_step_out), .d(curr_addr_step), .stall(data_stall), .clk(clk), .rst(rst));
+    latch curr_addr_step_latch [31:0] (.q(curr_addr_step_out), .d(curr_addr_step), .stall(stall), .clk(clk), .rst(rst));
     // Latch for the current address plus the additional value
-    latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(data_stall), .clk(clk), .rst(rst));  
+    latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));  
     // Latch for current address
-    latch curr_addr_latch [31:0] (.q(curr_addr_out), .d(curr_addr), .stall(data_stall), .clk(clk), .rst(rst));
+    latch curr_addr_latch [31:0] (.q(curr_addr_out), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
 
-    assign createdump = 1'b1;
-    assign enable = 1'b1;
     assign curr_addr_step = curr_addr + 4;
     assign curr_addr_addval = curr_addr_in + imm;
-    assign jump_taken = en_jmp & (en_reg_jmp | en_uncond_jmp | en_branch);   
+    assign jump_taken = en_jmp & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
+    assign stall_out = jump_taken & ~ready
+    assign stall = stall_out | stall_in;
+
+    // Constants
+    assign createdump = 1'b1;
+    assign enable = 1'b1;
     assign imem_wr = 1'b0;
     assign data_in = 32'b0;
 

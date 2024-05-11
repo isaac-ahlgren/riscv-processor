@@ -14,6 +14,7 @@ void fib(int n1, int n2, int N, int* arr) {
 }
 
 int main() {
+    asm volatile ("lui sp, 0x8;");
     int c = a + b;
     int nums[10];
     fib(0, 1, 10, nums);

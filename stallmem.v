@@ -45,7 +45,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    output  [31:0] data_out;
    output         ready;
    input [31:0]   data_in;
-   input [31:0]   addr;
+   input [15:0]   addr;
    input          enable;
    input          wr;
    input          createdump;

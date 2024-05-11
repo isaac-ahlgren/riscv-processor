@@ -1,19 +1,12 @@
-/home/ikey/repos/riscv-processor/fetch.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/fetch.v
+/home/ikey/repos/riscv-processor/fetch.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/fetch.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
-** Warning: /home/ikey/repos/riscv-processor/fetch.v(3): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"stallmem.v"'.
-** Warning: /home/ikey/repos/riscv-processor/fetch.v(4): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"latch.v"'.
-** Warning: /home/ikey/repos/riscv-processor/fetch.v(5): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"dflop.v"'.
+-- Compiling module stallmem
+-- Compiling module latch
+-- Compiling module dflop
 -- Compiling module fetch
 
 Top level modules:
 	fetch
-
-} {} {}} /home/ikey/repos/riscv-processor/latch.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/latch.v
-Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module latch
-
-Top level modules:
-	latch
 
 } {} {}} /home/ikey/repos/riscv-processor/reg_dff.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/reg_dff.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
@@ -30,7 +23,14 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	reg_file
 
-} {} {}} /home/ikey/repos/riscv-processor/alu_tb.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/alu_tb.v
+} {} {}} /home/ikey/repos/riscv-processor/stallmem.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/stallmem.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module stallmem
+
+Top level modules:
+	stallmem
+
+} {} {}} /home/ikey/repos/riscv-processor/alu_tb.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/alu_tb.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
 -- Compiling module reg_file
@@ -39,15 +39,9 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 -- Compiling module right_barrel_shifter
 -- Compiling module alu
 -- Compiling module memory2c
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** while parsing file included at proc.v(7)
-** at fetch.v(3): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"stallmem.v"'.
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** while parsing file included at proc.v(7)
-** at fetch.v(4): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"latch.v"'.
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** while parsing file included at proc.v(7)
-** at fetch.v(5): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"dflop.v"'.
+-- Compiling module stallmem
+-- Compiling module latch
+-- Compiling module dflop
 -- Compiling module fetch
 -- Compiling module proc
 -- Compiling module alu_tb
@@ -78,7 +72,7 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	alu
 
-} {} {}} /home/ikey/repos/riscv-processor/proc.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
+} {} {}} /home/ikey/repos/riscv-processor/proc.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
 -- Compiling module reg_file
@@ -87,12 +81,9 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 -- Compiling module right_barrel_shifter
 -- Compiling module alu
 -- Compiling module memory2c
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/proc.v(7)
-** at fetch.v(3): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"stallmem.v"'.
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/proc.v(7)
-** at fetch.v(4): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"latch.v"'.
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/proc.v(7)
-** at fetch.v(5): (vlog-2962) A non-IEEE 1800-2012-compliant identifier was used to define a macro: '"dflop.v"'.
+-- Compiling module stallmem
+-- Compiling module latch
+-- Compiling module dflop
 -- Compiling module fetch
 -- Compiling module proc
 
@@ -106,18 +97,18 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	decode
 
-} {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
-Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module left_barrel_shifter
-
-Top level modules:
-	left_barrel_shifter
-
 } {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module memory2c
 
 Top level modules:
 	memory2c
+
+} {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module left_barrel_shifter
+
+Top level modules:
+	left_barrel_shifter
 
 } {} {}}
