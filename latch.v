@@ -13,7 +13,7 @@ module latch (q, d, stall, clk, rst);
     assign #(1) q = state;
 
     always @(posedge clk) begin
-      state = rst? 0 : (stall ? d : q);
+      state = rst? 0 : (stall ? q : d);
     end
 
 endmodule

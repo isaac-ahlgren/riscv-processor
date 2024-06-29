@@ -4,7 +4,7 @@
 `include "latch.v"
 `include "dff.v"
 
-module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, jump_taken, icache_status, alu_bits, curr_addr_in, en_uncond_jmp, en_rel_reg_jmp, 
+module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, icache_status, jump_taken, alu_bits, curr_addr_in, en_uncond_jmp, en_rel_reg_jmp, 
               en_branch, en_jmp, imm, stall, clk, rst);
    
     // Instruction from I-cache
@@ -14,12 +14,12 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
     // Leaving Fetch Stage, Current address
     output wire [31:0] curr_addr_out;
     // Leaving Fetch Stage, Current address plus relative jump
-    output wire [31:0] curr_addr_addval_out;
-    // Leaving Fetch Stage, signal that shows that a jump has been taken
-    output wire jump_taken; 
+    output wire [31:0] curr_addr_addval_out; 
     // Leaving Fetch Stage, a signal that tells that a stall is occuring due to a instruction cache stall occuring at the same time as a jump
     output wire icache_status;
 
+    // From Main Processor, signal that tells whether a jump will be taken or not
+    input wire jump_taken;
     // From Execute, the address from the ALU
     input wire [31:0] alu_bits;
     // From Decode, the current address from the decode latch
@@ -76,7 +76,6 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ju
 
     assign curr_addr_step = curr_addr + 4;
     assign curr_addr_addval = curr_addr_in + imm;
-    assign jump_taken = en_jmp & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
     assign icache_status = jump_taken & ~ready;
 
     // Constants

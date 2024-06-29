@@ -5,6 +5,7 @@
 `include "alu.v"
 `include "memory2c.v"
 `include "fetch.v"
+`include "dff.v"
     
 // Macros for which value to use for a register load
 `define ALU_LD         3'b001
@@ -62,27 +63,34 @@ module proc(clk, rst);
     wire [31:0] curr_addr_step;
     wire [31:0] curr_addr_addval;
     wire [31:0] curr_addr;
-    wire jump_taken;
     wire icache_stall;
     wire dcache_stall;
+    wire stall;
+    wire jump_taken;
+    wire hazards_stage2;
 
     assign enable = 1'b1;
     assign createdump_data = 1'b1;
     assign dcache_stall = 1'b0;
+    assign stall = dcache_stall | icache_stall;
+    assign jump_taken = en_jmp & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
+
+    dflop hazards_latch (.q(hazards_stage2), .d(jump_taken), .clk(clk), .rst(rst));
+    latch hazards_latch (.q(hazards_stage2), .d(jump_taken), .stall(stall), .clk(clk), .rst(rst));
 
     // Fetch Stage
     fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval), .curr_addr_out(curr_addr), 
-               .jump_taken(jump_taken), .stall_out(icache_stall), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .stall_in(stall), .clk(clk), 
+               .icache_status(icache_stall), .jump_taken(jump_taken), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .stall(stall), .clk(clk), 
                .rst(rst));
     // Decode Stage
     decode dec (.instr(instr), .a0(a0), .a1(a1), .a2(a2), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_imm(en_imm), .en_reg_wr(en_reg_wr), .en_mem_wr(en_mem_wr), .en_rel_reg_jmp(en_rel_reg_jmp), .ld_code(ld_code));
     // Register File
-    reg_file regs (.a0(a0), .a1(a1), .a2(a2), .din(reg_out_bits), .reg_wr(en_reg_wr), .d0(d0), .d1(d1), .clk(clk), .rst(rst));
+    reg_file regs (.a0(a0), .a1(a1), .a2(a2), .din(reg_out_bits), .reg_wr(en_reg_wr & ~hazards_stage2), .d0(d0), .d1(d1), .clk(clk), .rst(rst));
     // ALU
     alu a(.bits_a(d0), .bits_b(bits_b), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
     // Data Cache
-    memory2c dcache (.data_out(dcache_bits), .data_in(d1), .addr(alu_bits), .enable(enable), .wr(en_mem_wr), .createdump(createdump_data), .clk(clk), .rst(rst));
+    memory2c dcache (.data_out(dcache_bits), .data_in(d1), .addr(alu_bits), .enable(enable), .wr(en_mem_wr & ~hazards_stage2), .createdump(createdump_data), .clk(clk), .rst(rst));
 
     assign enable = 1'b1;
     assign createdump = 1'b0;
