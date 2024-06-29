@@ -73,9 +73,8 @@ module proc(clk, rst);
     assign createdump_data = 1'b1;
     assign dcache_stall = 1'b0;
     assign stall = dcache_stall | icache_stall;
-    assign jump_taken = en_jmp & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
+    assign jump_taken = (en_jmp & hazards_stage2) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
 
-    dflop hazards_latch (.q(hazards_stage2), .d(jump_taken), .clk(clk), .rst(rst));
     latch hazards_latch (.q(hazards_stage2), .d(jump_taken), .stall(stall), .clk(clk), .rst(rst));
 
     // Fetch Stage

@@ -83,27 +83,6 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	alu
 
-} {} {}} /home/ikey/repos/riscv-processor/proc.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
-Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module reg_dflop
--- Compiling module reg_file
--- Compiling module decode
--- Compiling module left_barrel_shifter
--- Compiling module right_barrel_shifter
--- Compiling module alu
--- Compiling module memory2c
--- Compiling module stallmem
--- Compiling module latch
--- Compiling module dflop
--- Compiling module fetch
-** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/proc.v(8)
-** at dff.v(4): (vlog-2275) Existing module 'dflop' will be overwritten.
--- Compiling module dflop
--- Compiling module proc
-
-Top level modules:
-	proc
-
 } {} {}} /home/ikey/repos/riscv-processor/decode.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/decode.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module decode
@@ -111,18 +90,18 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	decode
 
-} {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
-Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module memory2c
-
-Top level modules:
-	memory2c
-
 } {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module left_barrel_shifter
 
 Top level modules:
 	left_barrel_shifter
+
+} {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module memory2c
+
+Top level modules:
+	memory2c
 
 } {} {}}
