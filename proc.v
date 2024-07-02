@@ -97,12 +97,6 @@ module proc(clk, rst);
 
     always @(*) begin
 
-        // Determine which value to use for the second value in the ALU operation
-        if (en_imm)
-            bits_b <= imm;
-        else
-            bits_b <= d1;
-
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin

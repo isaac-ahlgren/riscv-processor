@@ -83,12 +83,12 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	alu
 
-} {} {}} /home/ikey/repos/riscv-processor/decode.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/decode.v
+} {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module decode
+-- Compiling module memory2c
 
 Top level modules:
-	decode
+	memory2c
 
 } {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
@@ -96,12 +96,5 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 
 Top level modules:
 	left_barrel_shifter
-
-} {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
-Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module memory2c
-
-Top level modules:
-	memory2c
 
 } {} {}}
