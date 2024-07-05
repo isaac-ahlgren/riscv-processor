@@ -67,15 +67,20 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ic
     
     // Instruction Latch
     latch instr_latch [31:0] (.q(instr), .d(fetched_instr), .stall(stall), .clk(clk), .rst(rst));
+
     // Latch for the current address plus four bytes
     latch curr_addr_step_latch [31:0] (.q(curr_addr_step_out), .d(curr_addr_step), .stall(stall), .clk(clk), .rst(rst));
+
     // Latch for the current address plus the additional value
-    latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));  
+    latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));
+
     // Latch for current address
-    latch curr_addr_latch [31:0] (.q(curr_addr_out), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
+    wire curr_addr_conn_latch1;
+    latch curr_addr_latch1 [31:0] (.q(curr_addr_conn_latch1), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
+    latch curr_addr_latch2 [31:0] (.q(curr_addr_out), .d(curr_addr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     assign curr_addr_step = curr_addr + 4;
-    assign curr_addr_addval = curr_addr_in + imm;
+    assign curr_addr_addval = curr_addr_out + imm;
     assign icache_status = jump_taken & ~ready;
 
     // Constants

@@ -28,8 +28,8 @@ module proc(clk, rst);
     wire [31:0] alu_bits;
     // Bits from the data cache
     wire [31:0] dcache_bits;
-    // Bits to be written to a register
-    reg [31:0] reg_out_bits;
+    // Data to be written to a register
+    reg [31:0] data_to_reg;
     
     // Register Numbers
     wire [4:0] a0;
@@ -67,29 +67,36 @@ module proc(clk, rst);
     wire dcache_stall;
     wire stall;
     wire jump_taken;
-    wire hazards_stage2;
+    wire data_to_mem;
 
     assign enable = 1'b1;
     assign createdump_data = 1'b1;
     assign dcache_stall = 1'b0;
-    assign stall = dcache_stall | icache_stall;
-    assign jump_taken = (en_jmp & ~hazards_stage2) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
 
-    latch hazards_latch (.q(hazards_stage2), .d(jump_taken), .stall(stall), .clk(clk), .rst(rst));
+    wire control_hazard;
+    wire control_hazard_latch1_conn;
+    wire control_hazard_latch2_conn;
+    latch control_hazard_latch1 (.q(control_hazard_latch1_conn), .d(control_hazard), .stall(stall), .clk(clk), .rst(rst));
+    latch control_hazard_latch2 (.q(control_hazard_latch2_conn), .d(control_hazard_latch1_conn), .stall(stall), .clk(clk), .rst(rst));
+
+    assign control_hazard = ~jump_taken;
+    assign stall = dcache_stall | icache_stall;
+    assign jump_taken = (en_jmp & control_hazard_latch2_conn) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
 
     // Fetch Stage
     fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval), .curr_addr_out(curr_addr), 
                .icache_status(icache_stall), .jump_taken(jump_taken), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp & ~hazards_stage2), .imm(imm), .stall(stall), .clk(clk), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp & control_hazard_latch2_conn), .imm(imm), .stall(stall), .clk(clk), 
                .rst(rst));
     // Decode Stage
-    decode dec (.instr(instr), .a0(a0), .a1(a1), .a2(a2), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_imm(en_imm), .en_reg_wr(en_reg_wr), .en_mem_wr(en_mem_wr), .en_rel_reg_jmp(en_rel_reg_jmp), .ld_code(ld_code));
-    // Register File
-    reg_file regs (.a0(a0), .a1(a1), .a2(a2), .din(reg_out_bits), .reg_wr(en_reg_wr & ~hazards_stage2), .d0(d0), .d1(d1), .clk(clk), .rst(rst));
+    decode_register_select(.imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp),
+                           .en_mem_wr(en_mem_wr), .ld_code(ld_code), .alu_data1(d0), .alu_data2(d1), .data_to_mem(data_to_mem), 
+                           .instr(instr), .data_to_reg(data_to_reg), .stall(stall), .control_hazard(control_hazard_latch2_conn), 
+                           .clk(clk), .rst(rst))
     // ALU
     alu a(.bits_a(d0), .bits_b(bits_b), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
     // Data Cache
-    memory2c dcache (.data_out(dcache_bits), .data_in(d1), .addr(alu_bits), .enable(enable), .wr(en_mem_wr & ~hazards_stage2), .createdump(createdump_data), .clk(clk), .rst(rst));
+    memory2c dcache (.data_out(dcache_bits), .data_in(data_to_mem), .addr(alu_bits), .enable(enable), .wr(en_mem_wr & control_hazard_latch2_conn), .createdump(createdump), .clk(clk), .rst(rst));
 
     assign enable = 1'b1;
     assign createdump = 1'b0;
@@ -97,31 +104,25 @@ module proc(clk, rst);
 
     always @(*) begin
 
-        // Determine which value to use for the second value in the ALU operation
-        if (en_imm)
-            bits_b <= imm;
-        else
-            bits_b <= d1;
-
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin
-                 reg_out_bits <= alu_bits;
+                 data_to_reg <= alu_bits;
              end
             `MEM_LD: begin
-                 reg_out_bits <= dcache_bits;
+                 data_to_reg <= dcache_bits;
              end
             `IMM_LD: begin
-                 reg_out_bits <= imm;
+                 data_to_reg <= imm;
              end
              `PC_LD: begin
-                 reg_out_bits <= curr_addr_step;
+                 data_to_reg <= curr_addr_step;
              end
              `PC_PIMM_LD: begin
-                 reg_out_bits <= curr_addr_addval;
+                 data_to_reg <= curr_addr_addval;
              end
              default: begin
-                 reg_out_bits <= curr_addr_step;
+                 data_to_reg <= curr_addr_step;
              end
         endcase
     end

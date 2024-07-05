@@ -1,4 +1,151 @@
-# Error opening /home/ikey/repos/riscv-processor/decode.v
-# Path name '/home/ikey/repos/riscv-processor/decode.v' doesn't exist.
-# Error opening /home/ikey/repos/riscv-processor/decode.v
-# Path name '/home/ikey/repos/riscv-processor/decode.v' doesn't exist.
+# Loading project riscv-processor
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 13 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 13 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v failed with 1 errors.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v failed with 9 errors.
+# 14 compiles, 4 failed with 36 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 6 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 6 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v failed with 3 errors.
+# 14 compiles, 3 failed with 15 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 5 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 5 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v failed with 2 errors.
+# 14 compiles, 3 failed with 12 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 4 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 4 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v failed with 1 errors.
+# 14 compiles, 3 failed with 9 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 6 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 6 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v failed with 3 errors.
+# 14 compiles, 3 failed with 15 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 3 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 3 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# 14 compiles, 2 failed with 6 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 3 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 3 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# 14 compiles, 2 failed with 6 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 2 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 2 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# 14 compiles, 2 failed with 4 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v failed with 1 errors.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v failed with 1 errors.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# 14 compiles, 2 failed with 2 errors.
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# 14 compiles, 0 failed with no errors.
