@@ -22,6 +22,14 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	latch
 
+} {} {}} /home/ikey/repos/riscv-processor/hazards.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/hazards.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module latch
+-- Compiling module hazards_controller
+
+Top level modules:
+	hazards_controller
+
 } {} {}} /home/ikey/repos/riscv-processor/reg_dff.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/reg_dff.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
@@ -37,17 +45,22 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	reg_file
 
-} {} {}} /home/ikey/repos/riscv-processor/alu_tb.v {0 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/alu_tb.v
+} {} {}} /home/ikey/repos/riscv-processor/alu_tb.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/alu_tb.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
 -- Compiling module reg_file
 -- Compiling module decode_logic
+-- Compiling module latch
 -- Compiling module decode_register_select
 -- Compiling module left_barrel_shifter
 -- Compiling module right_barrel_shifter
 -- Compiling module alu
 -- Compiling module memory2c
 -- Compiling module stallmem
+** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
+** while parsing file included at proc.v(7)
+** while parsing file included at fetch.v(4)
+** at latch.v(3): (vlog-2275) Existing module 'latch' will be overwritten.
 -- Compiling module latch
 -- Compiling module dflop
 -- Compiling module fetch
@@ -56,15 +69,12 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 ** at dff.v(4): (vlog-2275) Existing module 'dflop' will be overwritten.
 -- Compiling module dflop
 -- Compiling module proc
-** Error: ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** at proc.v(76): (vlog-2730) Undefined variable: 'hazards_latch2_conn'.
-** Error: (vlog-13069) ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** at proc.v(80): near "wire": syntax error, unexpected wire, expecting ';' or ','.
-** Error: (vlog-13069) ** while parsing file included at /home/ikey/repos/riscv-processor/alu_tb.v(4)
-** at proc.v(96): near "alu": syntax error, unexpected IDENTIFIER, expecting ';' or ','.
 -- Compiling module alu_tb
 
-} {20.0 21.0 22.0 23.0 24.0 25.0} {}} /home/ikey/repos/riscv-processor/stallmem.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/stallmem.v
+Top level modules:
+	alu_tb
+
+} {} {}} /home/ikey/repos/riscv-processor/stallmem.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/stallmem.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module stallmem
 
@@ -94,17 +104,21 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	alu
 
-} {} {}} /home/ikey/repos/riscv-processor/proc.v {0 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
+} {} {}} /home/ikey/repos/riscv-processor/proc.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
 -- Compiling module reg_file
 -- Compiling module decode_logic
+-- Compiling module latch
 -- Compiling module decode_register_select
 -- Compiling module left_barrel_shifter
 -- Compiling module right_barrel_shifter
 -- Compiling module alu
 -- Compiling module memory2c
 -- Compiling module stallmem
+** Warning: ** while parsing file included at /home/ikey/repos/riscv-processor/proc.v(7)
+** while parsing file included at fetch.v(4)
+** at latch.v(3): (vlog-2275) Existing module 'latch' will be overwritten.
 -- Compiling module latch
 -- Compiling module dflop
 -- Compiling module fetch
@@ -112,11 +126,11 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 ** at dff.v(4): (vlog-2275) Existing module 'dflop' will be overwritten.
 -- Compiling module dflop
 -- Compiling module proc
-** Error: /home/ikey/repos/riscv-processor/proc.v(76): (vlog-2730) Undefined variable: 'hazards_latch2_conn'.
-** Error: (vlog-13069) /home/ikey/repos/riscv-processor/proc.v(80): near "wire": syntax error, unexpected wire, expecting ';' or ','.
-** Error: (vlog-13069) /home/ikey/repos/riscv-processor/proc.v(96): near "alu": syntax error, unexpected IDENTIFIER, expecting ';' or ','.
 
-} {19.0 22.0} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
+Top level modules:
+	proc
+
+} {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module left_barrel_shifter
 

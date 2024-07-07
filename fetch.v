@@ -4,8 +4,9 @@
 `include "latch.v"
 `include "dff.v"
 
-module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, icache_status, jump_taken, alu_bits, curr_addr_in, en_uncond_jmp, en_rel_reg_jmp, 
-              en_branch, en_jmp, imm, stall, clk, rst);
+module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, 
+              icache_status, jump_taken, alu_bits, curr_addr_in, en_uncond_jmp, 
+              en_rel_reg_jmp, en_branch, en_jmp, imm, stall, clk, rst);
    
     // Instruction from I-cache
     output wire [31:0] instr;
@@ -75,7 +76,7 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, ic
     latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for current address
-    wire curr_addr_conn_latch1;
+    wire [31:0] curr_addr_conn_latch1;
     latch curr_addr_latch1 [31:0] (.q(curr_addr_conn_latch1), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
     latch curr_addr_latch2 [31:0] (.q(curr_addr_out), .d(curr_addr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
