@@ -1179,3 +1179,271 @@ run
 run
 run
 run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 17:30:17 on Jul 08,2024, Elapsed time: 29:03:51
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 17:30:17 on Jul 08,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 17:40:12 on Jul 08,2024, Elapsed time: 0:09:55
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 17:40:12 on Jul 08,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 22:15:42 on Jul 08,2024, Elapsed time: 4:35:30
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 22:15:42 on Jul 08,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run

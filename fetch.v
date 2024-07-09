@@ -91,9 +91,9 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out,
     assign data_in = 32'b0;
 
     always @(*) begin
-        // If the cache stalls, replace out going instruction with NOP
+        // If the cache stalls, replace out going instruction with empty instruction
         if (~ready) begin
-            fetched_instr <= 32'h13;
+            fetched_instr <= 32'b0;
         end
         else begin
             fetched_instr <= cache_instr;
