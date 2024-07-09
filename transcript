@@ -1447,3 +1447,346 @@ run
 run
 run
 run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 12:17:30 on Jul 09,2024, Elapsed time: 14:01:48
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 12:17:31 on Jul 09,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+vsim work.alu_tb
+# End time: 12:18:04 on Jul 09,2024, Elapsed time: 0:00:33
+# Errors: 0, Warnings: 3
+# vsim work.alu_tb 
+# Start time: 12:18:04 on Jul 09,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 13:12:50 on Jul 09,2024, Elapsed time: 0:54:46
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 13:12:50 on Jul 09,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+run
+run
+run
+run
+run
+# Compile of alu.v was successful.
+# Compile of alu_tb.v was successful with warnings.
+# Compile of dff.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory2c.v was successful.
+# Compile of proc.v was successful with warnings.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of fetch.v was successful.
+# Compile of latch.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of decode.v was successful.
+# Compile of hazards.v was successful.
+# 15 compiles, 0 failed with no errors.
+vsim work.alu_tb
+# End time: 13:14:39 on Jul 09,2024, Elapsed time: 0:01:49
+# Errors: 0, Warnings: 4
+# vsim work.alu_tb 
+# Start time: 13:14:39 on Jul 09,2024
+# Loading work.alu_tb
+# Loading work.proc
+# Loading work.hazards_controller
+# Loading work.latch
+# Loading work.fetch
+# Loading work.stallmem
+# Loading work.decode_register_select
+# Loading work.decode_logic
+# Loading work.alu
+# Loading work.left_barrel_shifter
+# Loading work.right_barrel_shifter
+# Loading work.reg_file
+# Loading work.memory2c
+# Loading work.dflop
+# Loading work.reg_dflop
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: /home/ikey/repos/riscv-processor/stallmem.v(43).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/fet/icache File: /home/ikey/repos/riscv-processor/fetch.v Line: 67
+# ** Warning: (vsim-3015) [PCDPC] - Port size (16) does not match connection size (32) for port 'addr'. The port definition is at: memory2c.v(35).
+#    Time: 0 ns  Iteration: 0  Instance: /alu_tb/cpu/dcache File: /home/ikey/repos/riscv-processor/proc.v Line: 101
+add wave -position insertpoint sim:/alu_tb/cpu/*
+add wave -position insertpoint sim:/alu_tb/cpu/hazards/*
+add wave -position insertpoint sim:/alu_tb/cpu/fet/*
+add wave -position insertpoint sim:/alu_tb/cpu/drs/*
+add wave -position insertpoint sim:/alu_tb/cpu/regs/*
+run
+# Using seed           0
+# rand_pat=12153524 00010010000101010011010100100100
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+#############  Autofindloop Analysis  ###############
+#############  Loop found at time 476 us ###############
+#       Signal: /alu_tb/cpu/stall @ sub-iteration 0 at Value St1 (/home/ikey/repos/riscv-processor/proc.v:69)
+#       Signal: /alu_tb/cpu/control_hazard @ sub-iteration 0 at Value St1 (/home/ikey/repos/riscv-processor/proc.v:71)
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({5~squash}&input_a2)#85 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({3~squash}&input_ld_code)#82 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({32~squash}&input_imm)#76 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({32~squash}&d1)#73 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({32~squash}&alu_input_data2)#70 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({32~squash}&d0)#69 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({10~squash}&input_func)#66 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/drs/#ASSIGN#93 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+#   Active process: /alu_tb/cpu/hazards/#ASSIGN#31 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:78
+#   Active process: /alu_tb/cpu/hazards/#ASSIGN#32 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:78
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#61 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#59 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#60 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#62 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#64 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#65 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#66 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#67 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/drs/dec/#ASSIGN#68 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/fet/icache/#ASSIGN#68 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/fetch.v:67
+#   Active process: /alu_tb/cpu/fet/#ASSIGN#83 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:84
+#   Active process: /alu_tb/cpu/fet/#ASSIGN#84 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:84
+#   Active process: /alu_tb/cpu/drs/dec/#ALWAYS#70 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/decode.v:88
+#   Active process: /alu_tb/cpu/fet/#ALWAYS#93 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:84
+#   Active process: /alu_tb/cpu/#ALWAYS#109 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/alu_tb.v:10
+#   Active process: /alu_tb/cpu/regs/#ALWAYS#57 @ sub-iteration 1
+#     Source: /home/ikey/repos/riscv-processor/proc.v:97
+#       Signal: /alu_tb/cpu/data_hazard @ sub-iteration 2 at Value St0 (/home/ikey/repos/riscv-processor/proc.v:72)
+#       Signal: /alu_tb/cpu/jump_taken @ sub-iteration 2 at Value St0 (/home/ikey/repos/riscv-processor/proc.v:70)
+#   Active process: /alu_tb/cpu/drs/#IMPLICIT-WIRE({5~squash}&input_a2)#85 @ sub-iteration 3
+#     Source: /home/ikey/repos/riscv-processor/proc.v:90
+################# END OF LOOP #################
+# ** Error (suppressible): (vsim-3601) Iteration limit 5000 reached at time 476 us.
+run
+# ** Error (suppressible): (vsim-3601) Iteration limit 5000 reached at time 476 us.

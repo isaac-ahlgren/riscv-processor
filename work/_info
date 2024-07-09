@@ -10,7 +10,7 @@ z2
 cModel Technology
 d/home/ikey
 valu
-Z0 !s110 1720494934
+Z0 !s110 1720548870
 !i10b 1
 !s100 j8V[E1<G7EC;6<>QJdN=F0
 Z1 !s11b Dg1SIo80bB@j0V0VzS_@n1
@@ -20,20 +20,20 @@ Z3 d/home/ikey/repos/riscv-processor
 Z4 w1719929935
 8alu.v
 Falu.v
-!i122 1428
+!i122 1473
 L0 20 82
 Z5 OV;L;2020.1;71
 r1
 !s85 0
 31
-Z6 !s108 1720494934.000000
+Z6 !s108 1720548870.000000
 Z7 !s107 dff.v|stallmem.v|fetch.v|memory2c.v|right_barrel_shifter.v|left_barrel_shifter.v|alu.v|latch.v|decode_logic.v|decode.v|reg_dff.v|reg_file.v|/home/ikey/repos/riscv-processor/proc.v|
 Z8 !s90 -reportprogress|300|-work|work|-stats=none|/home/ikey/repos/riscv-processor/proc.v|
 !i113 1
 Z9 o-work work
 Z10 tCvgOpt 0
 valu_tb
-!s110 1720494933
+R0
 !i10b 1
 !s100 [1mV;XM;]JPfXFd672Yo;0
 R1
@@ -43,13 +43,13 @@ R3
 R4
 8/home/ikey/repos/riscv-processor/alu_tb.v
 F/home/ikey/repos/riscv-processor/alu_tb.v
-!i122 1424
+!i122 1469
 L0 6 23
 R5
 r1
 !s85 0
 31
-!s108 1720494933.000000
+R6
 !s107 dff.v|stallmem.v|fetch.v|memory2c.v|right_barrel_shifter.v|left_barrel_shifter.v|alu.v|latch.v|decode_logic.v|decode.v|reg_dff.v|reg_file.v|proc.v|/home/ikey/repos/riscv-processor/alu_tb.v|
 !s90 -reportprogress|300|-work|work|-stats=none|/home/ikey/repos/riscv-processor/alu_tb.v|
 !i113 1
@@ -89,7 +89,7 @@ R3
 w1719929975
 8decode_logic.v
 Fdecode_logic.v
-!i122 1436
+!i122 1481
 R11
 R5
 r1
@@ -112,7 +112,7 @@ R3
 w1720494901
 8/home/ikey/repos/riscv-processor/decode.v
 F/home/ikey/repos/riscv-processor/decode.v
-!i122 1436
+!i122 1481
 L0 6 98
 R5
 r1
@@ -135,7 +135,7 @@ R3
 R4
 8dff.v
 Fdff.v
-!i122 1432
+!i122 1477
 L0 4 16
 R5
 r1
@@ -158,7 +158,7 @@ R3
 w1720408742
 8/home/ikey/repos/riscv-processor/fetch.v
 F/home/ikey/repos/riscv-processor/fetch.v
-!i122 1432
+!i122 1477
 L0 7 111
 R5
 r1
@@ -173,16 +173,16 @@ R10
 vhazards_controller
 R0
 !i10b 1
-!s100 BzDFJ]FQ^zMhn7<>VD<Z;0
+!s100 N[lO`^lW5L4i@do8UnbHX0
 R1
-IXCE69N?IP0PMl77dFE^^K3
+I9eLOiYYYll1nI4Q:bUnSP0
 R2
 R3
-w1720478382
+w1720548861
 8/home/ikey/repos/riscv-processor/hazards.v
 F/home/ikey/repos/riscv-processor/hazards.v
-!i122 1437
-L0 3 45
+!i122 1482
+L0 3 34
 R5
 r1
 !s85 0
@@ -204,7 +204,7 @@ R3
 w1720465858
 8latch.v
 Flatch.v
-!i122 1437
+!i122 1482
 L0 3 17
 R5
 r1
@@ -227,7 +227,7 @@ R3
 R4
 8left_barrel_shifter.v
 Fleft_barrel_shifter.v
-!i122 1428
+!i122 1473
 L0 4 110
 R5
 r1
@@ -250,7 +250,7 @@ R3
 R4
 8memory2c.v
 Fmemory2c.v
-!i122 1428
+!i122 1473
 L0 35 60
 R5
 r1
@@ -273,7 +273,7 @@ R3
 w1720477770
 8/home/ikey/repos/riscv-processor/proc.v
 F/home/ikey/repos/riscv-processor/proc.v
-!i122 1428
+!i122 1473
 L0 18 116
 R5
 r1
@@ -296,7 +296,7 @@ R3
 R4
 8reg_dff.v
 Freg_dff.v
-!i122 1430
+!i122 1475
 L0 4 18
 R5
 r1
@@ -319,7 +319,7 @@ R3
 R4
 8/home/ikey/repos/riscv-processor/reg_file.v
 F/home/ikey/repos/riscv-processor/reg_file.v
-!i122 1430
+!i122 1475
 L0 8 349
 R5
 r1
@@ -342,7 +342,7 @@ R3
 R4
 8/home/ikey/repos/riscv-processor/right_barrel_shifter.v
 F/home/ikey/repos/riscv-processor/right_barrel_shifter.v
-!i122 1431
+!i122 1476
 L0 3 115
 R5
 r1
@@ -365,7 +365,7 @@ R3
 R4
 8/home/ikey/repos/riscv-processor/stallmem.v
 F/home/ikey/repos/riscv-processor/stallmem.v
-!i122 1434
+!i122 1479
 L0 43 72
 R5
 r1
