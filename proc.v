@@ -78,7 +78,7 @@ module proc(clk, rst);
     hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), 
                                .jump_taken(jump_taken), .dcache_stall(dcache_stall), .icache_stall(icache_stall), 
                                .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
-    assign jump_taken = (en_jmp & ~control_hazard) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
+    assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
 
     // Fetch Stage
     fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval),

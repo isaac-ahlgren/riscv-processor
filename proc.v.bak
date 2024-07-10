@@ -84,22 +84,22 @@ module proc(clk, rst);
     fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval),
                .curr_addr_out(curr_addr), .icache_status(icache_stall), .jump_taken(jump_taken), 
                .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp & ~control_hazard), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), 
                .imm(imm), .stall(stall | data_hazard), .clk(clk), .rst(rst));
     // Decode Stage
     decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), 
                            .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(en_mem_wr), .ld_code(ld_code), .alu_data1(alu_data1), 
                            .alu_data2(alu_data2), .data_to_mem(data_to_mem), .en_reg_wr(en_reg_wr), .instr(instr), .d0(d0), .d1(d1), 
-                           .stall(stall), .squash(data_hazard), .clk(clk), .rst(rst));
+                           .stall(stall), .squash(data_hazard | control_hazard), .clk(clk), .rst(rst));
     // ALU
     alu a(.bits_a(alu_data1), .bits_b(alu_data2), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
     // Register File
     reg_file regs (.a0(a0), .a1(a1), .a2(a2), 
-                   .din(data_to_reg), .reg_wr(en_reg_wr & ~control_hazard), 
+                   .din(data_to_reg), .reg_wr(en_reg_wr), 
                    .d0(d0), .d1(d1), .clk(clk), .rst(rst));
     // Data Cache
     memory2c dcache (.data_out(dcache_bits), .data_in(data_to_mem), .addr(alu_bits), .enable(enable), 
-                     .wr(en_mem_wr & ~control_hazard), .createdump(createdump_data), .clk(clk), 
+                     .wr(en_mem_wr), .createdump(createdump_data), .clk(clk), 
                      .rst(rst));
 
     assign enable = 1'b1;
