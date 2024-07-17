@@ -2,7 +2,6 @@
 
 `include "stallmem.v"
 `include "latch.v"
-`include "dff.v"
 
 module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out, 
               icache_status, jump_taken, alu_bits, curr_addr_in, en_uncond_jmp, 
@@ -62,7 +61,7 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out,
     reg  [31:0] next_addr;
 
     // Program Counter
-    dflop pc [31:0] (.q(curr_addr), .d(next_addr), .clk(clk), .rst(rst)); 
+    latch pc [31:0] (.q(curr_addr), .d(next_addr), .stall(stall | ~ready), .clk(clk), .rst(rst)); 
     // Instruction Cache
     stallmem icache (.data_out(cache_instr), .ready(ready), .data_in(data_in), .addr(curr_addr), .enable(enable), .wr(imem_wr), .createdump(createdump), .clk(clk), .rst(rst), .err(err));
     
@@ -83,6 +82,7 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out,
     assign curr_addr_step = curr_addr + 4;
     assign curr_addr_addval = curr_addr_out + imm;
     assign icache_status = jump_taken & ~ready;
+    assign fetched_instr = cache_instr & {32{ready}}; // If the cache stalls, replace out going instruction with empty instruction
 
     // Constants
     assign createdump = 1'b1;
@@ -91,19 +91,8 @@ module fetch (instr, curr_addr_step_out, curr_addr_addval_out, curr_addr_out,
     assign data_in = 32'b0;
 
     always @(*) begin
-        // If the cache stalls, replace out going instruction with empty instruction
-        if (~ready) begin
-            fetched_instr <= 32'b0;
-        end
-        else begin
-            fetched_instr <= cache_instr;
-        end
-
         // Determine if a jump is to be taken
-        if (~ready) begin
-            next_addr <= curr_addr;
-        end
-        else if (en_jmp & en_rel_reg_jmp) begin
+        if (en_jmp & en_rel_reg_jmp) begin
             next_addr <= alu_bits;
         end
         else if (en_jmp & (en_uncond_jmp | en_branch)) begin

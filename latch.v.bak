@@ -10,7 +10,7 @@ module latch (q, d, stall, clk, rst);
 
     reg            state;
 
-    assign #(1) q = state;
+    assign q = state;
 
     always @(posedge clk) begin
       state = rst? 0 : (stall ? q : d);
