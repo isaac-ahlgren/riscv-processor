@@ -1,14 +1,14 @@
 `include "latch.v"
 
-module hazards_controller(control_hazard, data_hazard, stall, jump_taken, dcache_stall, icache_stall, a0, a1, a2, clk, rst);  
+module hazards_controller(control_hazard, data_hazard, stall, jump_taken, dmem_stall, imem_stall, a0, a1, a2, clk, rst);  
  
     output wire control_hazard;
     output wire data_hazard;
     output wire stall;
 
     input wire jump_taken;
-    input wire dcache_stall;
-    input wire icache_stall;
+    input wire dmem_stall;
+    input wire imem_stall;
     input wire [4:0] a0;
     input wire [4:0] a1;
     input wire [4:0] a2;
@@ -31,6 +31,6 @@ module hazards_controller(control_hazard, data_hazard, stall, jump_taken, dcache
     assign a1_equal_a2 = ~(|(a2_latch1_conn ^ a1));
     assign a0_equal_a2 = ~(|(a2_latch1_conn ^ a0));
     assign data_hazard = (a1_equal_a2 | a0_equal_a2) & ~a2_equal_zero & ~control_hazard; 
-    assign stall = dcache_stall | icache_stall;
+    assign stall = dmem_stall | imem_stall;
     assign control_hazard = control_hazard_input | control_hazard_latch_conn;      
 endmodule 

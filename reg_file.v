@@ -17,8 +17,6 @@ module reg_file(a0, a1, a2, din, reg_wr, d0, d1, clk, rst);
      output reg [31:0] d1;
      wire [31:0] qn [`REG_NUM-2:0];
      reg [`REG_NUM-2:0] we;
-
-     //assign a2 = a2 & {`REG_BITS{reg_wr}};
  
      // registers x1-x31, x0 is the zero register (always holds zero)
      reg_dflop x1  [31:0](.q(qn[0]),  .d(din), .we(we[0]),  .clk(clk), .rst(rst));
