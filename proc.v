@@ -5,7 +5,6 @@
 `include "alu.v"
 `include "memory2c.v"
 `include "fetch.v"
-`include "dff.v"
     
 // Macros for which value to use for a register load
 `define ALU_LD         3'b001
@@ -15,34 +14,61 @@
 `define PC_PIMM_LD     3'b101
 `define NO_LD          3'b000
 
-module proc(clk, rst);
+module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready, 
+            imem_data_out, imem_data_in, imem_addr, imem_wr, imem_ready, 
+            clk, rst);
+
+    // Data from data main memory
+    input wire [31:0] dmem_data_out;
+    // Data going into data main memory
+    output wire [31:0] dmem_data_in;
+    // Address for the data main memory 
+    output wire [15:0] dmem_addr;
+    // Write flag for data main memory
+    output wire dmem_wr;
+    // Ready tp read status for data main memory
+    input wire dmem_ready;
+    // Data from instruction main memory
+    input wire [31:0] imem_data_out;
+    // Data going into instruction main memory
+    output wire [31:0] imem_data_in;
+    // Address for the instruction main memory 
+    output wire [15:0] imem_addr;
+    // Write flag for instruction main memory
+    output wire imem_wr; 
+    // Ready to read status for instruction main memory
+    input wire imem_ready;
     input wire clk, rst;
 
-    // Enable Caches
-    wire enable;
-    // Instruction
+
+
+    // Intruction
     wire [31:0] instr;
-    // Second value in the ALU operation
-    reg [31:0] bits_b;
     // Output from ALU operation
     wire [31:0] alu_bits;
-    // Bits from the data cache
-    wire [31:0] dcache_bits;
-    // Bits to be written to a register
-    reg [31:0] reg_out_bits;
+    // Data to be written to a register
+    reg [31:0] data_to_reg;
     
     // Register Numbers
     wire [4:0] a0;
     wire [4:0] a1;
     wire [4:0] a2;
+    wire [4:0] a2_hazard;
     // Output data from register file
     wire [31:0] d0;
     wire [31:0] d1;
+    // Data to be used in ALU comutation
+    wire [31:0] alu_data1;
+    wire [31:0] alu_data2;
     // Immediate Value (if there is one)
     wire [31:0] imm;
     // Function Value (if there is one)
     wire [9:0] func;
 
+    // Stall from data memory
+    wire dmem_stall;
+    // Stall from instruction memory
+    wire imem_stall;
     // Enables if a jump can be taken
     wire en_jmp;
     // Enables unconditional jumps
@@ -51,77 +77,65 @@ module proc(clk, rst);
     wire en_rel_reg_jmp;
     // Enables if a branch is going to be be taken or not
     wire en_branch;
-    // Enables the use of immediates
-    wire en_imm;
     // Enables a write to the register
     wire en_reg_wr;
-    // Enables a write to memory
-    wire en_mem_wr;
     // Value that determines which value is put on the register write bus
     wire [2:0] ld_code;
      
     wire [31:0] curr_addr_step;
     wire [31:0] curr_addr_addval;
-    wire [31:0] curr_addr;
-    wire icache_stall;
-    wire dcache_stall;
     wire stall;
     wire jump_taken;
-    wire hazards_stage2;
+    wire control_hazard;
+    wire data_hazard;
 
-    assign enable = 1'b1;
-    assign createdump_data = 1'b1;
-    assign dcache_stall = 1'b0;
-    assign stall = dcache_stall | icache_stall;
-    assign jump_taken = (en_jmp & ~hazards_stage2) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);      
-
-    latch hazards_latch (.q(hazards_stage2), .d(jump_taken), .stall(stall), .clk(clk), .rst(rst));
+    hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), 
+                               .jump_taken(jump_taken), .dmem_stall(dmem_stall), .imem_stall(imem_stall),
+                               .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
+    assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
+    assign imem_stall = jump_taken & ~imem_ready;    
 
     // Fetch Stage
-    fetch fet (.instr(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval), .curr_addr_out(curr_addr), 
-               .icache_status(icache_stall), .jump_taken(jump_taken), .alu_bits(alu_bits), .curr_addr_in(curr_addr), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp & ~hazards_stage2), .imm(imm), .stall(stall), .clk(clk), 
-               .rst(rst));
+    fetch fet (.curr_addr(imem_addr), .instr_out(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval),
+               .instr_in(imem_data_out), .jump_taken(jump_taken), .alu_bits(alu_bits), .en_uncond_jmp(en_uncond_jmp), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .stall(stall | data_hazard), 
+               .imem_ready(imem_ready), .clk(clk), .rst(rst));
     // Decode Stage
-    decode dec (.instr(instr), .a0(a0), .a1(a1), .a2(a2), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_imm(en_imm), .en_reg_wr(en_reg_wr), .en_mem_wr(en_mem_wr), .en_rel_reg_jmp(en_rel_reg_jmp), .ld_code(ld_code));
-    // Register File
-    reg_file regs (.a0(a0), .a1(a1), .a2(a2), .din(reg_out_bits), .reg_wr(en_reg_wr & ~hazards_stage2), .d0(d0), .d1(d1), .clk(clk), .rst(rst));
+    decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), 
+                           .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(dmem_wr), .ld_code(ld_code), .alu_data1(alu_data1), 
+                           .alu_data2(alu_data2), .data_to_mem(dmem_data_in), .en_reg_wr(en_reg_wr), .instr(instr), .d0(d0), .d1(d1), 
+                           .stall(stall), .squash(data_hazard | control_hazard), .clk(clk), .rst(rst));
     // ALU
-    alu a(.bits_a(d0), .bits_b(bits_b), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
-    // Data Cache
-    memory2c dcache (.data_out(dcache_bits), .data_in(d1), .addr(alu_bits), .enable(enable), .wr(en_mem_wr & ~hazards_stage2), .createdump(createdump_data), .clk(clk), .rst(rst));
+    alu a(.bits_a(alu_data1), .bits_b(alu_data2), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
+    // Register File
+    reg_file regs (.a0(a0), .a1(a1), .a2(a2), 
+                   .din(data_to_reg), .reg_wr(en_reg_wr), 
+                   .d0(d0), .d1(d1), .clk(clk), .rst(rst));
 
-    assign enable = 1'b1;
-    assign createdump = 1'b0;
-    assign imem_wr = 1'b0;
+    assign dmem_stall = 1'b0;
+    assign dmem_addr = alu_bits;
 
     always @(*) begin
-
-        // Determine which value to use for the second value in the ALU operation
-        if (en_imm)
-            bits_b <= imm;
-        else
-            bits_b <= d1;
 
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin
-                 reg_out_bits <= alu_bits;
+                 data_to_reg <= alu_bits;
              end
             `MEM_LD: begin
-                 reg_out_bits <= dcache_bits;
+                 data_to_reg <= dmem_data_out;
              end
             `IMM_LD: begin
-                 reg_out_bits <= imm;
+                 data_to_reg <= imm;
              end
              `PC_LD: begin
-                 reg_out_bits <= curr_addr_step;
+                 data_to_reg <= curr_addr_step;
              end
              `PC_PIMM_LD: begin
-                 reg_out_bits <= curr_addr_addval;
+                 data_to_reg <= curr_addr_addval;
              end
              default: begin
-                 reg_out_bits <= curr_addr_step;
+                 data_to_reg <= curr_addr_step;
              end
         endcase
     end

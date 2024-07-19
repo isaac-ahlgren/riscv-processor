@@ -1,205 +1,103 @@
+`timescale 1us/100ns
 
-// Macros for bit sizes in instructions
-`define REG_BITS 5
-`define OPCODE_SIZE 7
-`define FUNC1_BITS 3
-`define FUNC2_BITS 7
+`include "decode_logic.v"
+`include "latch.v"
 
-// Macros for opcodes
-`define LOAD_UPPER_IMM       7'b0110111
-`define ADD_UPPER_IMM_PC     7'b0010111
-`define JUMP_AND_LINK        7'b1101111
-`define JUMP_AND_LINK_REG    7'b1100111
-`define LOAD_OP              7'b0000011
-`define STORE_OP             7'b0100011
-`define BRANCH_OP            7'b1100011
-`define IMM_ALU_OP           7'b0010011
-`define REG_ALU_OP           7'b0110011
+module decode_register_select(a0, a1, a2, a2_hazard, imm, func, en_jmp, en_uncond_jmp, en_rel_reg_jmp,
+                              en_mem_wr, ld_code, alu_data1, alu_data2, data_to_mem, en_reg_wr,
+                              instr, d0, d1, stall, squash, clk, rst);
+    
+    // Register identifiers for computation
+    output wire [4:0] a0;
+    output wire [4:0] a1;
+    output wire [4:0] a2;
+    output wire [4:0] a2_hazard;
+    // Leaving decode stage, immediate value (if there is one)
+    output wire [31:0] imm;
+    // Leaving decode stage, function value (if there is one)
+    output wire [9:0] func;
+    // Leaving decode stage, enables if a jump can be taken
+    output wire en_jmp;
+    // Leaving decode stage, enables unconditional jumps
+    output wire en_uncond_jmp;
+    // Leaving decode stage, enables unconditional jump relative to value in a register
+    output wire en_rel_reg_jmp;
+    // Leaving decode stage, enables a write to memory
+    output wire en_mem_wr;
+    // Leaving decode stage, value that determines which value is put on the register write bus
+    output wire [2:0] ld_code;
+    // Leaving decode stage, output data from register file
+    output wire [31:0] alu_data1;
+    output wire [31:0] alu_data2;
+    // Leaving decode stage, data that is going to be written to memory
+    output wire [31:0] data_to_mem;
+    output wire en_reg_wr;
 
-// Macros for format of immediate
-`define FORMAT_U       3'b001
-`define FORMAT_I       3'b010
-`define FORMAT_S       3'b011
-`define FORMAT_B       3'b100
-`define FORMAT_J       3'b101
-`define NO_IMM         3'b000
+    // From fetch stage, the fetched instruction
+    input wire [31:0] instr;
+    input wire [31:0] d0;
+    input wire [31:0] d1;
+    input wire stall;
+    input wire squash;
+    input wire clk, rst;
 
-// Macros for which value to use for a register load
-`define ALU_LD         3'b001
-`define MEM_LD         3'b010
-`define IMM_LD         3'b011
-`define PC_LD          3'b100
-`define PC_PIMM_LD     3'b101
-`define NO_LD          3'b000
+    // Enables immediates for computation
+    wire en_imm;
+    wire input_en_reg_wr;
+    wire input_en_jmp;
+    wire input_en_uncond_jmp; 
+    wire input_en_rel_reg_jmp;
+    wire [9:0] input_func;
+    reg [31:0] alu_input_data2;
+    wire [31:0] input_imm;
+    wire input_en_mem_wr;
+    wire [2:0] input_ld_code;
+    wire [4:0] input_a2;
 
-module decode(instr, a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg_wr, en_mem_wr, en_rel_reg_jmp, ld_code);
-    input  [31:0] instr;
-    output reg [`REG_BITS-1:0] a0;
-    output reg [`REG_BITS-1:0] a1;
-    output reg [`REG_BITS-1:0] a2;
-    output reg [31:0] imm;
-    output reg [`FUNC1_BITS+`FUNC2_BITS-1:0] func;
-    output reg en_jmp;
-    output reg en_uncond_jmp;
-    output reg en_imm;
-    output reg en_reg_wr;
-    output reg en_mem_wr;
-    output reg en_rel_reg_jmp;
-    output reg [2:0] ld_code;
+    latch en_reg_wr_latch1 (.q(en_reg_wr), .d(~squash & input_en_reg_wr), .stall(stall), .clk(clk), .rst(rst));
 
-    reg [2:0] imm_pos;
-    reg en_alu_str_func;
+    latch en_jmp_latch (.q(en_jmp), .d(~squash & input_en_jmp), .stall(stall), .clk(clk), .rst(rst));
 
-    reg [31:0] fu_imm;
-    reg [31:0] fi_imm;
-    reg [31:0] fs_imm;
-    reg [31:0] fb_imm;
-    reg [31:0] fj_imm;
+    latch en_uncond_jmp_latch (.q(en_uncond_jmp), .d(~squash & input_en_uncond_jmp), .stall(stall), .clk(clk), .rst(rst));
+    
+    latch en_rel_reg_jmp_latch (.q(en_rel_reg_jmp), .d(~squash &input_en_rel_reg_jmp), .stall(stall), .clk(clk), .rst(rst));
 
-    assign a0 = instr[`OPCODE_SIZE + 2*`REG_BITS + `FUNC1_BITS - 1:`OPCODE_SIZE + `REG_BITS + `FUNC1_BITS];
-    assign a1 = instr[`OPCODE_SIZE + 3*`REG_BITS + `FUNC1_BITS - 1:`OPCODE_SIZE + 2*`REG_BITS + `FUNC1_BITS];
-    assign a2 = instr[`OPCODE_SIZE + `REG_BITS - 1:`OPCODE_SIZE];
-    assign func = {`FUNC1_BITS+`FUNC2_BITS{~en_alu_str_func}} & {instr[`OPCODE_SIZE + 3*`REG_BITS + `FUNC1_BITS + `FUNC2_BITS - 1:`OPCODE_SIZE + 3*`REG_BITS + `FUNC1_BITS], instr[`OPCODE_SIZE + `REG_BITS + `FUNC1_BITS - 1:`OPCODE_SIZE + `REG_BITS]};
-        
-    assign fu_imm = {instr[31:12], {12{instr[31]}}};
-    assign fi_imm = {{20{instr[31]}}, instr[31:20]};
-    assign fs_imm = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-    assign fb_imm = {{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0};
-    assign fj_imm = {{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:21], 1'b0};
+    // Function code for ALU latch
+    latch function_code_latch [9:0] (.q(func), .d({10{~squash}} & input_func), .stall(stall), .clk(clk), .rst(rst));
 
-    always @ (*) begin  
-        case({instr[`OPCODE_SIZE-1:0]})
-           `LOAD_UPPER_IMM: begin
-                imm_pos = `FORMAT_U;
-                ld_code = `IMM_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `ADD_UPPER_IMM_PC: begin
-                imm_pos = `FORMAT_U;
-                ld_code = `PC_PIMM_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `JUMP_AND_LINK: begin
-                imm_pos = `FORMAT_J;
-                ld_code = `PC_LD;
-                en_jmp = 1'b1;
-                en_uncond_jmp = 1'b1;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `JUMP_AND_LINK_REG: begin
-                imm_pos = `FORMAT_I;
-                ld_code = `PC_LD;
-                en_jmp = 1'b1;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b1;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `LOAD_OP: begin
-                imm_pos = `FORMAT_I;
-                ld_code = `MEM_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b1;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0; 
-                en_alu_str_func = 1'b1;
-            end
-            `STORE_OP: begin
-                imm_pos = `FORMAT_S;
-                ld_code = `NO_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b1;
-                en_reg_wr = 1'b0;
-                en_mem_wr = 1'b1;
-                en_alu_str_func = 1'b1;
-            end
-            `BRANCH_OP: begin
-                imm_pos = `FORMAT_B;
-                ld_code = `NO_LD;
-                en_jmp = 1'b1;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `IMM_ALU_OP: begin
-                imm_pos = `FORMAT_I;
-                ld_code = `ALU_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b1;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            `REG_ALU_OP: begin
-                imm_pos = `NO_IMM;
-                ld_code = `ALU_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b1;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end
-            default: begin
-                imm_pos = `NO_IMM;
-                ld_code = `NO_LD;
-                en_jmp = 1'b0;
-                en_uncond_jmp = 1'b0;
-                en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
-                en_reg_wr = 1'b0;
-                en_mem_wr = 1'b0;
-                en_alu_str_func = 1'b0;
-            end  
-       endcase
+    // Data for ALU computation latch
+    latch data1_latch [31:0] (.q(alu_data1), .d({32{~squash}} & d0), .stall(stall), .clk(clk), .rst(rst));
+    latch data2_latch [31:0] (.q(alu_data2), .d({32{~squash}} & alu_input_data2), .stall(stall), .clk(clk), .rst(rst));
+    
+    // Memory data in latch
+    latch data_to_mem_latch [31:0] (.q(data_to_mem), .d({32{~squash}} & d1), .stall(stall), .clk(clk), .rst(rst));
 
-       case({imm_pos})
-           `FORMAT_U: begin
-               imm = fu_imm;
-           end
-           `FORMAT_I: begin
-               imm = fi_imm;
-           end
-           `FORMAT_S: begin
-               imm = fs_imm;
-           end
-           `FORMAT_B: begin
-               imm = fb_imm;
-           end
-           `FORMAT_J: begin
-               imm = fj_imm;
-           end
-           default: begin
-               imm = fu_imm;
-           end       
-       endcase
-   end
+    // Immediate latch
+    latch immediate_latch [31:0] (.q(imm), .d({32{~squash}} & input_imm), .stall(stall), .clk(clk), .rst(rst));
+
+    // Enable memory write latch
+    latch en_mem_wr_latch(.q(en_mem_wr), .d(~squash & input_en_mem_wr), .stall(stall), .clk(clk), .rst(rst));
+    
+    // Load Code latch
+    latch ld_code_latch [2:0] (.q(ld_code), .d({3{~squash}} & input_ld_code), .stall(stall), .clk(clk), .rst(rst));
+
+    // a2 latch to tell the register file at the correct time
+    latch a2_latch1 [4:0] (.q(a2), .d({5{~squash}} & input_a2), .stall(stall), .clk(clk), .rst(rst));
+
+    // Decode Logic
+    decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 
+                      .en_jmp(input_en_jmp), .en_uncond_jmp(input_en_uncond_jmp), 
+                      .en_imm(en_imm), .en_reg_wr(input_en_reg_wr), .en_mem_wr(input_en_mem_wr), 
+                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .instr(instr));
+
+    assign a2_hazard = {5{~squash}} & input_a2;
+    always @(*) begin
+
+        // Determine which value to use for the second value in the ALU operation
+        if (en_imm)
+            alu_input_data2 <= input_imm;
+        else
+            alu_input_data2 <= d1;
+    end
 
 endmodule
