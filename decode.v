@@ -3,7 +3,7 @@
 `include "decode_logic.v"
 `include "latch.v"
 
-module decode_register_select(a0, a1, a2, a2_hazard, imm, func, en_jmp, en_uncond_jmp, en_rel_reg_jmp,
+module decode_register_select(a0, a1, a2, a2_hazard, imm_to_reg, imm_to_addr, func, en_jmp, en_uncond_jmp, en_rel_reg_jmp,
                               en_mem_wr, ld_code, alu_data1, alu_data2, data_to_mem, en_reg_wr,
                               instr, d0, d1, stall, squash, clk, rst);
     
@@ -12,8 +12,9 @@ module decode_register_select(a0, a1, a2, a2_hazard, imm, func, en_jmp, en_uncon
     output wire [4:0] a1;
     output wire [4:0] a2;
     output wire [4:0] a2_hazard;
-    // Leaving decode stage, immediate value (if there is one)
-    output wire [31:0] imm;
+    // Leaving decode stage, immediate values (if there is one)
+    output wire [31:0] imm_to_reg;
+    output wire [31:0] imm_to_addr;
     // Leaving decode stage, function value (if there is one)
     output wire [9:0] func;
     // Leaving decode stage, enables if a jump can be taken
@@ -54,7 +55,9 @@ module decode_register_select(a0, a1, a2, a2_hazard, imm, func, en_jmp, en_uncon
     wire [2:0] input_ld_code;
     wire [4:0] input_a2;
 
-    latch en_reg_wr_latch1 (.q(en_reg_wr), .d(~squash & input_en_reg_wr), .stall(stall), .clk(clk), .rst(rst));
+    wire en_reg_wr_conn_latch1;
+    latch en_reg_wr_latch1 (.q(en_reg_wr_conn_latch1), .d(~squash & input_en_reg_wr), .stall(stall), .clk(clk), .rst(rst));
+    latch en_reg_wr_latch2 (.q(en_reg_wr), .d(en_reg_wr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     latch en_jmp_latch (.q(en_jmp), .d(~squash & input_en_jmp), .stall(stall), .clk(clk), .rst(rst));
 
@@ -70,19 +73,29 @@ module decode_register_select(a0, a1, a2, a2_hazard, imm, func, en_jmp, en_uncon
     latch data2_latch [31:0] (.q(alu_data2), .d({32{~squash}} & alu_input_data2), .stall(stall), .clk(clk), .rst(rst));
     
     // Memory data in latch
-    latch data_to_mem_latch [31:0] (.q(data_to_mem), .d({32{~squash}} & d1), .stall(stall), .clk(clk), .rst(rst));
+    wire [31:0] data_to_mem_conn_latch1;
+    latch data_to_mem_latch1 [31:0] (.q(data_to_mem_conn_latch1), .d({32{~squash}} & d1), .stall(stall), .clk(clk), .rst(rst));
+    latch data_to_mem_latch2 [31:0] (.q(data_to_mem), .d(data_to_mem_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     // Immediate latch
-    latch immediate_latch [31:0] (.q(imm), .d({32{~squash}} & input_imm), .stall(stall), .clk(clk), .rst(rst));
+    latch immediate_latch1 [31:0] (.q(imm_to_addr), .d({32{~squash}} & input_imm), .stall(stall), .clk(clk), .rst(rst));
+    latch immediate_latch2 [31:0] (.q(imm_to_reg), .d(imm_to_addr), .stall(stall), .clk(clk), .rst(rst));
 
     // Enable memory write latch
-    latch en_mem_wr_latch(.q(en_mem_wr), .d(~squash & input_en_mem_wr), .stall(stall), .clk(clk), .rst(rst));
+    wire en_mem_wr_conn_latch1;
+    latch en_mem_wr_latch1(.q(en_mem_wr_conn_latch1), .d(~squash & input_en_mem_wr), .stall(stall), .clk(clk), .rst(rst));
+    latch en_mem_wr_latch2(.q(en_mem_wr), .d(en_mem_wr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     
     // Load Code latch
-    latch ld_code_latch [2:0] (.q(ld_code), .d({3{~squash}} & input_ld_code), .stall(stall), .clk(clk), .rst(rst));
+    wire [2:0] ld_code_conn_latch1;
+    latch ld_code_latch1 [2:0] (.q(ld_code_conn_latch1), .d({3{~squash}} & input_ld_code), .stall(stall), .clk(clk), .rst(rst));
+    latch ld_code_latch2 [2:0] (.q(ld_code), .d(ld_code_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     // a2 latch to tell the register file at the correct time
-    latch a2_latch1 [4:0] (.q(a2), .d({5{~squash}} & input_a2), .stall(stall), .clk(clk), .rst(rst));
+    wire [4:0] a2_conn_latch1;
+    latch a2_latch1 [4:0] (.q(a2_conn_latch1), .d({5{~squash}} & input_a2), .stall(stall), .clk(clk), .rst(rst));
+    latch a2_latch2 [4:0] (.q(a2), .d(a2_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
+    
 
     // Decode Logic
     decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 
