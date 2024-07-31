@@ -45,6 +45,13 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	reg_file
 
+} {} {}} /home/ikey/repos/riscv-processor/stallmem.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/stallmem.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module stallmem
+
+Top level modules:
+	stallmem
+
 } {} {}} /home/ikey/repos/riscv-processor/proc_tb.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc_tb.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
@@ -85,6 +92,15 @@ Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 
 Top level modules:
 	alu
 
+} {} {}} /home/ikey/repos/riscv-processor/decode.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/decode.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module decode_logic
+-- Compiling module latch
+-- Compiling module decode_register_select
+
+Top level modules:
+	decode_register_select
+
 } {} {}} /home/ikey/repos/riscv-processor/proc.v {2 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/proc.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
 -- Compiling module reg_dflop
@@ -109,14 +125,12 @@ Top level modules:
 	stallmem
 	proc
 
-} {} {}} /home/ikey/repos/riscv-processor/decode.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/decode.v
+} {} {}} /home/ikey/repos/riscv-processor/memory2c.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/memory2c.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
--- Compiling module decode_logic
--- Compiling module latch
--- Compiling module decode_register_select
+-- Compiling module memory2c
 
 Top level modules:
-	decode_register_select
+	memory2c
 
 } {} {}} /home/ikey/repos/riscv-processor/left_barrel_shifter.v {1 {vlog -work work -stats=none /home/ikey/repos/riscv-processor/left_barrel_shifter.v
 Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020

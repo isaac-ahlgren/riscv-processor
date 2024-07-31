@@ -45,7 +45,7 @@ module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready,
     // Intruction
     wire [31:0] instr;
     // Output from ALU operation
-    wire [31:0] alu_bits;
+    wire [31:0] alu_output_data_in;
     // Data to be written to a register
     reg [31:0] data_to_reg;
     
@@ -61,7 +61,8 @@ module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready,
     wire [31:0] alu_data1;
     wire [31:0] alu_data2;
     // Immediate Value (if there is one)
-    wire [31:0] imm;
+    wire [31:0] imm_to_reg;
+    wire [31:0] imm_to_addr;
     // Function Value (if there is one)
     wire [9:0] func;
 
@@ -89,44 +90,49 @@ module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready,
     wire control_hazard;
     wire data_hazard;
 
+    wire [31:0] alu_output_data_out;
+    latch alu_output_data_latch1 [31:0] (.q(alu_output_data_out), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
+
     hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), 
                                .jump_taken(jump_taken), .dmem_stall(dmem_stall), .imem_stall(imem_stall),
                                .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
     assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
-    assign imem_stall = jump_taken & ~imem_ready;    
+    assign imem_stall = jump_taken & ~imem_ready;
+    assign dmem_stall = ~dmem_ready;   
 
     // Fetch Stage
     fetch fet (.curr_addr(imem_addr), .instr_out(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval),
-               .instr_in(imem_data_out), .jump_taken(jump_taken), .alu_bits(alu_bits), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm), .stall(stall | data_hazard), 
+               .instr_in(imem_data_out), .jump_taken(jump_taken), .alu_bits(alu_output_data_in), .en_uncond_jmp(en_uncond_jmp), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard), 
                .imem_ready(imem_ready), .clk(clk), .rst(rst));
     // Decode Stage
-    decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm(imm), .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), 
-                           .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(dmem_wr), .ld_code(ld_code), .alu_data1(alu_data1), 
-                           .alu_data2(alu_data2), .data_to_mem(dmem_data_in), .en_reg_wr(en_reg_wr), .instr(instr), .d0(d0), .d1(d1), 
-                           .stall(stall), .squash(data_hazard | control_hazard), .clk(clk), .rst(rst));
+    decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
+                           .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(dmem_wr), 
+                           .ld_code(ld_code), .alu_data1(alu_data1), .alu_data2(alu_data2), .data_to_mem(dmem_data_in), .en_reg_wr(en_reg_wr), 
+                           .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), .clk(clk), .rst(rst));
+
     // ALU
-    alu a(.bits_a(alu_data1), .bits_b(alu_data2), .func(func), .out_bits(alu_bits), .compare_val(en_branch));
+    alu a(.bits_a(alu_data1), .bits_b(alu_data2), .func(func), .out_bits(alu_output_data_in), .compare_val(en_branch));
+
     // Register File
     reg_file regs (.a0(a0), .a1(a1), .a2(a2), 
                    .din(data_to_reg), .reg_wr(en_reg_wr), 
                    .d0(d0), .d1(d1), .clk(clk), .rst(rst));
 
-    assign dmem_stall = 1'b0;
-    assign dmem_addr = alu_bits;
+    assign dmem_addr = alu_output_data_out;
 
     always @(*) begin
 
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin
-                 data_to_reg <= alu_bits;
+                 data_to_reg <= alu_output_data_out;
              end
             `MEM_LD: begin
                  data_to_reg <= dmem_data_out;
              end
             `IMM_LD: begin
-                 data_to_reg <= imm;
+                 data_to_reg <= imm_to_reg;
              end
              `PC_LD: begin
                  data_to_reg <= curr_addr_step;

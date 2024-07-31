@@ -96,7 +96,7 @@ module decode_logic(a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg
                 en_jmp = 1'b1;
                 en_uncond_jmp = 1'b1;
                 en_rel_reg_jmp = 1'b0;
-                en_imm = 1'b0;
+                en_imm = 1'b1;
                 en_reg_wr = 1'b1;
                 en_mem_wr = 1'b0;
                 en_alu_str_func = 1'b0;
@@ -107,7 +107,7 @@ module decode_logic(a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg
                 en_jmp = 1'b1;
                 en_uncond_jmp = 1'b0;
                 en_rel_reg_jmp = 1'b1;
-                en_imm = 1'b0;
+                en_imm = 1'b1;
                 en_reg_wr = 1'b1;
                 en_mem_wr = 1'b0;
                 en_alu_str_func = 1'b0;
