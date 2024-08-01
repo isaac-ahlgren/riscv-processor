@@ -90,8 +90,13 @@ module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready,
     wire control_hazard;
     wire data_hazard;
 
-    wire [31:0] alu_output_data_out;
-    latch alu_output_data_latch1 [31:0] (.q(alu_output_data_out), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
+    wire [31:0] alu_output_data_as_addr;
+    wire [31:0] alu_output_data_to_reg;
+    latch alu_output_data_latch1 [31:0] (.q(alu_output_data_as_addr), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
+    latch alu_output_data_latch2 [31:0] (.q(alu_output_data_to_reg), .d(alu_output_data_as_addr), .stall(stall), .clk(clk), .rst(rst));
+
+    wire [31:0] dmem_data_out_to_reg;
+    latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
 
     hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), 
                                .jump_taken(jump_taken), .dmem_stall(dmem_stall), .imem_stall(imem_stall),
@@ -119,17 +124,17 @@ module proc(dmem_data_out, dmem_data_in, dmem_addr, dmem_wr, dmem_ready,
                    .din(data_to_reg), .reg_wr(en_reg_wr), 
                    .d0(d0), .d1(d1), .clk(clk), .rst(rst));
 
-    assign dmem_addr = alu_output_data_out;
+    assign dmem_addr = alu_output_data_as_addr;
 
     always @(*) begin
 
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin
-                 data_to_reg <= alu_output_data_out;
+                 data_to_reg <= alu_output_data_to_reg;
              end
             `MEM_LD: begin
-                 data_to_reg <= dmem_data_out;
+                 data_to_reg <= dmem_data_out_to_reg;
              end
             `IMM_LD: begin
                  data_to_reg <= imm_to_reg;
