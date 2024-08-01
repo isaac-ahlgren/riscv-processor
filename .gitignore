@@ -1,3 +1,6 @@
 *.v.bak
-./work/
+work/
 *.txt
+dumpfile
+risc_test_program/merge_sort
+risc_test_program/risc_test

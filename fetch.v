@@ -59,12 +59,16 @@ module fetch (curr_addr, instr_out, curr_addr_step_out, curr_addr_addval_out,
     // Latch for the current address plus four bytes
     wire [31:0] curr_addr_step_conn_latch1;
     wire [31:0] curr_addr_step_conn_latch2;
+    wire [31:0] curr_addr_step_conn_latch3;
     latch curr_addr_step_latch1 [31:0] (.q(curr_addr_step_conn_latch1), .d(curr_addr_step), .stall(stall), .clk(clk), .rst(rst));
     latch curr_addr_step_latch2 [31:0] (.q(curr_addr_step_conn_latch2), .d(curr_addr_step_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
-    latch curr_addr_step_latch3 [31:0] (.q(curr_addr_step_out), .d(curr_addr_step_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
+    latch curr_addr_step_latch3 [31:0] (.q(curr_addr_step_conn_latch3), .d(curr_addr_step_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
+    latch curr_addr_step_latch4 [31:0] (.q(curr_addr_step_out), .d(curr_addr_step_conn_latch3), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for the current address plus the additional value
-    latch curr_addr_addval_latch [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));
+    wire [31:0] curr_addr_addval_conn_latch1;
+    latch curr_addr_addval_latch1 [31:0] (.q(curr_addr_addval_conn_latch1), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));
+    latch curr_addr_addval_latch2 [31:0] (.q(curr_addr_addval_out), .d(curr_addr_addval_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for current address
     wire [31:0] curr_addr_conn_latch1;

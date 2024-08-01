@@ -40,9 +40,20 @@ module hazards_controller(control_hazard, data_hazard, stall, jump_taken, dmem_s
     assign a0_equal_a2_latch2 = ~(|(a2_latch2_conn ^ a0));
     assign data_hazard_latch2 = (a1_equal_a2_latch2 | a0_equal_a2_latch2) & ~a2_equal_zero_latch2;
 
+    wire [4:0] a2_latch3_conn;
+    wire a1_equal_a2_latch3;
+    wire a0_equal_a2_latch3;
+    wire a2_equal_zero_latch3;
+    wire data_hazard_latch3;
+    latch register_wr_latch3 [4:0] (.q(a2_latch3_conn), .d(a2_latch2_conn), .stall(stall), .clk(clk), .rst(rst));
+    assign a2_equal_zero_latch3 = ~(|(a2_latch3_conn ^ 5'b0));
+    assign a1_equal_a2_latch3 = ~(|(a2_latch3_conn ^ a1));
+    assign a0_equal_a2_latch3 = ~(|(a2_latch3_conn ^ a0));
+    assign data_hazard_latch3 = (a1_equal_a2_latch3 | a0_equal_a2_latch3) & ~a2_equal_zero_latch3;
+
     assign control_hazard_input = jump_taken;
 
-    assign data_hazard = (data_hazard_latch1 | data_hazard_latch2) & ~control_hazard; 
+    assign data_hazard = (data_hazard_latch1 | data_hazard_latch2 | data_hazard_latch3) & ~control_hazard; 
     assign stall = dmem_stall | imem_stall;
     assign control_hazard = control_hazard_input | control_hazard_latch1_conn;      
 endmodule 
