@@ -1,10 +1,4 @@
 `timescale 1us/100ns
-
-`include "reg_file.v"
-`include "decode.v"
-`include "alu.v"
-`include "memory2c.v"
-`include "fetch.v"
     
 // Macros for which value to use for a register load
 `define ALU_LD         3'b001

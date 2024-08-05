@@ -35,9 +35,6 @@ module proc_tb();
     wire imem_createdump; 
     wire err;
 
-    // Data Memory
-    memory2c dmem (.data_out(dmem_data_out), .data_in(dmem_data_in), .addr(dmem_addr), .enable(enable), 
-                   .wr(dmem_wr), .createdump(dmem_createdump), .clk(clk), .rst(rst));
     // Instruction Memory
     stallmem imem (.data_out(imem_data_out), .ready(imem_ready), .data_in(imem_data_in), .addr(imem_addr), .enable(enable), 
                    .wr(imem_wr), .createdump(instr_cache_createdump), .clk(clk), .rst(rst), .err(err));
