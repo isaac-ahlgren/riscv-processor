@@ -3,21 +3,9 @@
 `include "left_barrel_shifter.v"
 `include "right_barrel_shifter.v"
 
-`define RISC_ADD_SUB_OP     3'b000
-`define RISC_SHIFT_LEFT     3'b001
-`define RISC_SHIFT_RIGHT    3'b101
-`define RISC_XOR_OP         3'b100
-`define RISC_OR_OP          3'b110
-`define RISC_AND_OP         3'b111
-
-`define BEQ                 3'b000
-`define BNE                 3'b001
-`define BLT                 3'b100
-`define BGE                 3'b101
-`define BLTU                3'b110
-`define BGETU               3'b111
-
 module alu(bits_a, bits_b, func, out_bits, compare_val);
+    `include "proc_params.h"
+
     input [31:0] bits_a;
     input [31:0] bits_b;
     input [9:0] func;

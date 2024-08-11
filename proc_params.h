@@ -32,3 +32,18 @@
 `define PC_PIMM_LD     3'b101
 `define NO_LD          3'b000
 
+// Macros for function codes in the ALU
+`define RISC_ADD_SUB_OP     3'b000
+`define RISC_SHIFT_LEFT     3'b001
+`define RISC_SHIFT_RIGHT    3'b101
+`define RISC_XOR_OP         3'b100
+`define RISC_OR_OP          3'b110
+`define RISC_AND_OP         3'b111
+
+// Macros for branch type codes
+`define BEQ                 3'b000
+`define BNE                 3'b001
+`define BLT                 3'b100
+`define BGE                 3'b101
+`define BLTU                3'b110
+`define BGETU               3'b111
