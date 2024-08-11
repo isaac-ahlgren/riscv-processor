@@ -4,7 +4,7 @@
 `include "latch.v"
 
 module decode_register_select(a0, a1, a2, a2_hazard, imm_to_reg, imm_to_addr, func, en_jmp, en_uncond_jmp, en_rel_reg_jmp,
-                              en_mem_wr, ld_code, alu_data1, alu_data2, data_to_mem, en_reg_wr,
+                              en_mem_wr, ld_code, alu_data1, alu_data2, data_to_mem, en_reg_wr, dmem_addr_bus_use,
                               instr, d0, d1, stall, squash, clk, rst);
     
     // Register identifiers for computation
@@ -33,6 +33,7 @@ module decode_register_select(a0, a1, a2, a2_hazard, imm_to_reg, imm_to_addr, fu
     // Leaving decode stage, data that is going to be written to memory
     output wire [31:0] data_to_mem;
     output wire en_reg_wr;
+    output wire dmem_addr_bus_use;
 
     // From fetch stage, the fetched instruction
     input wire [31:0] instr;
@@ -104,12 +105,17 @@ module decode_register_select(a0, a1, a2, a2_hazard, imm_to_reg, imm_to_addr, fu
     latch a2_latch2 [4:0] (.q(a2_conn_latch2), .d(a2_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     latch a2_latch3 [4:0] (.q(a2), .d(a2_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
     
+    wire input_dmem_addr_bus_use;
+    wire dmem_addr_bus_use_conn_latch1;
+    latch dmem_addr_bus_use_latch1(.q(dmem_addr_bus_use_conn_latch1), .d(~squash & input_dmem_addr_bus_use), .stall(stall), .clk(clk), .rst(rst));
+    latch dmem_addr_bus_use_latch2(.q(dmem_addr_bus_use), .d(dmem_addr_bus_use_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     // Decode Logic
     decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 
                       .en_jmp(input_en_jmp), .en_uncond_jmp(input_en_uncond_jmp), 
                       .en_imm(en_imm), .en_reg_wr(input_en_reg_wr), .en_mem_wr(input_en_mem_wr), 
-                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .instr(instr));
+                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .dmem_addr_bus_use(input_dmem_addr_bus_use), 
+                      .instr(instr));
 
     assign a2_hazard = {5{~squash}} & input_a2;
     always @(*) begin

@@ -5,7 +5,7 @@
 
 module fetch (curr_addr, instr_out, curr_addr_step_out, curr_addr_addval_out,
               instr_in, jump_taken, alu_bits, en_uncond_jmp, en_rel_reg_jmp, 
-              en_branch, en_jmp, imm, stall, imem_ready, clk, rst);
+              en_branch, en_jmp, imm, stall, imem_stall, clk, rst);
    
     // Current Address
     output wire [31:0] curr_addr;
@@ -36,7 +36,7 @@ module fetch (curr_addr, instr_out, curr_addr_step_out, curr_addr_addval_out,
     // Signal that informs whether a stall is occuring from the data cache
     input wire stall; 
     // Signal designating if the instruction memory was successfully read from
-    input wire imem_ready;
+    input wire imem_stall;
     // Clock and Reset 
     input wire clk, rst;
 
@@ -51,10 +51,10 @@ module fetch (curr_addr, instr_out, curr_addr_step_out, curr_addr_addval_out,
     reg  [31:0] next_addr;
 
     // Program Counter
-    latch pc [31:0] (.q(curr_addr), .d(next_addr), .stall(stall | ~imem_ready), .clk(clk), .rst(rst)); 
+    latch pc [31:0] (.q(curr_addr), .d(next_addr), .stall(stall | imem_stall), .clk(clk), .rst(rst)); 
        
     // Instruction Latch
-    latch instr_latch [31:0] (.q(instr_out), .d(instr_in & {32{imem_ready}}), .stall(stall), .clk(clk), .rst(rst)); // If the memory stalls, replace out going instruction with empty instruction
+    latch instr_latch [31:0] (.q(instr_out), .d(instr_in), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for the current address plus four bytes
     wire [31:0] curr_addr_step_conn_latch1;
