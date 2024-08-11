@@ -1,15 +1,9 @@
 `timescale 1us/100ns
-    
-// Macros for which value to use for a register load
-`define ALU_LD         3'b001
-`define MEM_LD         3'b010
-`define IMM_LD         3'b011
-`define PC_LD          3'b100
-`define PC_PIMM_LD     3'b101
-`define NO_LD          3'b000
 
 module proc(data_out, data_in, addr, mem_wr, mem_ready, 
             clk, rst);
+
+    `include "proc_params.h"
 
     // Data from data main memory
     input wire [31:0] data_out;
