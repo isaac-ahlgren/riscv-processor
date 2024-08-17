@@ -1,6 +1,6 @@
 `timescale 1us/100ns
 
-module proc(data_out, data_in, addr, mem_wr, mem_ready, 
+module proc(data_out, data_in, addr, mem_wr, mem_re, mem_ready, 
             clk, rst);
 
     `include "proc_params.h"
@@ -13,6 +13,8 @@ module proc(data_out, data_in, addr, mem_wr, mem_ready,
     output wire [31:0] addr;
     // Write flag for data main memory
     output wire mem_wr;
+    // Read flag for data main memory
+    output wire mem_re;
     input wire mem_ready;
     input wire clk, rst;
 
@@ -96,7 +98,7 @@ module proc(data_out, data_in, addr, mem_wr, mem_ready,
                .imem_stall(imem_stall), .clk(clk), .rst(rst));
     // Decode Stage
     decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
-                           .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), 
+                           .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), .en_mem_re(mem_re)
                            .ld_code(ld_code), .alu_data1(alu_data1), .alu_data2(alu_data2), .data_to_mem(data_in), .en_reg_wr(en_reg_wr), 
                            .dmem_addr_bus_use(dmem_use), .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), 
                            .clk(clk), .rst(rst));

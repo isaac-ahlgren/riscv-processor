@@ -45,67 +45,85 @@ module risc_de10(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-    wire rst;
-    // Data from data main memory
-    wire [31:0] dmem_data_out;
-    // Data going into data main memory
-    wire [31:0] dmem_data_in;
-    // Address for the data main memory 
-    wire [15:0] dmem_addr;
+    reg clk;
+    reg rst;
+    
+    // Data from data main memory from processor
+    wire [31:0] proc_data_out;
+    // Data going into data main memory from processor
+    wire [31:0] proc_data_in;
+    // Address for the data main memory from processor
+    wire [31:0] proc_addr;
     // Write flag for data main memory
-    wire dmem_wr;
+    wire proc_mem_wr;
+    // Read flag for data main memory
+	wire proc_mem_re;
+	// Data from main memory from processor
+    wire [31:0] data_out;
+    // Data going directly into main memory
+    wire [31:0] data_in;
+    // Address going into the main memory
+    wire [31:0] addr;
+    // Write flag going into main memory
+    wire mem_wr;
+    // Read flag for data main memory
+	wire mem_re;
     // Ready to read status for instruction main memory
-    wire dmem_ready;
-    // Data from instruction main memory
-    wire [31:0] imem_data_out;
-    // Data going into instruction main memory
-    wire [31:0] imem_data_in;
-    // Address for the instruction main memory 
-    wire [15:0] imem_addr;
-    // Write flag for instruction main memory
-    wire imem_wr; 
-    // Ready to read status for instruction main memory
-    wire imem_ready;
+    wire mem_ready;
+	wire write_finished;
+	wire read_finished;
 
 
 
 //=======================================================
 //  Structural coding
 //=======================================================
-    assign rst = KEY[0] | KEY[1]
+    assign rst = KEY[0] | KEY[1];
+	assign clk = MAX10_CLK1_50;
 
-    proc cpu (.dmem_data_out(dmem_data_out), .dmem_data_in(dmem_data_in), .dmem_addr(dmem_addr), .dmem_wr(dmem_wr), 
-              .dmem_ready(dmem_ready), .imem_data_out(imem_data_out), .imem_data_in(imem_data_in), 
-              .imem_addr(imem_addr), .imem_wr(imem_wr), .imem_ready(imem_ready), .clk(MAX10_CLK1_50), .rst(rst));
+    always @(posedge write_finished or posedge read_finished) begin
+        mem_ready <= 1'b1;
+	end
+    // FIX THIS
+	always @(mem_ready or mem_wr or mem_re) begin
+	    if (mem_ready) begin
+            data_in <= proc_data_in;
+            mem_wr <= proc_mem_wr;
+			mem_re <= proc_mem_re;
+		end
+	end
 
-	Sdram_Control u1 (	//	HOST Side
-						.REF_CLK(MAX10_CLK1_50),
-					    .RESET_N(rst),
-						//	FIFO Write Side 
-						.WR_DATA(writedata),
-						.WR(write),
-						.WR_ADDR(0),
-						.WR_MAX_ADDR(25'h1ffffff),		//	
-						.WR_LENGTH(9'h80),
-						.WR_LOAD(!test_global_reset_n ),
-						.WR_CLK(clk_test),
-						//	FIFO Read Side 
-						.RD_DATA(readdata),
-				        .RD(read),
-				        .RD_ADDR(0),			//	Read odd field and bypess blanking
-						.RD_MAX_ADDR(25'h1ffffff),
-						.RD_LENGTH(9'h80),
-				        .RD_LOAD(!test_global_reset_n ),
-						.RD_CLK(clk_test),
-                        //	SDRAM Side
-						.SA(DRAM_ADDR),
-						.BA(DRAM_BA),
-						.CS_N(DRAM_CS_N),
-						.CKE(DRAM_CKE),
-						.RAS_N(DRAM_RAS_N),
-				        .CAS_N(DRAM_CAS_N),
-				        .WE_N(DRAM_WE_N),
-						.DQ(DRAM_DQ),
-				        .DQM({DRAM_UDQM,DRAM_LDQM}),
-						.SDR_CLK(DRAM_CLK)	);
+   // Processor
+    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_ready(mem_ready), 
+              .clk(clk), .rst(rst));
+
+	sdram_controller sdram_controller(
+	    .iclk(clk),
+        .ireset(rst),
+		.in_use(in_use),
+    
+        .iwrite_req(mem_wr),
+        .iwrite_address(addr),
+        .iwrite_data(data_in),
+        .owrite_ack(write_finished),
+    
+        .iread_req(read_request),
+        .iread_address(addr),
+        .oread_data(data_out),
+        .oread_ack(read_finished),
+    
+	    //////////// SDRAM //////////
+	    .DRAM_ADDR(DRAM_ADDR),
+        .DRAM_BA(DRAM_BA),
+        .DRAM_CAS_N(DRAM_CAS_N),
+        .DRAM_CKE(DRAM_CKE),
+        .DRAM_CLK(DRAM_CLK),
+        .DRAM_CS_N(DRAM_CS_N),
+        .DRAM_DQ(DRAM_DQ),
+        .DRAM_LDQM(DRAM_LDQM),
+        .DRAM_RAS_N(DRAM_RAS_N),
+        .DRAM_UDQM(DRAM_UDQM),
+        .DRAM_WE_N(DRAM_WE_N)
+);
+
 endmodule
