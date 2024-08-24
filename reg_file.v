@@ -1,6 +1,4 @@
 
-`include "reg_dff.v"
-
 `define REG_BITS 5
 `define OPCODE_SIZE 7
 `define REG_NUM     32

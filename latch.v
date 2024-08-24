@@ -1,6 +1,6 @@
 `timescale 1us/100ns
 
-module latch (q, d, stall, clk, rst);
+module pipeline_latch (q, d, stall, clk, rst);
 
     output         q;
     input          d;

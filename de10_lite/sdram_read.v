@@ -9,7 +9,7 @@ module sdram_read(
     input           [12:0]      irow,
     input            [9:0]      icolumn,
     input            [1:0]      ibank,
-    output 		   [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]		odata,
+    output 		   [`DATA_BLOCK_SIZE-1:0]		odata,
     
     output		          		DRAM_CLK,
     output		          		DRAM_CKE,
@@ -32,7 +32,7 @@ reg      [7:0]  next_state;
 reg      [3:0]  command     = 4'h0;
 reg     [12:0]  address     = 13'h0;
 reg      [1:0]  bank        = 2'b00;
-reg    [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]  data = (`DB_WIDTH*`DSIZE_DB_WIDTH)'b0;
+reg    [`DATA_BLOCK_SIZE-1:0]  data = `DATA_BLOCK_SIZE'b0;
 reg      [1:0]  dqm         = 2'b11;
 
 reg             ready       = 1'b0;
@@ -70,7 +70,7 @@ begin
         state <= #1 next_state;
 end
 
-always @(state or ireq or dqm_count or data_count)
+always @(state or ireq or data_count)
 begin
     case(state)
         `IDLE:
@@ -175,7 +175,7 @@ begin
             address             <= #1 13'b0000000000000;   
             bank                <= #1 2'b00;
             dqm                 <= #1 2'b00;
-            data                <= #1 ((data << 16) | {(`DB_WIDTH*(`DSIZE_DB_WIDTH - 1))'b0, DRAM_DQ});
+            data                <= #1 ((data << `DB_WIDTH) | {`DATA_BLOCK_SIZE-`DB_WIDTH'b0, DRAM_DQ});
             ready               <= #1 1'b0;
             
             ctr_reset           <= #1 1'b0;

@@ -45,19 +45,9 @@ module risc_de10(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-    reg clk;
-    reg rst;
+    wire clk;
+    wire rst;
     
-    // Data from data main memory from processor
-    wire [31:0] proc_data_out;
-    // Data going into data main memory from processor
-    wire [31:0] proc_data_in;
-    // Address for the data main memory from processor
-    wire [31:0] proc_addr;
-    // Write flag for data main memory
-    wire proc_mem_wr;
-    // Read flag for data main memory
-	wire proc_mem_re;
 	// Data from main memory from processor
     wire [31:0] data_out;
     // Data going directly into main memory
@@ -72,42 +62,32 @@ module risc_de10(
     wire mem_ready;
 	wire write_finished;
 	wire read_finished;
+    wire in_use;
 
 
 
 //=======================================================
 //  Structural coding
 //=======================================================
+    assign mem_ready = ~in_use;
     assign rst = KEY[0] | KEY[1];
 	assign clk = MAX10_CLK1_50;
 
-    always @(posedge write_finished or posedge read_finished) begin
-        mem_ready <= 1'b1;
-	end
-    // FIX THIS
-	always @(mem_ready or mem_wr or mem_re) begin
-	    if (mem_ready) begin
-            data_in <= proc_data_in;
-            mem_wr <= proc_mem_wr;
-			mem_re <= proc_mem_re;
-		end
-	end
-
    // Processor
-    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_ready(mem_ready), 
+    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_re(mem_re), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
 
 	sdram_controller sdram_controller(
 	    .iclk(clk),
         .ireset(rst),
-		.in_use(in_use),
+		.oin_use(in_use),
     
         .iwrite_req(mem_wr),
         .iwrite_address(addr),
         .iwrite_data(data_in),
         .owrite_ack(write_finished),
     
-        .iread_req(read_request),
+        .iread_req(read_request & 1'b1), // Always requesting read because instructions are needed and there is no cache yet
         .iread_address(addr),
         .oread_data(data_out),
         .oread_ack(read_finished),

@@ -3,16 +3,16 @@ module sdram_controller(
 
 	input 		          		iclk,
     input 		          		ireset,
-    output                      in_use;
+    output                      oin_use,
     
     input                       iwrite_req,
     input           [21:0]      iwrite_address,
-    input          [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]      iwrite_data,
+    input          [`DATA_BLOCK_SIZE-1:0]      iwrite_data,
     output                      owrite_ack,
     
     input                       iread_req,
     input           [21:0]      iread_address,
-    output         [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]      oread_data,
+    output         [`DATA_BLOCK_SIZE-1:0]      oread_data,
     output                      oread_ack,
     
 	//////////// SDRAM //////////
@@ -71,6 +71,7 @@ wire            read_fin;
 assign {write_ibank, write_irow, write_icolumn} = {iwrite_address, 3'b0};
 assign {read_ibank, read_irow, read_icolumn}    = {iread_address, 3'b0};
 
+assign oin_use                                  = in_use;
 assign owrite_ack                               = write_ack;
 assign oread_ack                                = read_ack;
 

@@ -3,11 +3,11 @@ module decode_logic(a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg
     `include "proc_params.h"
     
     input  [31:0] instr;
-    output reg [`REG_BITS-1:0] a0;
-    output reg [`REG_BITS-1:0] a1;
-    output reg [`REG_BITS-1:0] a2;
+    output     [`REG_BITS-1:0] a0;
+    output     [`REG_BITS-1:0] a1;
+    output     [`REG_BITS-1:0] a2;
     output reg [31:0] imm;
-    output reg [`FUNC1_BITS+`FUNC2_BITS-1:0] func;
+    output     [`FUNC1_BITS+`FUNC2_BITS-1:0] func;
     output reg en_jmp;
     output reg en_uncond_jmp;
     output reg en_imm;
@@ -21,11 +21,11 @@ module decode_logic(a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg
     reg [2:0] imm_pos;
     reg en_alu_str_func;
 
-    reg [31:0] fu_imm;
-    reg [31:0] fi_imm;
-    reg [31:0] fs_imm;
-    reg [31:0] fb_imm;
-    reg [31:0] fj_imm;
+    wire [31:0] fu_imm;
+    wire [31:0] fi_imm;
+    wire [31:0] fs_imm;
+    wire [31:0] fb_imm;
+    wire [31:0] fj_imm;
 
     assign a0 = instr[`OPCODE_SIZE + 2*`REG_BITS + `FUNC1_BITS - 1:`OPCODE_SIZE + `REG_BITS + `FUNC1_BITS];
     assign a1 = instr[`OPCODE_SIZE + 3*`REG_BITS + `FUNC1_BITS - 1:`OPCODE_SIZE + 2*`REG_BITS + `FUNC1_BITS];

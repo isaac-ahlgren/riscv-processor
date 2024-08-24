@@ -1,5 +1,6 @@
 `define DSIZE_DB_WIDTH 2
 `define DB_WIDTH       16
+`define DATA_BLOCK_SIZE `DSIZE_DB_WIDTH*`DB_WIDTH
 
 `define INIT1          9'b000000001
 `define INIT2          9'b000000010

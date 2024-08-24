@@ -1,4 +1,5 @@
 module sdram_write(
+    `include "sdram_controller.h"
     input                       iclk,
     input                       ireset,
     input                       ireq,
@@ -8,7 +9,7 @@ module sdram_write(
     input           [12:0]      irow,
     input            [9:0]      icolumn,
     input            [1:0]      ibank,
-    input 		   [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]		idata,
+    input 		   [`DATA_BLOCK_SIZE-1:0]		idata,
     
     output		          		DRAM_CLK,
     output		          		DRAM_CKE,
@@ -22,8 +23,6 @@ module sdram_write(
     output		          		DRAM_UDQM,
     output 		    [`DB_WIDTH:0]		DRAM_DQ
 );
-
-`include "sdram_controller.h"
 `include "sdram_write.h"
 
 reg      [6:0]  state       = `IDLE;
@@ -32,7 +31,7 @@ reg      [6:0]  next_state;
 reg      [3:0]  command     = 4'h0;
 reg     [12:0]  address     = 13'h0;
 reg      [1:0]  bank        = 2'b00;
-reg    [`DB_WIDTH*`DSIZE_DB_WIDTH-1:0]  data = (`DB_WIDTH*`DSIZE_DB_WIDTH)'b0;
+reg    [`DATA_BLOCK_SIZE-1:0]  data = `DATA_BLOCK_SIZE'b0;
 reg      [1:0]  dqm         = 2'b11;
 
 reg             ready       = 1'b0;
@@ -50,7 +49,7 @@ assign {DRAM_CS_N, DRAM_RAS_N, DRAM_CAS_N, DRAM_WE_N}   = ienb ? command        
 assign {DRAM_UDQM, DRAM_LDQM}                           = ienb ? dqm            : 2'bz;
 assign DRAM_CLK                                         = ienb ? ~iclk          : 1'bz;
 assign DRAM_CKE                                         = ienb ? 1'b1           : 1'bz;
-assign DRAM_DQ                                          = ienb ? data[`DB_WIDTH*`DSIZE_DB_WIDTH-1:`DB_WIDTH*`DSIZE_DB_WIDTH-17]  : 16'bz;
+assign DRAM_DQ                                          = ienb ? data[`DATA_BLOCK_SIZE-1:`DATA_BLOCK_SIZE-`DB_WIDTH-1]  : `DB_WIDTH'bz;
 
 always @(posedge iclk or posedge ctr_reset)
 begin

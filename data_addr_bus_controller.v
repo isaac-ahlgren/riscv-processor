@@ -4,8 +4,8 @@
 module data_addr_bus_controller (imem_data_out, dmem_data_out, data_out, imem_ready, dmem_ready, mem_ready, 
                                  imem_addr, dmem_addr, mem_addr, dmem_use);
 
-    output reg     [`READ_SIZE-1:0] imem_data_out;
-    output reg     [`READ_SIZE-1:0] dmem_data_out;
+    output         [`READ_SIZE-1:0] imem_data_out;
+    output         [`READ_SIZE-1:0] dmem_data_out;
     output reg     [31:0] mem_addr;
     output         imem_ready;
     output         dmem_ready;

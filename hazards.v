@@ -1,4 +1,3 @@
-`include "latch.v"
 
 module hazards_controller(control_hazard, data_hazard, stall, dmem_stall, imem_stall, jump_taken, dmem_ready, imem_ready, dmem_use, a0, a1, a2, clk, rst);  
  
@@ -19,14 +18,14 @@ module hazards_controller(control_hazard, data_hazard, stall, dmem_stall, imem_s
 
     wire control_hazard_input;
     wire control_hazard_latch1_conn;
-    latch control_hazard_latch1 (.q(control_hazard_latch1_conn), .d(control_hazard_input), .stall(stall | data_hazard), .clk(clk), .rst(rst));
+    pipeline_latch control_hazard_latch1 (.q(control_hazard_latch1_conn), .d(control_hazard_input), .stall(stall | data_hazard), .clk(clk), .rst(rst));
  
     wire [4:0] a2_latch1_conn;
     wire a1_equal_a2_latch1;
     wire a0_equal_a2_latch1;
     wire a2_equal_zero_latch1;
     wire data_hazard_latch1;
-    latch register_wr_latch1 [4:0] (.q(a2_latch1_conn), .d(a2), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch register_wr_latch1 [4:0] (.q(a2_latch1_conn), .d(a2), .stall(stall), .clk(clk), .rst(rst));
     assign a2_equal_zero_latch1 = ~(|(a2_latch1_conn ^ 5'b0));
     assign a1_equal_a2_latch1 = ~(|(a2_latch1_conn ^ a1));
     assign a0_equal_a2_latch1 = ~(|(a2_latch1_conn ^ a0));
@@ -37,7 +36,7 @@ module hazards_controller(control_hazard, data_hazard, stall, dmem_stall, imem_s
     wire a0_equal_a2_latch2;
     wire a2_equal_zero_latch2;
     wire data_hazard_latch2;
-    latch register_wr_latch2 [4:0] (.q(a2_latch2_conn), .d(a2_latch1_conn), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch register_wr_latch2 [4:0] (.q(a2_latch2_conn), .d(a2_latch1_conn), .stall(stall), .clk(clk), .rst(rst));
     assign a2_equal_zero_latch2 = ~(|(a2_latch2_conn ^ 5'b0));
     assign a1_equal_a2_latch2 = ~(|(a2_latch2_conn ^ a1));
     assign a0_equal_a2_latch2 = ~(|(a2_latch2_conn ^ a0));
@@ -48,7 +47,7 @@ module hazards_controller(control_hazard, data_hazard, stall, dmem_stall, imem_s
     wire a0_equal_a2_latch3;
     wire a2_equal_zero_latch3;
     wire data_hazard_latch3;
-    latch register_wr_latch3 [4:0] (.q(a2_latch3_conn), .d(a2_latch2_conn), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch register_wr_latch3 [4:0] (.q(a2_latch3_conn), .d(a2_latch2_conn), .stall(stall), .clk(clk), .rst(rst));
     assign a2_equal_zero_latch3 = ~(|(a2_latch3_conn ^ 5'b0));
     assign a1_equal_a2_latch3 = ~(|(a2_latch3_conn ^ a1));
     assign a0_equal_a2_latch3 = ~(|(a2_latch3_conn ^ a0));

@@ -80,11 +80,11 @@ module proc(data_out, data_in, addr, mem_wr, mem_re, mem_ready,
 
     wire [31:0] alu_output_data_as_addr;
     wire [31:0] alu_output_data_to_reg;
-    latch alu_output_data_latch1 [31:0] (.q(alu_output_data_as_addr), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
-    latch alu_output_data_latch2 [31:0] (.q(alu_output_data_to_reg), .d(alu_output_data_as_addr), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch alu_output_data_latch1 [31:0] (.q(alu_output_data_as_addr), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch alu_output_data_latch2 [31:0] (.q(alu_output_data_to_reg), .d(alu_output_data_as_addr), .stall(stall), .clk(clk), .rst(rst));
 
     wire [31:0] dmem_data_out_to_reg;
-    latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
 
     hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), .dmem_stall(dmem_stall),
                                .imem_stall(imem_stall), .jump_taken(jump_taken), .dmem_ready(dmem_ready), 
@@ -98,7 +98,7 @@ module proc(data_out, data_in, addr, mem_wr, mem_re, mem_ready,
                .imem_stall(imem_stall), .clk(clk), .rst(rst));
     // Decode Stage
     decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
-                           .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), .en_mem_re(mem_re)
+                           .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), .en_mem_re(mem_re),
                            .ld_code(ld_code), .alu_data1(alu_data1), .alu_data2(alu_data2), .data_to_mem(data_in), .en_reg_wr(en_reg_wr), 
                            .dmem_addr_bus_use(dmem_use), .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), 
                            .clk(clk), .rst(rst));

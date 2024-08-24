@@ -1,8 +1,5 @@
 `timescale 1us/100ns
 
-`include "left_barrel_shifter.v"
-`include "right_barrel_shifter.v"
-
 module alu(bits_a, bits_b, func, out_bits, compare_val);
     `include "proc_params.h"
 
@@ -12,9 +9,9 @@ module alu(bits_a, bits_b, func, out_bits, compare_val);
     output reg [31:0] out_bits;
     output reg compare_val;
 
-    reg [31:0] compare_bits; 
-    reg not_equal;
-    reg lesser;
+    wire [31:0] compare_bits; 
+    wire not_equal;
+    wire lesser;
 
     wire [31:0] add_sub_bits;
     wire [31:0] and_bits;
