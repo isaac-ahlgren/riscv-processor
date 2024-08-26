@@ -40,9 +40,6 @@ reg             in_use      = 1'b0;
 reg             read_ack    = 1'b0;
 reg             write_ack   = 1'b0;
 
-//Next opperation priority - 0 = Write, 1 = Read
-reg             next_prior  = 1'b0;
-
 //SDRAM INITLIZE MODULE
 reg             init_ireq   = 1'b0;
 wire            init_ienb;
@@ -85,7 +82,7 @@ begin
         state <= #1 next_state;
 end
 
-always @(state or init_fin or iwrite_req or iread_req or write_fin or read_fin or next_prior)
+always @(state or init_fin or iwrite_req or iread_req or write_fin or read_fin)
 begin
     case(state)
         //Init States
@@ -93,30 +90,18 @@ begin
             next_state      <= `INIT2;
         `INIT2:
             if(init_fin)
-                next_state  <= `IDLE;
+                next_state  <= `IDLE_SC;
             else
                 next_state  <= `INIT2;
                 
         //Idle State
-        `IDLE:
-            if(next_prior)
-            begin
-                if(iread_req)
-                    next_state  <= `READ1;
-                else if(iwrite_req)
-                    next_state  <= `WRITE1;
-                else
-                    next_state  <= `IDLE;
-            end
+        `IDLE_SC:
+            if(iwrite_req)
+                next_state  <= `WRITE1;
+            else if(iread_req)
+                next_state  <= `READ1;
             else
-            begin
-                if(iwrite_req)
-                    next_state  <= `WRITE1;
-                else if(iread_req)
-                    next_state  <= `READ1;
-                else
-                    next_state  <= `IDLE;
-            end
+                next_state  <= `IDLE_SC;
         //Write States
         `WRITE1:
             next_state      <= `WRITE2;    
@@ -126,7 +111,7 @@ begin
             else
                 next_state  <= `WRITE2;
         `WRITE3:
-            next_state      <= `IDLE;
+            next_state      <= `IDLE_SC;
             
         //Read States        `
         `READ1:
@@ -137,7 +122,7 @@ begin
             else
                 next_state  <= `READ2;
         `READ3:
-            next_state      <= `IDLE;
+            next_state      <= `IDLE_SC;
         default:
             next_state      <= `INIT1;
     endcase
@@ -173,7 +158,7 @@ begin
         end
         
         //Idle State
-        `IDLE:
+        `IDLE_SC:
         begin    
             init_ireq       <= 1'b0;
             write_ireq      <= 1'b0;
@@ -223,7 +208,6 @@ begin
             read_ack        <= 1'b0;
             
             mul_state       <= 3'b010;
-            next_prior      <= 1'b1;
         end
         
         //Read States
@@ -262,7 +246,6 @@ begin
             read_ack        <= 1'b1;
             
             mul_state       <= 3'b100;
-            next_prior      <= 1'b0;
         end
     endcase
 end

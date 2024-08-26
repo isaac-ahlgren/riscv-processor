@@ -3,12 +3,14 @@
 
 module reg_dflop (q, d, we, clk, rst);
 
-    output         q;
-    input          d;
-    input          we;
-    input          clk;
-    input          rst;
+    output    wire q;
+    input     wire d;
+    input     wire we;
+    input     wire clk;
+    input     wire rst;
 
+	 wire           dd;
+	 
     reg            state;
 
     assign #(1) q = state;

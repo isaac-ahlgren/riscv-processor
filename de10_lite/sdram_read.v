@@ -26,7 +26,7 @@ module sdram_read(
 
 `include "sdram_read.h"
 
-reg      [7:0]  state       = `IDLE;
+reg      [7:0]  state       = `IDLE_READ;
 reg      [7:0]  next_state;
 
 reg      [3:0]  command     = 4'h0;
@@ -65,7 +65,7 @@ assign data_count   = (counter == `DSIZE_DB_WIDTH);
 always @(posedge iclk)
 begin
     if(ireset == 1'b1)
-        state <= #1 `IDLE;
+        state <= #1 `IDLE_READ;
     else
         state <= #1 next_state;
 end
@@ -73,12 +73,12 @@ end
 always @(state or ireq or data_count)
 begin
     case(state)
-        `IDLE:
+        `IDLE_READ:
             if(ireq)
-                next_state   <= `ACTIVE;
+                next_state   <= `ACTIVE_READ;
             else
-                next_state   <= `IDLE;
-        `ACTIVE:
+                next_state   <= `IDLE_READ;
+        `ACTIVE_READ:
             next_state       <= `NOP;
         `NOP:
             next_state       <= `READ;
@@ -90,20 +90,20 @@ begin
             next_state       <= `READING;
         `READING:
             if(data_count)
-                next_state   <= `FIN;
+                next_state   <= `FIN_READ;
             else
                 next_state   <= `READING;
-        `FIN:
-            next_state       <= `IDLE;
+        `FIN_READ:
+            next_state       <= `IDLE_READ;
         default:
-            next_state       <= `IDLE;
+            next_state       <= `IDLE_READ;
     endcase
 end
 
 always @(state)
 begin
     case(state)
-        `IDLE:
+        `IDLE_READ:
         begin
             command             <= #1 4'b0111;
             address             <= #1 13'b0000000000000;
@@ -114,7 +114,7 @@ begin
             
             ctr_reset           <= #1 1'b0;
         end
-        `ACTIVE:
+        `ACTIVE_READ:
         begin
             command             <= #1 4'b0011;
             address             <= #1 irow;
@@ -175,12 +175,12 @@ begin
             address             <= #1 13'b0000000000000;   
             bank                <= #1 2'b00;
             dqm                 <= #1 2'b00;
-            data                <= #1 ((data << `DB_WIDTH) | {`DATA_BLOCK_SIZE-`DB_WIDTH'b0, DRAM_DQ});
+            data                <= #1 ((data << `DB_WIDTH) | {`DATA_BLOCK_SIZE_MINUS_WIDTH'b0, DRAM_DQ});
             ready               <= #1 1'b0;
             
             ctr_reset           <= #1 1'b0;
         end
-        `FIN:
+        `FIN_READ:
         begin
             command             <= #1 4'b0111;
             address             <= #1 13'b0000000000000;   

@@ -25,7 +25,7 @@ module sdram_write(
 );
 `include "sdram_write.h"
 
-reg      [6:0]  state       = `IDLE;
+reg      [6:0]  state       = `IDLE_WRITE;
 reg      [6:0]  next_state;
 
 reg      [3:0]  command     = 4'h0;
@@ -64,7 +64,7 @@ assign data_count = (counter == 5);
 always @(posedge iclk)
 begin
     if(ireset == 1'b1)
-        state <= #1 `IDLE;
+        state <= #1 `IDLE_WRITE;
     else
         state <= #1 next_state;
 end
@@ -72,12 +72,12 @@ end
 always @(state or ireq or data_count)
 begin
     case(state)
-        `IDLE:
+        `IDLE_WRITE:
             if(ireq)
-                next_state   <= `ACTIVE;
+                next_state   <= `ACTIVE_WRITE;
             else
-                next_state   <= `IDLE;
-        `ACTIVE:
+                next_state   <= `IDLE_WRITE;
+        `ACTIVE_WRITE:
             next_state       <= `NOP1;
         `NOP1:
             next_state       <= `WRITE;
@@ -89,18 +89,18 @@ begin
             else
                 next_state   <= `WRITING;
         `NOP2:
-            next_state       <= `FIN;
-        `FIN:
-            next_state       <= `IDLE;
+            next_state       <= `FIN_WRITE;
+        `FIN_WRITE:
+            next_state       <= `IDLE_WRITE;
         default:
-            next_state       <= `IDLE;
+            next_state       <= `IDLE_WRITE;
     endcase
 end
 
 always @(posedge iclk)
 begin
     case(state)
-        `IDLE:
+        `IDLE_WRITE:
         begin
             command             <= #1 4'b0111;
             address             <= #1 13'b0000000000000;
@@ -111,7 +111,7 @@ begin
             
             ctr_reset           <= #1 1'b0;
         end
-        `ACTIVE:
+        `ACTIVE_WRITE:
         begin
             command             <= #1 4'b0011;
             address             <= #1 irow;
@@ -150,7 +150,7 @@ begin
             address             <= #1 13'b0000000000000;   
             bank                <= #1 2'b00;
             dqm                 <= #1 2'b00;
-            data                <= #1 (data << 16);
+            data                <= #1 (data << `DB_WIDTH);
             ready               <= #1 1'b0;
             
             ctr_reset           <= #1 1'b0;
@@ -166,7 +166,7 @@ begin
             
             ctr_reset           <= #1 1'b0;
         end
-        `FIN:
+        `FIN_WRITE:
         begin
             command             <= #1 4'b0111;
             address             <= #1 13'b0000000000000;   
