@@ -63,7 +63,8 @@ module risc_de10(
 	wire write_finished;
 	wire read_finished;
     wire in_use;
-
+    wire en_sdram;
+	wire en_sys_reg;
 
 
 //=======================================================
@@ -76,6 +77,8 @@ module risc_de10(
    // Processor
     proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_re(mem_re), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
+
+	de10_bus_addr_controller abus_controller (.addr(addr), .en_sdram(en_sdram), .en_sys_reg(en_sys_reg));
 
 	sdram_controller sdram_controller(
 	    .iclk(clk),

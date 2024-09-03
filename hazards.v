@@ -1,20 +1,19 @@
 
-module hazards_controller(control_hazard, data_hazard, stall, dmem_stall, imem_stall, jump_taken, dmem_ready, imem_ready, dmem_use, a0, a1, a2, clk, rst);  
- 
-    output wire control_hazard;
-    output wire data_hazard;
-    output wire dmem_stall;
-    output wire imem_stall;
-    output wire stall;
-
-    input wire jump_taken;
-    input wire dmem_ready;
-    input wire imem_ready;
-    input wire dmem_use;
-    input wire [4:0] a0;
-    input wire [4:0] a1;
-    input wire [4:0] a2;
-    input wire clk, rst;
+module hazards_controller(
+                          output control_hazard,  // Signal if there is a control hazard
+                          output data_hazard,     // Signal if there is a data hazard
+                          output stall,           // Signal if there is a full pipeline stall
+                          output dmem_stall,      // Signal if there is a data cache stall
+                          output imem_stall,      // Signal if there is a instruction cache stall
+                          input jump_taken,       // Signal if there is a jump taken
+                          input dmem_ready,       // Signal if the data cache can be read from
+                          input imem_ready,       // Signal if the instruction cache can be read from       
+                          input dmem_use,         
+                          input [4:0] a0,         // 1st register identifier
+                          input [4:0] a1,         // 2nd register identifier
+                          input [4:0] a2,         // 3rd register identifier
+                          input clk,              // Clock
+                          input rst);             // Reset
 
     wire control_hazard_input;
     wire control_hazard_latch1_conn;

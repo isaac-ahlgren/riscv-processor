@@ -1,22 +1,15 @@
 `timescale 1us/100ns
 
-module proc(data_out, data_in, addr, mem_wr, mem_re, mem_ready, 
-            clk, rst);
+module proc(input [31:0] data_out, 
+            output [31:0] data_in, 
+            output [31:0] addr, 
+            output mem_wr, 
+            output mem_re, 
+            input mem_ready, 
+            input clk, 
+            input rst);
 
     `include "proc_params.h"
-
-    // Data from data main memory
-    input wire [31:0] data_out;
-    // Data going into data main memory
-    output wire [31:0] data_in;
-    // Address for the data main memory 
-    output wire [31:0] addr;
-    // Write flag for data main memory
-    output wire mem_wr;
-    // Read flag for data main memory
-    output wire mem_re;
-    input wire mem_ready;
-    input wire clk, rst;
 
     // Intruction
     wire [31:0] instr;
@@ -92,8 +85,8 @@ module proc(data_out, data_in, addr, mem_wr, mem_re, mem_ready,
     assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch); 
 
     // Fetch Stage
-    fetch fet (.curr_addr(imem_addr), .instr_out(instr), .curr_addr_step_out(curr_addr_step), .curr_addr_addval_out(curr_addr_addval),
-               .instr_in(imem_data_out), .jump_taken(jump_taken), .alu_bits(alu_output_data_in), .en_uncond_jmp(en_uncond_jmp), 
+    fetch fet (.curr_addr(imem_addr), .oinstr(instr), .ocurr_addr_step_out(curr_addr_step), .ocurr_addr_reljmp(curr_addr_addval),
+               .iinstr(imem_data_out), .jump_taken(jump_taken), .addr_rel_reg(alu_output_data_in), .en_uncond_jmp(en_uncond_jmp), 
                .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard), 
                .imem_stall(imem_stall), .clk(clk), .rst(rst));
     // Decode Stage

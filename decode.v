@@ -1,46 +1,31 @@
 `timescale 1us/100ns
 
-module decode_register_select(a0, a1, a2, a2_hazard, imm_to_reg, imm_to_addr, func, en_jmp, en_uncond_jmp, en_rel_reg_jmp,
-                              en_mem_wr, en_mem_re, ld_code, alu_data1, alu_data2, data_to_mem, en_reg_wr, dmem_addr_bus_use,
-                              instr, d0, d1, stall, squash, clk, rst);
-    
-    // Register identifiers for computation
-    output wire [4:0] a0;
-    output wire [4:0] a1;
-    output wire [4:0] a2;
-    output wire [4:0] a2_hazard;
-    // Leaving decode stage, immediate values (if there is one)
-    output wire [31:0] imm_to_reg;
-    output wire [31:0] imm_to_addr;
-    // Leaving decode stage, function value (if there is one)
-    output wire [9:0] func;
-    // Leaving decode stage, enables if a jump can be taken
-    output wire en_jmp;
-    // Leaving decode stage, enables unconditional jumps
-    output wire en_uncond_jmp;
-    // Leaving decode stage, enables unconditional jump relative to value in a register
-    output wire en_rel_reg_jmp;
-    // Leaving decode stage, enables a write to memory
-    output wire en_mem_wr;
-    // Leaving decode stage, enables a read from memory
-    output wire en_mem_re;
-    // Leaving decode stage, value that determines which value is put on the register write bus
-    output wire [2:0] ld_code;
-    // Leaving decode stage, output data from register file
-    output wire [31:0] alu_data1;
-    output wire [31:0] alu_data2;
-    // Leaving decode stage, data that is going to be written to memory
-    output wire [31:0] data_to_mem;
-    output wire en_reg_wr;
-    output wire dmem_addr_bus_use;
-
-    // From fetch stage, the fetched instruction
-    input wire [31:0] instr;
-    input wire [31:0] d0;
-    input wire [31:0] d1;
-    input wire stall;
-    input wire squash;
-    input wire clk, rst;
+module decode_register_select(
+                              output [4:0] a0,           // Register identifiers for computation
+                              output [4:0] a1, 
+                              output [4:0] a2, 
+                              output [4:0] a2_hazard,    // Register identifier going to hazard controller
+                              output [31:0] imm_to_reg,  // Immediate value going to register file
+                              output [31:0] imm_to_addr, // Immediate value going to address bus
+                              output [9:0] func,         // Function value for ALU control
+                              output en_jmp,             // Enables jumps
+                              output en_uncond_jmp,      // Signals unconditional jump
+                              output en_rel_reg_jmp,     // Signals relative from register jump
+                              output en_mem_wr,          // Enables write to memory
+                              output en_mem_re,          // Enables read to memory
+                              output [2:0] ld_code,      // Load code for write-back stage
+                              output [31:0] alu_data1,   // 1st argument for ALU
+                              output [31:0] alu_data2,   // 2nd argument for ALU
+                              output [31:0] data_to_mem, // Data going to memory
+                              output en_reg_wr,          // Enables write to memory
+                              output dmem_addr_bus_use,  // Instruction needs to use address bus for data memory
+                              input [31:0] instr,        // Instruction
+                              input [31:0] d0,           // 1st piece of data from register file
+                              input [31:0] d1,           // 2nd piece of data from register file
+                              input stall,               // Signal for stalling pipeline
+                              input squash,              // Signal to squash instruction
+                              input clk,                 // Clock
+                              input rst);                // Reset
 
     // Enables immediates for computation
     wire en_imm;

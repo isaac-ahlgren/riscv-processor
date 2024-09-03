@@ -33,13 +33,14 @@ vsim.
 *_inst.vhd
 *.bak
 *.cmp
+*.cdf
 *.done
 *.eqn
 *.hex
 *.html
 *.jdi
 *.jpg
-# *.mif
+*.mif
 *.pin
 *.pof
 *.ptf.*

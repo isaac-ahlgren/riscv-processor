@@ -1,22 +1,21 @@
 
-module decode_logic(a0, a1, a2, imm, func, en_jmp, en_uncond_jmp, en_imm, en_reg_wr, en_mem_wr, en_mem_re, en_rel_reg_jmp, ld_code, dmem_addr_bus_use, instr);
-    `include "proc_params.h"
-    
-    input  [31:0] instr;
-    output     [`REG_BITS-1:0] a0;
-    output     [`REG_BITS-1:0] a1;
-    output     [`REG_BITS-1:0] a2;
-    output reg [31:0] imm;
-    output     [`FUNC1_BITS+`FUNC2_BITS-1:0] func;
-    output reg en_jmp;
-    output reg en_uncond_jmp;
-    output reg en_imm;
-    output reg en_reg_wr;
-    output reg en_mem_wr;
-    output reg en_mem_re;
-    output reg en_rel_reg_jmp;
-    output reg [2:0] ld_code;
-    output reg dmem_addr_bus_use;
+module decode_logic(
+                    `include "proc_params.h"
+                    output [`REG_BITS-1:0] a0, 
+                    output [`REG_BITS-1:0] a1, 
+                    output [`REG_BITS-1:0] a2, 
+                    output reg [31:0] imm, 
+                    output [`FUNC1_BITS+`FUNC2_BITS-1:0] func, 
+                    output reg en_jmp, 
+                    output reg en_uncond_jmp, 
+                    output reg en_imm, 
+                    output reg en_reg_wr, 
+                    output reg en_mem_wr, 
+                    output reg en_mem_re, 
+                    output reg en_rel_reg_jmp, 
+                    output reg [2:0] ld_code, 
+                    output reg dmem_addr_bus_use, 
+                    input [31:0] instr);
 
     reg [2:0] imm_pos;
     reg en_alu_str_func;

@@ -1,13 +1,12 @@
 `timescale 1us/100ns
 
-module alu(bits_a, bits_b, func, out_bits, compare_val);
+module alu(
+           input [31:0] data1, 
+           input [31:0] data2, 
+           input [9:0] func, 
+           output reg [31:0] odata, 
+           output reg compare_val);
     `include "proc_params.h"
-
-    input [31:0] bits_a;
-    input [31:0] bits_b;
-    input [9:0] func;
-    output reg [31:0] out_bits;
-    output reg compare_val;
 
     wire [31:0] compare_bits; 
     wire not_equal;
@@ -21,40 +20,40 @@ module alu(bits_a, bits_b, func, out_bits, compare_val);
     wire [31:0] bsl_bits;
     wire [31:0] bsr_bits;
 
-    left_barrel_shifter lbs(.in_bits(bits_a), .out_bits(bsl_bits), .shift_len(bits_b[4:0]));
-    right_barrel_shifter rbs(.in_bits(bits_a), .out_bits(bsr_bits), .shift_len(bits_b[4:0]), .arithmetic(func[8]));
+    left_barrel_shifter lbs(.idata(data1), .odata(bsl_bits), .shift_len(data2[4:0]));
+    right_barrel_shifter rbs(.idata(data1), .odata(bsr_bits), .shift_len(data2[4:0]), .arithmetic(func[8]));
 
-    assign add_sub_bits = bits_a + bits_b;
-    assign and_bits = bits_a & bits_b;
-    assign or_bits = bits_a | bits_b;
-    assign xor_bits = bits_a ^ bits_b;
-    assign compare_bits = bits_a - bits_b;
+    assign add_sub_bits = data1 + data2;
+    assign and_bits = data1 & data2;
+    assign or_bits = data1 | data2;
+    assign xor_bits = data1 ^ data2;
+    assign compare_bits = data1 - data2;
     assign not_equal = |compare_bits;
-    assign lesser = compare_bits[31]; // bits_a is less than bits_b
+    assign lesser = compare_bits[31]; // data1 is less than data2
 
     always @ (*) begin
         // Arithmetic Computation
         case({func[2:0]})
             `RISC_ADD_SUB_OP: begin
-                out_bits = add_sub_bits; // Replace with homebrew carry-look-ahead
+                odata = add_sub_bits; // Replace with homebrew carry-look-ahead
             end
             `RISC_AND_OP: begin
-                out_bits = and_bits;
+                odata = and_bits;
             end
             `RISC_OR_OP: begin
-                out_bits = or_bits;
+                odata = or_bits;
             end
             `RISC_XOR_OP: begin
-                out_bits = xor_bits;
+                odata = xor_bits;
             end
             `RISC_SHIFT_LEFT: begin
-                out_bits = bsl_bits;
+                odata = bsl_bits;
             end
             `RISC_SHIFT_RIGHT: begin
-                out_bits = bsr_bits;
+                odata = bsr_bits;
             end
             default: begin
-                out_bits = bits_a;
+                odata = data1;
             end
         endcase
     
