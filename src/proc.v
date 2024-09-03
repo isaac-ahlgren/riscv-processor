@@ -3,8 +3,8 @@
 module proc(input [31:0] data_out, 
             output [31:0] data_in, 
             output [31:0] addr, 
-            output mem_wr, 
-            output mem_re, 
+            output omem_wr, 
+            output omem_re, 
             input mem_ready, 
             input clk, 
             input rst);
@@ -65,11 +65,13 @@ module proc(input [31:0] data_out,
     wire [31:0] dmem_data_out; 
     wire [31:0] dmem_addr;
     wire dmem_ready;
-    wire dmem_use;
+    wire mem_wr;
+    wire mem_re;
 
-    data_addr_bus_controller dabc (.imem_data_out(imem_data_out), .dmem_data_out(dmem_data_out), .data_out(data_out), 
+    memory_systen ms (.imem_data_out(imem_data_out), .dmem_data_out(dmem_data_out), .data_out(data_out), 
                                    .imem_ready(imem_ready), .dmem_ready(dmem_ready), .mem_ready(mem_ready), 
-                                   .imem_addr(imem_addr), .dmem_addr(dmem_addr), .mem_addr(addr), .dmem_use(dmem_use));
+                                   .imem_addr(imem_addr), .dmem_addr(dmem_addr), .mem_addr(addr), .ien_mem_re(mem_re), 
+                                   .ien_mem_wr(mem_wr), .oen_mem_re(omem_re), .oen_mem_wr(omem_wr));
 
     wire [31:0] alu_output_data_as_addr;
     wire [31:0] alu_output_data_to_reg;
@@ -93,7 +95,7 @@ module proc(input [31:0] data_out,
     decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
                                .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), .en_mem_re(mem_re),
                                .ld_code(ld_code), .alu_data1(alu_data1), .alu_data2(alu_data2), .data_to_mem(data_in), .en_reg_wr(en_reg_wr), 
-                               .dmem_addr_bus_use(dmem_use), .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), 
+                               .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), 
                                .clk(clk), .rst(rst));
 
     // ALU

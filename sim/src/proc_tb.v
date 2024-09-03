@@ -18,21 +18,22 @@ module proc_tb();
 
     // Constants
     // Enable Caches
-    wire enable;
+    wire enable_mem;
     wire createdump;
     wire err;
 
     // Instruction Memory
-    stallmem mem (.data_out(data_out), .ready(mem_ready), .data_in(data_in), .addr(addr), .enable(enable), 
+    stallmem mem (.data_out(data_out), .ready(mem_ready), .data_in(data_in), .addr(addr), .enable(enable_mem), 
                    .wr(mem_wr), .createdump(createdump), .clk(clk), .rst(rst), .err(err));
+
     // Processor
     proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
     
     // Constants 
-    assign enable = 1'b1;
     assign createdump = 1'b1;
- 
+    assign enable_mem = 1'b1;
+
     always #5 clk = ~clk;
 
     initial begin

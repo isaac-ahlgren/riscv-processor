@@ -90,7 +90,7 @@ module risc_de10(
         .iwrite_data(data_in),
         .owrite_ack(write_finished),
     
-        .iread_req(mem_re & 1'b1), // Always requesting read because instructions are needed and there is no cache yet
+        .iread_req(mem_re),
         .iread_address(addr),
         .oread_data(data_out),
         .oread_ack(read_finished),

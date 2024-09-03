@@ -18,7 +18,6 @@ module decode_register_select(
                               output [31:0] alu_data2,   // 2nd argument for ALU
                               output [31:0] data_to_mem, // Data going to memory
                               output en_reg_wr,          // Enables write to memory
-                              output dmem_addr_bus_use,  // Instruction needs to use address bus for data memory
                               input [31:0] instr,        // Instruction
                               input [31:0] d0,           // 1st piece of data from register file
                               input [31:0] d1,           // 2nd piece of data from register file
@@ -104,8 +103,7 @@ module decode_register_select(
     decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 
                       .en_jmp(input_en_jmp), .en_uncond_jmp(input_en_uncond_jmp), 
                       .en_imm(en_imm), .en_reg_wr(input_en_reg_wr), .en_mem_wr(input_en_mem_wr), .en_mem_re(input_en_mem_re),
-                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .dmem_addr_bus_use(input_dmem_addr_bus_use), 
-                      .instr(instr));
+                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .instr(instr));
 
     assign a2_hazard = {5{~squash}} & input_a2;
     always @(*) begin

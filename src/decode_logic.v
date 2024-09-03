@@ -14,7 +14,6 @@ module decode_logic(
                     output reg en_mem_re, 
                     output reg en_rel_reg_jmp, 
                     output reg [2:0] ld_code, 
-                    output reg dmem_addr_bus_use, 
                     input [31:0] instr);
 
     reg [2:0] imm_pos;
@@ -50,7 +49,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `ADD_UPPER_IMM_PC: begin
                 imm_pos <= `FORMAT_U;
@@ -63,7 +61,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `JUMP_AND_LINK: begin
                 imm_pos <= `FORMAT_J;
@@ -76,7 +73,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `JUMP_AND_LINK_REG: begin
                 imm_pos <= `FORMAT_I;
@@ -89,7 +85,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `LOAD_OP: begin
                 imm_pos <= `FORMAT_I;
@@ -102,7 +97,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b1; 
                 en_alu_str_func <= 1'b1;
-                dmem_addr_bus_use <= 1'b1;
             end
             `STORE_OP: begin
                 imm_pos <= `FORMAT_S;
@@ -115,7 +109,6 @@ module decode_logic(
                 en_mem_wr <= 1'b1;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b1;
-                dmem_addr_bus_use <= 1'b1;
             end
             `BRANCH_OP: begin
                 imm_pos <= `FORMAT_B;
@@ -128,7 +121,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `IMM_ALU_OP: begin
                 imm_pos <= `FORMAT_I;
@@ -141,7 +133,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             `REG_ALU_OP: begin
                 imm_pos <= `NO_IMM;
@@ -154,7 +145,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end
             default: begin
                 imm_pos <= `NO_IMM;
@@ -167,7 +157,6 @@ module decode_logic(
                 en_mem_wr <= 1'b0;
                 en_mem_re <= 1'b0;
                 en_alu_str_func <= 1'b0;
-                dmem_addr_bus_use <= 1'b0;
             end  
        endcase
 
