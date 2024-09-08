@@ -68,7 +68,7 @@ module proc(input [31:0] data_out,
     wire mem_wr;
     wire mem_re;
 
-    memory_systen ms (.imem_data_out(imem_data_out), .dmem_data_out(dmem_data_out), .data_out(data_out), 
+    memory_system ms (.imem_data_out(imem_data_out), .dmem_data_out(dmem_data_out), .data_out(data_out), 
                                    .imem_ready(imem_ready), .dmem_ready(dmem_ready), .mem_ready(mem_ready), 
                                    .imem_addr(imem_addr), .dmem_addr(dmem_addr), .mem_addr(addr), .ien_mem_re(mem_re), 
                                    .ien_mem_wr(mem_wr), .oen_mem_re(omem_re), .oen_mem_wr(omem_wr));
