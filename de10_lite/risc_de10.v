@@ -65,7 +65,8 @@ module risc_de10(
     wire in_use;
     wire en_sdram;
 	wire en_sys_reg;
-
+	wire [31:0] periph_odata;
+	wire [31:0] sdram_odata;
 
 //=======================================================
 //  Structural coding
@@ -80,19 +81,29 @@ module risc_de10(
 
 	de10_bus_addr_controller abus_controller (.addr(addr), .en_sdram(en_sdram), .en_sys_reg(en_sys_reg));
 
+    de10_peripherals(.addr(addr),
+                     .wr(wr), 
+                     .idata(data_in),
+                     .odata(periph_odata),
+                     .clk(clk), 
+					 .rst(rst),
+                     .LEDR(LEDR),
+                     .GPIO(GPIO)
+                )
+
 	sdram_controller sdram_controller(
 	    .iclk(clk),
         .ireset(rst),
 		.oin_use(in_use),
     
-        .iwrite_req(mem_wr),
+        .iwrite_req(mem_wr & en_sdram),
         .iwrite_address(addr),
         .iwrite_data(data_in),
         .owrite_ack(write_finished),
     
-        .iread_req(mem_re),
+        .iread_req(mem_re & en_sdram),
         .iread_address(addr),
-        .oread_data(data_out),
+        .oread_data(sdram_odata),
         .oread_ack(read_finished),
     
 	    //////////// SDRAM //////////
@@ -107,6 +118,18 @@ module risc_de10(
         .DRAM_RAS_N(DRAM_RAS_N),
         .DRAM_UDQM(DRAM_UDQM),
         .DRAM_WE_N(DRAM_WE_N)
-);
+    );
+ 
+    always @(*) begin
+		if (en_sdram) begin
+			data_out <= sdram_odata;
+		end
+		else if begin
+			data_out <= periph_odata;
+		end
+		else begin
+			data_out <= 32'b0;
+		end
+	end
 
 endmodule
