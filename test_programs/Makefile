@@ -9,7 +9,6 @@ all:
 	$(CC) $(CFLAGS) merge_sort.c -o merge_sort
 	$(OBJCOPY) risc_test -O verilog risc_test_verilog.txt
 	$(OBJCOPY) merge_sort -O verilog merge_sort_verilog.txt
-	mv risc_test_verilog.txt merge_sort_verilog.txt ../sim/
 
 dump:
 	$(OBJDUMP) -D risc_test

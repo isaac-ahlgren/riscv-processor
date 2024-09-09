@@ -86,7 +86,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    always @(posedge clk) begin
       if (rst) begin
          if (!loaded) begin
-            $readmemh("../../test_programs/risc_test_verilog.txt", mem);
+            $readmemh("../test_programs/risc_test_verilog.txt", mem);
             loaded = 1;
          end
       end

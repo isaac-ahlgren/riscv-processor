@@ -13,6 +13,8 @@ module proc_tb();
     wire [31:0] addr;
     // Write flag for data main memory
     wire mem_wr;
+    // Read flag
+    wire mem_re;
     // Ready to read status for instruction main memory
     wire mem_ready;
 
@@ -27,7 +29,7 @@ module proc_tb();
                    .wr(mem_wr), .createdump(createdump), .clk(clk), .rst(rst), .err(err));
 
     // Processor
-    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_ready(mem_ready), 
+    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .omem_wr(mem_wr), .omem_re(mem_re), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
     
     // Constants 

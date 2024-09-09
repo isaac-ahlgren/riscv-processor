@@ -14,7 +14,7 @@ module proc(input [31:0] data_out,
     // Intruction
     wire [31:0] instr;
     // Output from ALU operation
-    wire [31:0] alu_output_data_in;
+    wire [31:0] ialu_odata;
     // Data to be written to a register
     reg [31:0] data_to_reg;
     
@@ -73,22 +73,22 @@ module proc(input [31:0] data_out,
                                    .imem_addr(imem_addr), .dmem_addr(dmem_addr), .mem_addr(addr), .ien_mem_re(mem_re), 
                                    .ien_mem_wr(mem_wr), .oen_mem_re(omem_re), .oen_mem_wr(omem_wr));
 
-    wire [31:0] alu_output_data_as_addr;
-    wire [31:0] alu_output_data_to_reg;
-    pipeline_latch alu_output_data_latch1 [31:0] (.q(alu_output_data_as_addr), .d(alu_output_data_in), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch alu_output_data_latch2 [31:0] (.q(alu_output_data_to_reg), .d(alu_output_data_as_addr), .stall(stall), .clk(clk), .rst(rst));
+    wire [31:0] alu_odata_as_addr;
+    wire [31:0] alu_odata_to_reg;
+    pipeline_latch alu_output_data_latch1 [31:0] (.q(alu_odata_as_addr), .d(ialu_odata), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch alu_output_data_latch2 [31:0] (.q(alu_odata_to_reg), .d(alu_odata_as_addr), .stall(stall), .clk(clk), .rst(rst));
 
     wire [31:0] dmem_data_out_to_reg;
     pipeline_latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
 
     hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), .dmem_stall(dmem_stall),
                                .imem_stall(imem_stall), .jump_taken(jump_taken), .dmem_ready(dmem_ready), 
-                               .imem_ready(imem_ready), .dmem_use(dmem_use), .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
+                               .imem_ready(imem_ready), .en_mem_re(mem_re), .en_mem_wr(mem_wr), .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
     assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch); 
 
     // Fetch Stage
-    fetch fet (.curr_addr(imem_addr), .oinstr(instr), .ocurr_addr_step_out(curr_addr_step), .ocurr_addr_reljmp(curr_addr_addval),
-               .iinstr(imem_data_out), .jump_taken(jump_taken), .addr_rel_reg(alu_output_data_in), .en_uncond_jmp(en_uncond_jmp), 
+    fetch fet (.curr_addr(imem_addr), .oinstr(instr), .ocurr_addr_step(curr_addr_step), .ocurr_addr_reljmp(curr_addr_addval),
+               .iinstr(imem_data_out), .jump_taken(jump_taken), .addr_rel_reg(ialu_odata), .en_uncond_jmp(en_uncond_jmp), 
                .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard), 
                .imem_stall(imem_stall), .clk(clk), .rst(rst));
     // Decode Stage
@@ -99,21 +99,21 @@ module proc(input [31:0] data_out,
                                .clk(clk), .rst(rst));
 
     // ALU
-    alu a(.bits_a(alu_data1), .bits_b(alu_data2), .func(func), .out_bits(alu_output_data_in), .compare_val(en_branch));
+    alu a(.data1(alu_data1), .data2(alu_data2), .func(func), .odata(ialu_odata), .compare_val(en_branch));
 
     // Register File
     reg_file regs (.a0(a0), .a1(a1), .a2(a2), 
                    .din(data_to_reg), .reg_wr(en_reg_wr), 
                    .d0(d0), .d1(d1), .clk(clk), .rst(rst));
 
-    assign dmem_addr = alu_output_data_as_addr;
+    assign dmem_addr = alu_odata_as_addr;
 
     always @(*) begin
 
         // Mux to Determine Register Write Back
         case({ld_code})
             `ALU_LD: begin
-                 data_to_reg <= alu_output_data_to_reg;
+                 data_to_reg <= alu_odata_to_reg;
              end
             `MEM_LD: begin
                  data_to_reg <= dmem_data_out_to_reg;
