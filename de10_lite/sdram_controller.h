@@ -5,7 +5,7 @@
 
 `define INIT1          9'b000000001
 `define INIT2          9'b000000010
-`define IDLE_SC           9'b000000100
+`define IDLE_SC        9'b000000100
 `define WRITE1         9'b000001000
 `define WRITE2         9'b000010000
 `define WRITE3         9'b000100000

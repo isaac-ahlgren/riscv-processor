@@ -3,6 +3,7 @@ work/
 dumpfile
 merge_sort
 risc_test
+blinky
 
 # ignore ModelSim generated files and directories (temp files and so on)
 [_@]*
