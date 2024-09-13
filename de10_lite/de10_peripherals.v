@@ -12,7 +12,7 @@ module de10_peripherals(
     inout [35:0] GPIO
 
 );
-    wire [9:0] periph_addr;
+    wire [21:0] periph_addr;
     wire [31:0] qn [`PERIPH_REG_NUM-1:0];
     reg [`PERIPH_REG_NUM-1:0] we;
     reg [31:0] data;

@@ -77,10 +77,10 @@ module risc_de10(
 	assign clk = MAX10_CLK1_50;
 
    // Processor
-    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .mem_wr(mem_wr), .mem_re(mem_re), .mem_ready(mem_ready), 
+    proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .omem_wr(mem_wr), .omem_re(mem_re), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
 
-	de10_bus_addr_controller abus_controller (.addr(addr), .en_sdram(en_sdram), .en_peripherals(en_peripherals));
+	de10_bus_addr_controller abus_controller (.addr(addr), .oen_sdram(en_sdram), .oen_peripherals(en_peripherals));
 
     de10_peripherals periph (.addr(addr),
 							 .wr(mem_wr & en_peripherals), 
