@@ -40,19 +40,16 @@ module proc_tb();
     wire [35:0]	gpio;
 
 
-    // I NEED TO FIX THE INPUTS AND OUTPUTS TO THIS SIMULATION MODULE
     sdram_model sdram (.in_CLK(clk),
-                       .in_CS,(dram_cs_n), // CHIP SELECT
+                       .in_CS(dram_cs_n),           // CHIP SELECT
                        .in_write_en(dram_we_n),
-                       .in_CAS(dram_cs_n), //COLUMN ADRESS STROBE
-                       .in_RAS(dram_ras_n), //ROW ADRESS STROBE
-input[1:0]  in_bank_select,     // BANK SELECTION BITS
-input[13:0] in_sdram_addr,      
-input[31:0] in_sdram_write_data,
-
-output reg [31:0] out_sdram_read_data 
-// SDRAM MODEL INTERFACE END
-);
+                       .in_CAS(dram_cs_n),           //COLUMN ADRESS STROBE
+                       .in_RAS(dram_ras_n),          //ROW ADRESS STROBE
+                       .in_bank_select(dram_ba),     // BANK SELECTION BITS
+                       .in_sdram_addr(dram_addr),      
+                       .dram_ldqm(dram_ldqm),
+                       .dram_udqm(dram_udqm),
+                       .dq(dram_dq)); 
 
    risc_de10 board (.ADC_CLK_10(clk),
 	                .MAX10_CLK1_50(clk),
@@ -76,7 +73,7 @@ output reg [31:0] out_sdram_read_data
                     .VGA_R(vga_r),
                     .VGA_VS(vga_vs),
 	                .GPIO(gpio)
-    )
+    );
 
     always #5 clk = ~clk;
 

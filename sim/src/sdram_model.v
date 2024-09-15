@@ -1,3 +1,5 @@
+
+`define DATA_SIZE 16
 module sdram_model
 (
 // SDRAM MODEL INTERFACE
@@ -8,12 +10,13 @@ input       in_CAS,             //COLUMN ADRESS STROBE
 input       in_RAS,             //ROW ADRESS STROBE
 input[1:0]  in_bank_select,     // BANK SELECTION BITS
 input[13:0] in_sdram_addr,      
-
-inout [15:0] dq; 
+input dram_ldqm,
+input dram_udqm,
+inout reg [15:0] dq
 // SDRAM MODEL INTERFACE END
 );
 
-	parameter DATA   = 32,
+	parameter DATA   = `DATA_SIZE,
 			  ROW    = 16384,
 			  COLUMN = 512;
 			
@@ -39,6 +42,12 @@ inout [15:0] dq;
 	reg [DATA-1 : 0] bank1 [0 : ROW-1][0 : COLUMN-1];
 	reg [DATA-1 : 0] bank2 [0 : ROW-1][0 : COLUMN-1];
 	reg [DATA-1 : 0] bank3 [0 : ROW-1][0 : COLUMN-1];
+
+
+    wire [`DATA_SIZE-1:0] idata;
+	reg [`DATA_SIZE-1:0] odata;
+	assign idata = in_write_en ?  `DATA_SIZE'b0 : dq;
+	assign dq = odata;
 	
 	localparam BANK0 = 2'b00,
 			   BANK1 = 2'b01,
@@ -72,19 +81,19 @@ inout [15:0] dq;
 			case(registered_bank_sel)
 		
 				BANK0:begin
-					bank0[registered_row][registered_column] = in_sdram_write_data;
+					bank0[registered_row][registered_column] = idata;
 				end
 		
 				BANK1:begin
-					bank1[registered_row][registered_column] = in_sdram_write_data;
+					bank1[registered_row][registered_column] = idata;
 				end
 		
 				BANK2:begin
-					bank2[registered_row][registered_column] = in_sdram_write_data;
+					bank2[registered_row][registered_column] = idata;
 				end
 		
 				BANK3:begin
-					bank3[registered_row][registered_column] = in_sdram_write_data;
+					bank3[registered_row][registered_column] = idata;
 				end
 		
 			endcase	
@@ -94,19 +103,19 @@ inout [15:0] dq;
 			case(registered_bank_sel)
 		
 				BANK0:begin
-					out_sdram_read_data = bank0[registered_row][registered_column];
+					odata = bank0[registered_row][registered_column];
 				end
 		
 				BANK1:begin
-					out_sdram_read_data = bank1[registered_row][registered_column];
+					odata = bank1[registered_row][registered_column];
 				end
 		
 				BANK2:begin
-					out_sdram_read_data = bank2[registered_row][registered_column];
+					odata = bank2[registered_row][registered_column];
 				end
 		
 				BANK3:begin
-					out_sdram_read_data = bank3[registered_row][registered_column];
+					odata = bank3[registered_row][registered_column];
 				end
 		
 			endcase

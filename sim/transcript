@@ -1,7 +1,9 @@
-# Compile of memory2c.v was successful with warnings.
-# Compile of proc_tb.v was successful.
+# Compile of proc_tb.v failed with 3 errors.
 # Compile of stallmem.v was successful.
 # Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 1 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
 # Compile of decode.v was successful.
 # Compile of decode_logic.v was successful.
 # Compile of fetch.v was successful.
@@ -13,17 +15,19 @@
 # Compile of reg_dff.v was successful.
 # Compile of reg_file.v was successful.
 # Compile of right_barrel_shifter.v was successful.
-# 15 compiles, 0 failed with no errors.
-# Compile of memory2c.v was successful.
-# Compile of proc_tb.v was successful.
+# Compile of risc_de10.v failed with 2 errors.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v failed with 1 errors.
+# 23 compiles, 4 failed with 7 errors.
+# Compile of proc_tb.v failed with 3 errors.
 # Compile of stallmem.v was successful.
 # Compile of alu.v was successful.
-# Compile of memory2c.v was successful.
-# Compile of proc_tb.v was successful.
-# Compile of memory2c.v was successful.
-# Compile of proc_tb.v was successful.
-# Compile of stallmem.v was successful.
-# Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 1 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
 # Compile of decode.v was successful.
 # Compile of decode_logic.v was successful.
 # Compile of fetch.v was successful.
@@ -35,9 +39,19 @@
 # Compile of reg_dff.v was successful.
 # Compile of reg_file.v was successful.
 # Compile of right_barrel_shifter.v was successful.
-# 15 compiles, 0 failed with no errors.
+# Compile of risc_de10.v failed with 1 errors.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 3 failed with 5 errors.
+# Compile of proc_tb.v failed with 1 errors.
 # Compile of stallmem.v was successful.
 # Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 4 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
 # Compile of decode.v was successful.
 # Compile of decode_logic.v was successful.
 # Compile of fetch.v was successful.
@@ -49,7 +63,19 @@
 # Compile of reg_dff.v was successful.
 # Compile of reg_file.v was successful.
 # Compile of right_barrel_shifter.v was successful.
-# 15 compiles, 0 failed with no errors.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 2 failed with 5 errors.
+# Compile of proc_tb.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 1 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
 # Compile of decode.v was successful.
 # Compile of decode_logic.v was successful.
 # Compile of fetch.v was successful.
@@ -61,4 +87,130 @@
 # Compile of reg_dff.v was successful.
 # Compile of reg_file.v was successful.
 # Compile of right_barrel_shifter.v was successful.
-# 15 compiles, 0 failed with no errors.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 1 failed with 1 error.
+# Compile of proc_tb.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 1 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
+# Compile of decode.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of fetch.v was successful.
+# Compile of hazards.v was successful.
+# Compile of latch.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory_system.v was successful.
+# Compile of proc.v was successful.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 1 failed with 1 error.
+# Compile of proc_tb.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 1 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
+# Compile of decode.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of fetch.v was successful.
+# Compile of hazards.v was successful.
+# Compile of latch.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory_system.v was successful.
+# Compile of proc.v was successful.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 1 failed with 1 error.
+# Compile of proc_tb.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v failed with 4 errors.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
+# Compile of decode.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of fetch.v was successful.
+# Compile of hazards.v was successful.
+# Compile of latch.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory_system.v was successful.
+# Compile of proc.v was successful.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 1 failed with 4 errors.
+# Compile of proc_tb.v was successful.
+# Compile of proc_tb.v was successful.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v was successful.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
+# Compile of decode.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of fetch.v was successful.
+# Compile of hazards.v was successful.
+# Compile of latch.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory_system.v was successful.
+# Compile of proc.v was successful.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 0 failed with no errors.
+# Compile of stallmem.v was successful.
+# Compile of alu.v was successful.
+# Compile of sdram_model.v was successful.
+# Compile of de10_bus_controller.v was successful.
+# Compile of de10_peripherals.v was successful.
+# Compile of decode.v was successful.
+# Compile of decode_logic.v was successful.
+# Compile of fetch.v was successful.
+# Compile of hazards.v was successful.
+# Compile of latch.v was successful.
+# Compile of left_barrel_shifter.v was successful.
+# Compile of memory_system.v was successful.
+# Compile of proc.v was successful.
+# Compile of reg_dff.v was successful.
+# Compile of reg_file.v was successful.
+# Compile of right_barrel_shifter.v was successful.
+# Compile of risc_de10.v was successful.
+# Compile of sdram_controller.v was successful.
+# Compile of sdram_intialize.v was successful.
+# Compile of sdram_read.v was successful.
+# Compile of sdram_write.v was successful.
+# Compile of sram.v was successful.
+# 23 compiles, 0 failed with no errors.

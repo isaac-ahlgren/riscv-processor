@@ -41,7 +41,7 @@ module sram (output [`DATA_SIZE-1:0] data_out,
       end
       // synthesis translate_off
       mcd = $fopen("dumpfile", "w");
-      for (i=0; i<=largest+1; i=i+1) begin
+      for (i=0; i <= `SRAM_SIZE; i=i+1) begin
          $fdisplay(mcd,"%4h %2h", i, mem[i]);
       end
       $fclose(mcd);

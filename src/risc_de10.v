@@ -84,10 +84,10 @@ module risc_de10(
 	de10_bus_controller bus_controller (.addr(addr),
 	                                    .sram_data(sram_data),
                                         .sdram_data(sdram_data),
-										.periperal_data(periperal_data).
+										.periperal_data(periperal_data),
 										.oen_sram(en_sram),
 										.oen_sdram(en_sdram), 
-										.oen_peripherals(en_peripherals)
+										.oen_peripherals(en_peripherals),
 										.odata(data_out));
 
     sram sr (.data_out(sdram_data), 
@@ -96,7 +96,7 @@ module risc_de10(
              .enable(en_sram), 
              .wr(mem_wr), 
              .clk(clk), 
-             .rst(rst))
+             .rst(rst));
 
     de10_peripherals periph (.addr(addr),
 							 .wr(mem_wr & en_peripherals), 
