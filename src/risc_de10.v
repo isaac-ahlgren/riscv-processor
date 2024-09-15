@@ -65,9 +65,10 @@ module risc_de10(
     wire in_use;
     wire en_sdram;
 	wire en_peripherals;
-	wire [31:0] periph_odata;
-	wire [31:0] sdram_odata;
-	reg [31:0] odata;
+	wire en_sram;
+	wire [31:0] periph_data;
+	wire [31:0] sdram_data;
+	wire [31:0] sram_data;
 
 //=======================================================
 //  Structural coding
@@ -80,12 +81,27 @@ module risc_de10(
     proc cpu (.data_out(data_out), .data_in(data_in), .addr(addr), .omem_wr(mem_wr), .omem_re(mem_re), .mem_ready(mem_ready), 
               .clk(clk), .rst(rst));
 
-	de10_bus_addr_controller abus_controller (.addr(addr), .oen_sdram(en_sdram), .oen_peripherals(en_peripherals));
+	de10_bus_controller bus_controller (.addr(addr),
+	                                    .sram_data(sram_data),
+                                        .sdram_data(sdram_data),
+										.periperal_data(periperal_data).
+										.oen_sram(en_sram),
+										.oen_sdram(en_sdram), 
+										.oen_peripherals(en_peripherals)
+										.odata(data_out));
+
+    sram sr (.data_out(sdram_data), 
+             .data_in(data_in), 
+             .addr(addr), 
+             .enable(en_sram), 
+             .wr(mem_wr), 
+             .clk(clk), 
+             .rst(rst))
 
     de10_peripherals periph (.addr(addr),
 							 .wr(mem_wr & en_peripherals), 
 							 .idata(data_in),
-							 .odata(periph_odata),
+							 .odata(periph_data),
 							 .clk(clk), 
 							 .rst(rst),
 							 .LEDR(LEDR),
@@ -104,7 +120,7 @@ module risc_de10(
     
         .iread_req(mem_re & en_sdram),
         .iread_address(addr),
-        .oread_data(sdram_odata),
+        .oread_data(sdram_data),
         .oread_ack(read_finished),
     
 	    //////////// SDRAM //////////
@@ -120,18 +136,5 @@ module risc_de10(
         .DRAM_UDQM(DRAM_UDQM),
         .DRAM_WE_N(DRAM_WE_N)
     );
- 
-    assign data_out = odata;
-    always @(*) begin
-		if (en_sdram) begin
-			odata <= sdram_odata;
-		end
-		else if (en_peripherals) begin
-			odata <= periph_odata;
-		end
-		else begin
-			odata <= 32'b0;
-		end
-	end
 
 endmodule
