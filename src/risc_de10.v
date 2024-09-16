@@ -74,7 +74,7 @@ module risc_de10(
 //  Structural coding
 //=======================================================
     assign mem_ready = ~in_use;
-    assign rst = KEY[0] | KEY[1];
+    assign rst = ~(KEY[0] & KEY[1]);
 	assign clk = MAX10_CLK1_50;
 
    // Processor
@@ -84,15 +84,15 @@ module risc_de10(
 	de10_bus_controller bus_controller (.addr(addr),
 	                                    .sram_data(sram_data),
                                         .sdram_data(sdram_data),
-										.periperal_data(periperal_data),
+										.peripheral_data(periph_data),
 										.oen_sram(en_sram),
 										.oen_sdram(en_sdram), 
 										.oen_peripherals(en_peripherals),
 										.odata(data_out));
 
-    sram sr (.data_out(sdram_data), 
+    sram sr (.data_out(sram_data), 
              .data_in(data_in), 
-             .addr(addr), 
+             .addr(addr[15:0]), 
              .enable(en_sram), 
              .wr(mem_wr), 
              .clk(clk), 
@@ -114,12 +114,12 @@ module risc_de10(
 		.oin_use(in_use),
     
         .iwrite_req(mem_wr & en_sdram),
-        .iwrite_address(addr),
+        .iwrite_address(addr[21:0]),
         .iwrite_data(data_in),
         .owrite_ack(write_finished),
     
         .iread_req(mem_re & en_sdram),
-        .iread_address(addr),
+        .iread_address(addr[21:0]),
         .oread_data(sdram_data),
         .oread_ack(read_finished),
     

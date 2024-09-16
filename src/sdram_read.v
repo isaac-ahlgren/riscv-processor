@@ -1,3 +1,5 @@
+`timescale 1us/100ns
+
 module sdram_read(
     `include "sdram_controller.h"
     input                       iclk,

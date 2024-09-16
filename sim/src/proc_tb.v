@@ -3,20 +3,6 @@
 
 module proc_tb();
     reg clk;
-    reg rst;
-    
-    // Data from data main memory
-    wire [31:0] data_out;
-    // Data going into data main memory
-    wire [31:0] data_in;
-    // Address for the data main memory 
-    wire [31:0] addr;
-    // Write flag for data main memory
-    wire mem_wr;
-    // Read flag
-    wire mem_re;
-    // Ready to read status for instruction main memory
-    wire mem_ready;
 
     // input and output ports
     wire [12:0] dram_addr;
@@ -30,7 +16,7 @@ module proc_tb();
     wire dram_ras_n;
     wire dram_udqm;
     wire dram_we_n;
-    wire [1:0] key;
+    reg [1:0] key;
     wire [9:0] ledr;
     wire [3:0] vga_b;
     wire [3:0] vga_g;
@@ -79,13 +65,13 @@ module proc_tb();
 
     initial begin
         clk = 0;
-        rst = 0;
+        key = 2'b11;
 	
 	// reset logic  
         #2;
-        rst = 1;
+        key = 2'b00;
         #10;
-        rst = 0;
+        key = 2'b11;
           
 	#50000;
 	$finish;

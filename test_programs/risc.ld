@@ -5,7 +5,7 @@ SECTIONS
     . = 0x0;
     .text :
     {
-        *(.text.start)
+        *(.text.main)
         *(.text)
     }
     . = ALIGN(4096); /* align to page size */

@@ -1,7 +1,7 @@
 
 `define SRAM_SIZE 65536
 `define DATA_SIZE 32
-module sram (output [`DATA_SIZE-1:0] data_out, 
+module sram (output reg [`DATA_SIZE-1:0] data_out, 
              input [`DATA_SIZE-1:0] data_in, 
              input [15:0] addr, 
              input enable, 
@@ -22,15 +22,18 @@ module sram (output [`DATA_SIZE-1:0] data_out,
    assign in_bounds = addr < `SRAM_SIZE;
 
    initial begin
-      $readmemh("../../test_programs/merge_sort_verilog.txt", mem);
+      $readmemh("../test_programs/merge_sort_verilog.hex", mem);
    end
 
    always @(posedge clk) begin
-      if (enable & (~wr)) begin
-         data <= {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]};
+      if (rst) begin
+         data_out <= 0;
+      end
+      else if (enable & (~wr)) begin
+         data_out <= {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]};
       end
       else begin
-         data <= 0;
+         data_out <= 0;
       end
 
       if (enable & wr & in_bounds) begin

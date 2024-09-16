@@ -1,3 +1,5 @@
+`timescale 1us/100ns
+
 module sdram_write(
     `include "sdram_controller.h"
     input                       iclk,
@@ -21,7 +23,7 @@ module sdram_write(
 	output		          		DRAM_WE_N,
     output		          		DRAM_LDQM,
     output		          		DRAM_UDQM,
-    output 		    [`DB_WIDTH:0]		DRAM_DQ
+    output 		    [`DB_WIDTH-1:0]		DRAM_DQ
 );
 `include "sdram_write.h"
 

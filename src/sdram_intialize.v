@@ -1,3 +1,5 @@
+`timescale 1us/100ns
+
 //  SDRAM Settings
 //  Write Bust      -- Single Location
 //  CAS Latency     -- 2

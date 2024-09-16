@@ -9,7 +9,7 @@ input       in_write_en,
 input       in_CAS,             //COLUMN ADRESS STROBE
 input       in_RAS,             //ROW ADRESS STROBE
 input[1:0]  in_bank_select,     // BANK SELECTION BITS
-input[13:0] in_sdram_addr,      
+input[12:0] in_sdram_addr,      
 input dram_ldqm,
 input dram_udqm,
 inout reg [15:0] dq
