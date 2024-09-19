@@ -25,7 +25,7 @@ module sram (output reg [`DATA_SIZE-1:0] data_out,
       for (i=0; i<=65535; i=i+1) begin
          mem[i] = 8'd0;
       end
-      $readmemh("../test_programs/merge_sort_verilog.hex", mem);
+      $readmemh("../test_programs/blinky.hex", mem);
    end
 
    always @(*) begin

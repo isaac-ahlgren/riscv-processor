@@ -22,7 +22,7 @@ module hazards_controller(
     wire control_hazard_input;
     wire control_hazard_latch1_conn;
     pipeline_latch control_hazard_latch1 (.q(control_hazard_latch1_conn), .d(control_hazard_input), .stall(stall | data_hazard), .clk(clk), .rst(rst));
- 
+
     wire [4:0] a2_latch1_conn;
     wire a1_equal_a2_latch1;
     wire a0_equal_a2_latch1;
@@ -60,7 +60,7 @@ module hazards_controller(
 
     assign data_hazard = (data_hazard_latch1 | data_hazard_latch2 | data_hazard_latch3) & ~control_hazard; 
     assign control_hazard = control_hazard_input | control_hazard_latch1_conn;
-    assign imem_stall = ~imem_ready;
+    assign imem_stall = ~imem_ready & ~control_hazard;
     assign dmem_stall = ~dmem_ready & dmem_use;
     assign stall = dmem_stall | (imem_stall & ~dmem_use & jump_taken); // Full pipeline stall for the icache if there is not a miss in the dcache and jump is going to be taken
 endmodule 

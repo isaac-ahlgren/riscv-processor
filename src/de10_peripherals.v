@@ -38,17 +38,22 @@ module de10_peripherals(
              end
          endcase
 
-         case({periph_addr} & {`ADDR_LEN{wr}})
-             22'd0: begin
-                we <= `PERIPH_REG_NUM'b01;
-             end
-             22'd1: begin
-                we <= `PERIPH_REG_NUM'b10;
-             end
-             default: begin
-                we <= `PERIPH_REG_NUM'b00;
-             end
-         endcase
+         if (wr) begin
+             case({periph_addr})
+                 22'd0: begin
+                    we <= `PERIPH_REG_NUM'b01;
+                 end
+                 22'd1: begin
+                    we <= `PERIPH_REG_NUM'b10;
+                 end
+                 default: begin
+                    we <= `PERIPH_REG_NUM'b00;
+                 end
+             endcase
+         end
+         else begin 
+            we <= `PERIPH_REG_NUM'b00;
+         end
     end
 
 endmodule

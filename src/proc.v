@@ -89,7 +89,7 @@ module proc(input [31:0] data_out,
     // Fetch Stage
     fetch fet (.curr_addr(imem_addr), .oinstr(instr), .ocurr_addr_step(curr_addr_step), .ocurr_addr_reljmp(curr_addr_addval),
                .iinstr(imem_data_out), .jump_taken(jump_taken), .addr_rel_reg(ialu_odata), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard | (imem_stall & control_hazard)), 
                .imem_stall(imem_stall), .clk(clk), .rst(rst));
     // Decode Stage
     decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
