@@ -12,29 +12,32 @@ module sram (output reg [`DATA_SIZE-1:0] data_out,
    wire                   in_bounds;
 
    reg [7:0]      mem [0:`SRAM_SIZE-1];
-   reg [`DATA_SIZE-1:0]      data;
+   reg [31:0]     data;
 
    integer        mcd;
    integer        i;
 
    assign         data_out = data;
 
-   assign in_bounds = addr < `SRAM_SIZE;
+   assign in_bounds = addr < (`SRAM_SIZE - 4);
 
    initial begin
+      for (i=0; i<=65535; i=i+1) begin
+         mem[i] = 8'd0;
+      end
       $readmemh("../test_programs/merge_sort_verilog.hex", mem);
    end
 
-   always @(posedge clk) begin
-      if (rst) begin
-         data_out <= 0;
-      end
-      else if (enable & (~wr)) begin
-         data_out <= {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]};
+   always @(*) begin
+      if (enable & in_bounds) begin
+         data <= {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]};
       end
       else begin
-         data_out <= 0;
+         data <= 32'b0;
       end
+   end
+
+   always @(posedge clk) begin
 
       if (enable & wr & in_bounds) begin
 	        mem[addr+3] <= data_in[31:24];  // The actual write

@@ -73,7 +73,6 @@ module risc_de10(
 //=======================================================
 //  Structural coding
 //=======================================================
-    assign mem_ready = ~in_use;
     assign rst = ~(KEY[0] & KEY[1]);
 	assign clk = MAX10_CLK1_50;
 
@@ -85,10 +84,14 @@ module risc_de10(
 	                                    .sram_data(sram_data),
                                         .sdram_data(sdram_data),
 										.peripheral_data(periph_data),
+										.sram_ready(1'b1),
+										.sdram_ready(~in_use),
+										.peripheral_ready(1'b1),
 										.oen_sram(en_sram),
 										.oen_sdram(en_sdram), 
 										.oen_peripherals(en_peripherals),
-										.odata(data_out));
+										.odata(data_out),
+										.omem_ready(mem_ready));
 
     sram sr (.data_out(sram_data), 
              .data_in(data_in), 
