@@ -1,7 +1,7 @@
 
 module sram
 	#(parameter int
-		ADDR_WIDTH = 15,
+		ADDR_WIDTH = 16,
 		BYTE_WIDTH = 8,
 		BYTES = 4,
 		WIDTH = BYTES * BYTE_WIDTH
@@ -9,11 +9,15 @@ module sram
 ( 
 	input [ADDR_WIDTH-1:0] addr,
 	input [BYTES-1:0] be,
-	input [BYTE_WIDTH-1:0] data, 
+	input [WIDTH-1:0] data, 
 	input we, clk,
 	output reg [WIDTH - 1:0] q
 );
 	localparam int WORDS = 1 << ADDR_WIDTH ;
+
+	integer        mcd;
+    integer        i;
+	integer        j;
 
 	// use a multi-dimensional packed array to model individual bytes within the word
 	logic [BYTES-1:0][BYTE_WIDTH-1:0] ram[0:WORDS-1];
@@ -30,17 +34,19 @@ module sram
 	begin
 		if(we) begin
 		// edit this code if using other than four bytes per word
-			if(be[0]) ram[addr][0] <= data;
-			if(be[1]) ram[addr][1] <= data;
-			if(be[2]) ram[addr][2] <= data;
-			if(be[3]) ram[addr][3] <= data;
-	end
+			if(be[0]) ram[addr][0] <= data[BYTE_WIDTH - 1:0];
+			if(be[1]) ram[addr][1] <= data[2*BYTE_WIDTH - 1:BYTE_WIDTH];
+			if(be[2]) ram[addr][2] <= data[3*BYTE_WIDTH - 1:2*BYTE_WIDTH];
+			if(be[3]) ram[addr][3] <= data[4*BYTE_WIDTH - 1:3*BYTE_WIDTH];
+	    end
 		q <= ram[addr];
 
 	    // synthesis translate_off
-        mcd = $fopen("dumpfile", "w");
-        for (i=0; i <= `SRAM_SIZE; i=i+1) begin
-            $fdisplay(mcd,"%4h %2h", i, mem[i]);
+        mcd = $fopen("sram_dumpfile", "w");
+        for (i=0; i <= WORDS*BYTES; i=i+1) begin
+			for (j=0; j <= BYTES; j=j+1) begin
+                $fdisplay(mcd,"%4h %2h", i, ram[j][i]);
+			end
         end
         $fclose(mcd);
         // synthesis translate_on

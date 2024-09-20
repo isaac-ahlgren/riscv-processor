@@ -1,6 +1,7 @@
 work/
 *.txt
 dumpfile
+sram_dumpfile
 merge_sort
 risc_test
 blinky
