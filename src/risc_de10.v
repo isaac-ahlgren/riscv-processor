@@ -93,13 +93,12 @@ module risc_de10(
 										.odata(data_out),
 										.omem_ready(mem_ready));
 
-    sram sr (.data_out(sram_data), 
-             .data_in(data_in), 
+    sram sr (.data(data_in), 
+             .q(sram_data),
+			 .be(4'b1111),
              .addr(addr[15:0]), 
-             .enable(en_sram), 
-             .wr(mem_wr), 
-             .clk(clk), 
-             .rst(rst));
+             .we(mem_wr & en_sram), 
+             .clk(clk));
 
     de10_peripherals periph (.addr(addr),
 							 .wr(mem_wr & en_peripherals), 

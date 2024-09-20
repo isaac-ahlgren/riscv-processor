@@ -8,8 +8,8 @@ all:
 	$(CC) $(CFLAGS) risc_test.c -o risc_test
 	$(CC) $(CFLAGS) merge_sort.c -o merge_sort
 	$(CC) $(CFLAGS) blinky.c -o blinky
-	$(OBJCOPY) risc_test -O verilog risc_test_verilog.hex
-	$(OBJCOPY) merge_sort -O verilog merge_sort_verilog.hex
+	$(OBJCOPY) risc_test -O verilog risc_test.hex
+	$(OBJCOPY) merge_sort -O verilog merge_sort.hex
 	$(OBJCOPY) blinky -O verilog blinky.hex
 
 dump:
