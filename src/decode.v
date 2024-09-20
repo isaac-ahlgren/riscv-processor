@@ -93,11 +93,6 @@ module decode_register_select(
     pipeline_latch a2_latch1 [4:0] (.q(a2_conn_latch1), .d({5{~squash}} & input_a2), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch a2_latch2 [4:0] (.q(a2_conn_latch2), .d(a2_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch a2_latch3 [4:0] (.q(a2), .d(a2_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
-    
-    wire input_dmem_addr_bus_use;
-    wire dmem_addr_bus_use_conn_latch1;
-    pipeline_latch dmem_addr_bus_use_latch1(.q(dmem_addr_bus_use_conn_latch1), .d(~squash & input_dmem_addr_bus_use), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch dmem_addr_bus_use_latch2(.q(dmem_addr_bus_use), .d(dmem_addr_bus_use_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     // Decode Logic
     decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 

@@ -256,27 +256,29 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name VERILOG_FILE ../src/right_barrel_shifter.v
-set_global_assignment -name VERILOG_FILE ../src/reg_file.v
-set_global_assignment -name VERILOG_FILE ../src/reg_dff.v
-set_global_assignment -name SOURCE_FILE ../src/proc_params.h
-set_global_assignment -name VERILOG_FILE ../src/proc.v
-set_global_assignment -name VERILOG_FILE ../src/memory_system.v
-set_global_assignment -name VERILOG_FILE ../src/left_barrel_shifter.v
-set_global_assignment -name VERILOG_FILE ../src/latch.v
-set_global_assignment -name VERILOG_FILE ../src/hazards.v
-set_global_assignment -name VERILOG_FILE ../src/fetch.v
-set_global_assignment -name VERILOG_FILE ../src/decode_logic.v
-set_global_assignment -name VERILOG_FILE ../src/decode.v
-set_global_assignment -name VERILOG_FILE ../src/alu.v
-set_global_assignment -name SDC_FILE risc_de10.sdc
+set_global_assignment -name VERILOG_FILE sram.v
 set_global_assignment -name VERILOG_FILE sdram_write.v
 set_global_assignment -name SOURCE_FILE sdram_write.h
 set_global_assignment -name VERILOG_FILE sdram_read.v
 set_global_assignment -name SOURCE_FILE sdram_read.h
 set_global_assignment -name VERILOG_FILE sdram_intialize.v
 set_global_assignment -name VERILOG_FILE sdram_controller.v
-set_global_assignment -name VERILOG_FILE risc_de10.v
 set_global_assignment -name SOURCE_FILE sdram_controller.h
-set_global_assignment -name SDC_FILE risc_de10.SDC
+set_global_assignment -name VERILOG_FILE risc_de10.v
+set_global_assignment -name VERILOG_FILE right_barrel_shifter.v
+set_global_assignment -name VERILOG_FILE reg_file.v
+set_global_assignment -name VERILOG_FILE reg_dff.v
+set_global_assignment -name SOURCE_FILE proc_params.h
+set_global_assignment -name VERILOG_FILE proc.v
+set_global_assignment -name VERILOG_FILE memory_system.v
+set_global_assignment -name VERILOG_FILE left_barrel_shifter.v
+set_global_assignment -name VERILOG_FILE latch.v
+set_global_assignment -name VERILOG_FILE hazards.v
+set_global_assignment -name VERILOG_FILE fetch.v
+set_global_assignment -name VERILOG_FILE decode_logic.v
+set_global_assignment -name VERILOG_FILE decode.v
+set_global_assignment -name VERILOG_FILE de10_peripherals.v
+set_global_assignment -name VERILOG_FILE de10_bus_controller.v
+set_global_assignment -name VERILOG_FILE alu.v
+set_global_assignment -name VERILOG_CONSTANT_LOOP_LIMIT 70000
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
