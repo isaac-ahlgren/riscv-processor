@@ -14,7 +14,8 @@ module memory_system (
                         input ien_mem_re,
                         input ien_mem_wr,
                         output oen_mem_re,
-                        output oen_mem_wr);
+                        output oen_mem_wr,
+                        input rst);
 
     wire dmem_use;
 
@@ -23,7 +24,7 @@ module memory_system (
     assign dmem_data_out = data_out & {`MAIN_MEMORY_READ_SIZE{mem_ready}};
     assign imem_ready = mem_ready & ~dmem_use;
     assign dmem_ready = mem_ready;
-    assign oen_mem_re = ien_mem_re & 1'b1; // Always requesting read because instructions are needed and there is no cache yet
+    assign oen_mem_re = ien_mem_re | 1'b1 & rst; // Always requesting read because instructions are needed and there is no cache yet
     assign oen_mem_wr = ien_mem_wr;
 
     always @(dmem_use or dmem_addr or imem_addr or ien_mem_re or ien_mem_wr) begin

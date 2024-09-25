@@ -10,9 +10,10 @@ module sram
 	input [ADDR_WIDTH-1:0] addr,
 	input [BYTES-1:0] be,
 	input [WIDTH-1:0] data, 
-	input we, clk,
-	output reg [WIDTH - 1:0] q
+	input we, re, clk,
+	output wire [WIDTH - 1:0] oq
 );
+    reg [WIDTH - 1:0] q;
 	localparam int WORDS = 1 << ADDR_WIDTH ;
 
 	integer        mcd;
@@ -30,6 +31,8 @@ module sram
 		$readmemh("../test_programs/blinky.hex", ram);
 	end 
 
+    assign oq = q & {WIDTH{re}};    
+
 	always_ff@(posedge clk)
 	begin
 		if(we) begin
@@ -39,7 +42,7 @@ module sram
 			if(be[2]) ram[addr][2] <= data[3*BYTE_WIDTH - 1:2*BYTE_WIDTH];
 			if(be[3]) ram[addr][3] <= data[4*BYTE_WIDTH - 1:3*BYTE_WIDTH];
 	    end
-		q <= ram[addr];
+		q <= ram[addr]; //& {WIDTH{re}};
 
 	    // synthesis translate_off
         mcd = $fopen("sram_dumpfile", "w");
