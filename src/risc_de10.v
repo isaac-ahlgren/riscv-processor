@@ -69,6 +69,8 @@ module risc_de10(
 	wire [31:0] periph_data;
 	wire [31:0] sdram_data;
 	wire [31:0] sram_data;
+	wire sram_ready;
+	wire sdram_ready;
 
 //=======================================================
 //  Structural coding
@@ -84,8 +86,8 @@ module risc_de10(
 	                                    .sram_data(sram_data),
                                         .sdram_data(sdram_data),
 										.peripheral_data(periph_data),
-										.sram_ready(1'b1),
-										.sdram_ready(~in_use),
+										.sram_ready(sram_ready),
+										.sdram_ready(sdram_ready),
 										.peripheral_ready(1'b1),
 										.oen_sram(en_sram),
 										.oen_sdram(en_sdram), 
@@ -95,11 +97,13 @@ module risc_de10(
 
     sram sr (.data(data_in), 
              .oq(sram_data),
+			 .omem_ready(sram_ready),
 			 .be(4'b1111),
-             .addr(addr[15:0]), 
+             .addr(addr[15:2]), 
              .we(mem_wr & en_sram),
 			 .re(mem_re & en_sram),
-             .clk(clk));
+             .clk(clk),
+			 .rst(rst));
 
     de10_peripherals periph (.addr(addr),
 							 .wr(mem_wr & en_peripherals), 
@@ -114,7 +118,7 @@ module risc_de10(
 	sdram_controller sdram_controller(
 	    .iclk(clk),
         .ireset(rst),
-		.oin_use(in_use),
+		.omem_ready(sdram_ready),
     
         .iwrite_req(mem_wr & en_sdram),
         .iwrite_address(addr[21:0]),

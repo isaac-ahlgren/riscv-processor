@@ -5,7 +5,7 @@ module sdram_controller(
 
 	input 		          		iclk,
     input 		          		ireset,
-    output                      oin_use,
+    output                      omem_ready,
     
     input                       iwrite_req,
     input           [21:0]      iwrite_address,
@@ -38,7 +38,7 @@ reg      [8:0]  state       = `INIT1;
 reg      [8:0]  next_state  = `INIT1;
 reg      [2:0]  mul_state   = 3'b001;
 
-reg             in_use      = 1'b0;
+reg             mem_ready   = 1'b1;
 reg             read_ack    = 1'b0;
 reg             write_ack   = 1'b0;
 
@@ -70,7 +70,7 @@ wire            read_fin;
 assign {write_ibank, write_irow, write_icolumn} = {iwrite_address, 3'b0};
 assign {read_ibank, read_irow, read_icolumn}    = {iread_address, 3'b0};
 
-assign oin_use                                  = in_use;
+assign omem_ready                               = mem_ready;
 assign owrite_ack                               = write_ack;
 assign oread_ack                                = read_ack;
 
@@ -140,7 +140,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b0;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -152,7 +152,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b0;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -166,7 +166,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b0;
+            mem_ready       <= 1'b1;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -180,7 +180,7 @@ begin
             write_ireq      <= 1'b1;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -193,7 +193,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -205,7 +205,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b1;
             read_ack        <= 1'b0;
             
@@ -219,7 +219,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b1;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -231,7 +231,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b1;
             write_ack       <= 1'b0;
             read_ack        <= 1'b0;
             
@@ -243,7 +243,7 @@ begin
             write_ireq      <= 1'b0;
             read_ireq       <= 1'b0;
             
-            in_use          <= 1'b1;
+            mem_ready       <= 1'b0;
             write_ack       <= 1'b0;
             read_ack        <= 1'b1;
             
