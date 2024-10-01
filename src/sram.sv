@@ -52,7 +52,7 @@ module sram
 		end
     end
 
-    always_ff@(state)
+    always_comb
 	begin
 		case (state)
 			2'b01:

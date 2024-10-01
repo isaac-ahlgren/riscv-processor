@@ -20,8 +20,8 @@ module memory_system (
     wire dmem_use;
 
     assign dmem_use = ien_mem_re | ien_mem_wr; 
-    assign imem_data_out = data_out & {`MAIN_MEMORY_READ_SIZE{mem_ready}} & {`MAIN_MEMORY_READ_SIZE{~dmem_use}};
-    assign dmem_data_out = data_out & {`MAIN_MEMORY_READ_SIZE{mem_ready}};
+    assign imem_data_out = data_out & {`MAIN_MEMORY_READ_SIZE{imem_ready}};
+    assign dmem_data_out = data_out & {`MAIN_MEMORY_READ_SIZE{dmem_ready}};
     assign imem_ready = mem_ready & ~dmem_use;
     assign dmem_ready = mem_ready;
     assign oen_mem_re = (ien_mem_re | 1'b1) & ~rst; // Always requesting read because instructions are needed and there is no cache yet
