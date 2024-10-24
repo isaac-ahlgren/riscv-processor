@@ -12,7 +12,7 @@ module sram
 	input [BYTES-1:0] be,
 	input [WIDTH-1:0] data, 
 	input we, re, clk, rst,
-	output wire [WIDTH - 1:0] oq,
+	output reg [WIDTH - 1:0] oq,
 	output omem_ready
 );
 	localparam int WORDS = 1 << ADDR_WIDTH ;
@@ -25,10 +25,6 @@ module sram
 	logic [BYTES-1:0][BYTE_WIDTH-1:0] ram[0:WORDS-1];
 
     reg [WIDTH - 1:0] q;
-	reg [1:0] state;
-	reg [1:0] next_state;
-	reg mem_ready;
-
 
 	initial 
 	begin : INIT
@@ -37,43 +33,18 @@ module sram
 			ram[i] = {WIDTH{1'b1}};
 		$readmemh("../test_programs/blinky.hex", ram);
 	end 
-
-    assign oq = q & {WIDTH{re}};
-	assign omem_ready = mem_ready;
-
-    // State Machine to deal with 2 cycle reads
-    always @(posedge clk)
-    begin
-        if(rst) begin
-            state <= 2'b00;
-		end
-        else begin
-            state <= next_state;
-		end
-    end
-
-    always_comb
+    
+	always @(posedge clk)
 	begin
-		case (state)
-			2'b01:
-			    if (re) begin
-			        next_state <= 2'b10;
-					mem_ready <= 1'b0;
-				end
-				else begin
-					next_state <= 2'b01;
-					mem_ready <= 1'b1;
-				end
-			2'b10: begin
-			    next_state <= 2'b01;
-				mem_ready <= 1'b1;
-			end
-			default: begin
-			    next_state <= 2'b01;
-				mem_ready <= 1'b0;
-			end 
-		endcase
+		if (rst) begin
+            #(1) oq <= {WIDTH{0'b0}};           
+		end
+		else begin
+			#(1) oq <= q & {WIDTH{re}};
+		end
 	end
+
+	assign omem_ready = 1'b1;
 
     // Memory read/write logic
 	always_ff@(posedge clk)
