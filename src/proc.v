@@ -55,9 +55,11 @@ module proc(input [31:0] data_out,
     wire [31:0] curr_addr_step;
     wire [31:0] curr_addr_addval;
     wire stall;
+    wire first_stage_stall;
     wire jump_taken;
     wire control_hazard;
     wire data_hazard;
+    wire squash;
 
     wire [31:0] imem_data_out;
     wire [31:0] imem_addr;
@@ -68,10 +70,99 @@ module proc(input [31:0] data_out,
     wire mem_wr;
     wire mem_re;
 
-    memory_system ms (.imem_data_out(imem_data_out), .dmem_data_out(dmem_data_out), .data_out(data_out), 
-                                   .imem_ready(imem_ready), .dmem_ready(dmem_ready), .mem_ready(mem_ready), 
-                                   .imem_addr(imem_addr), .dmem_addr(dmem_addr), .mem_addr(addr), .ien_mem_re(mem_re), 
-                                   .ien_mem_wr(mem_wr), .oen_mem_re(omem_re), .oen_mem_wr(omem_wr), .rst(rst));
+    memory_system ms (.imem_data_out(imem_data_out), 
+                      .dmem_data_out(dmem_data_out), 
+                      .data_out(data_out), 
+                      .imem_stall(imem_stall), 
+                      .dmem_stall(dmem_stall), 
+                      .stall(stall),
+                      .first_stage_stall(first_stage_stall),
+                      .squash(squash),
+                      .mem_ready(mem_ready),
+                      .jump_taken(jump_taken),
+                      .imem_addr(imem_addr), 
+                      .dmem_addr(dmem_addr), 
+                      .mem_addr(addr), 
+                      .ien_mem_re(mem_re), 
+                      .ien_mem_wr(mem_wr), 
+                      .oen_mem_re(omem_re), 
+                      .oen_mem_wr(omem_wr), 
+                      .data_hazard(data_hazard), 
+                      .control_hazard(control_hazard), 
+                      .clk(clk), 
+                      .rst(rst));
+
+    hazards_controller hazards(.control_hazard(control_hazard), 
+                               .data_hazard(data_hazard), 
+                               .jump_taken(jump_taken), 
+                               .a0(a0), 
+                               .a1(a1), 
+                               .a2(a2_hazard),
+                               .stall(stall),
+                               .clk(clk), 
+                               .rst(rst));
+
+    // Fetch Stage
+    fetch fet (.curr_addr(imem_addr), 
+               .oinstr(instr), 
+               .ocurr_addr_step(curr_addr_step), 
+               .ocurr_addr_reljmp(curr_addr_addval),
+               .iinstr(imem_data_out), 
+               .jump_taken(jump_taken), 
+               .addr_rel_reg(ialu_odata), 
+               .en_uncond_jmp(en_uncond_jmp), 
+               .en_rel_reg_jmp(en_rel_reg_jmp), 
+               .en_branch(en_branch), 
+               .en_jmp(en_jmp), 
+               .imm(imm_to_addr), 
+               .stall(first_stage_stall), 
+               .imem_stall(imem_stall), 
+               .clk(clk), 
+               .rst(rst));
+
+    // Decode Stage
+    decode_register_select drs(.a0(a0), 
+                               .a1(a1), 
+                               .a2(a2), 
+                               .a2_hazard(a2_hazard), 
+                               .imm_to_reg(imm_to_reg), 
+                               .imm_to_addr(imm_to_addr),
+                               .func(func), 
+                               .en_jmp(en_jmp), 
+                               .en_uncond_jmp(en_uncond_jmp), 
+                               .en_rel_reg_jmp(en_rel_reg_jmp), 
+                               .en_mem_wr(mem_wr), 
+                               .en_mem_re(mem_re),
+                               .ld_code(ld_code), 
+                               .alu_data1(alu_data1), 
+                               .alu_data2(alu_data2), 
+                               .data_to_mem(data_in),
+                               .en_reg_wr(en_reg_wr), 
+                               .instr(instr), 
+                               .d0(d0), 
+                               .d1(d1), 
+                               .stall(stall), 
+                               .squash(squash), 
+                               .clk(clk), 
+                               .rst(rst));
+
+    // ALU
+    alu a(.data1(alu_data1), 
+          .data2(alu_data2), 
+          .func(func), 
+          .odata(ialu_odata), 
+          .compare_val(en_branch));
+
+    // Register File
+    reg_file regs (.a0(a0), 
+                   .a1(a1), 
+                   .a2(a2), 
+                   .din(data_to_reg), 
+                   .reg_wr(en_reg_wr), 
+                   .d0(d0), 
+                   .d1(d1), 
+                   .clk(clk), 
+                   .rst(rst));
 
     wire [31:0] alu_odata_as_addr;
     wire [31:0] alu_odata_to_reg;
@@ -81,32 +172,9 @@ module proc(input [31:0] data_out,
     wire [31:0] dmem_data_out_to_reg;
     pipeline_latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
 
-    hazards_controller hazards(.control_hazard(control_hazard), .data_hazard(data_hazard), .stall(stall), .dmem_stall(dmem_stall),
-                               .imem_stall(imem_stall), .jump_taken(jump_taken), .dmem_ready(dmem_ready), 
-                               .imem_ready(imem_ready), .en_mem_re(mem_re), .en_mem_wr(mem_wr), .a0(a0), .a1(a1), .a2(a2_hazard), .clk(clk), .rst(rst));
-    assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch); 
-
-    // Fetch Stage
-    fetch fet (.curr_addr(imem_addr), .oinstr(instr), .ocurr_addr_step(curr_addr_step), .ocurr_addr_reljmp(curr_addr_addval),
-               .iinstr(imem_data_out), .jump_taken(jump_taken), .addr_rel_reg(ialu_odata), .en_uncond_jmp(en_uncond_jmp), 
-               .en_rel_reg_jmp(en_rel_reg_jmp), .en_branch(en_branch), .en_jmp(en_jmp), .imm(imm_to_addr), .stall(stall | data_hazard | (imem_stall & control_hazard)), 
-               .imem_stall(imem_stall), .clk(clk), .rst(rst));
-    // Decode Stage
-    decode_register_select drs(.a0(a0), .a1(a1), .a2(a2), .a2_hazard(a2_hazard), .imm_to_reg(imm_to_reg), .imm_to_addr(imm_to_addr),
-                               .func(func), .en_jmp(en_jmp), .en_uncond_jmp(en_uncond_jmp), .en_rel_reg_jmp(en_rel_reg_jmp), .en_mem_wr(mem_wr), .en_mem_re(mem_re),
-                               .ld_code(ld_code), .alu_data1(alu_data1), .alu_data2(alu_data2), .data_to_mem(data_in), .en_reg_wr(en_reg_wr), 
-                               .instr(instr), .d0(d0), .d1(d1), .stall(stall), .squash(data_hazard | control_hazard), 
-                               .clk(clk), .rst(rst));
-
-    // ALU
-    alu a(.data1(alu_data1), .data2(alu_data2), .func(func), .odata(ialu_odata), .compare_val(en_branch));
-
-    // Register File
-    reg_file regs (.a0(a0), .a1(a1), .a2(a2), 
-                   .din(data_to_reg), .reg_wr(en_reg_wr), 
-                   .d0(d0), .d1(d1), .clk(clk), .rst(rst));
-
     assign dmem_addr = alu_odata_as_addr;
+
+    assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
 
     always @(*) begin
 

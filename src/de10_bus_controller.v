@@ -10,9 +10,12 @@ module de10_bus_controller(
     output oen_sdram,
     output oen_peripherals,
     output reg [31:0] odata,
-    output omem_ready);
+    output omem_ready,
+    input clk,
+    input rst);
 
     wire [9:0] tag;
+    reg [9:0] delayed_tag;
 
     reg en_sram;
     reg en_sdram;
@@ -26,34 +29,54 @@ module de10_bus_controller(
     assign oen_peripherals = en_peripherals;
     assign omem_ready = mem_ready;
 
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            delayed_tag <= 10'b0;
+        end
+        else begin
+            delayed_tag <= tag;
+        end
+    end
+
     always @ (*) begin
         if (tag == 10'h0) begin
-            odata <= sram_data;
             en_sram <= 1'b1;
             en_sdram <= 1'b0;
             en_peripherals <= 1'b0;
             mem_ready <= sram_ready;
         end
         else if (tag == 10'h1) begin
-            odata <= peripheral_data;
             en_sram <= 1'b0;
             en_sdram <= 1'b0;
             en_peripherals <= 1'b1;
             mem_ready <= peripheral_ready;
         end
         else if (tag == 10'h2) begin
-            odata <= sdram_data;
             en_sram <= 1'b0;
             en_sdram <= 1'b1;
             en_peripherals <= 1'b0;
             mem_ready <= sdram_ready;
         end
         else begin
-            odata <= 32'b0;
             en_sram <= 1'b0;
             en_sdram <= 1'b0;
             en_peripherals <= 1'b0;
             mem_ready <= 1'b1;
+        end
+    end
+
+    always @ (*) begin
+        if (delayed_tag == 10'h0) begin
+            odata <= sram_data;
+        end
+        else if (delayed_tag == 10'h1) begin
+            odata <= peripheral_data;
+        end
+        else if (delayed_tag == 10'h2) begin
+            odata <= sdram_data;
+        end
+        else begin
+            odata <= 32'b0;
         end
     end
 

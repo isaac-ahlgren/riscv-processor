@@ -93,7 +93,9 @@ module risc_de10(
 										.oen_sdram(en_sdram), 
 										.oen_peripherals(en_peripherals),
 										.odata(data_out),
-										.omem_ready(mem_ready));
+										.omem_ready(mem_ready),
+										.clk(clk),
+										.rst(rst));
 
     sram sr (.data(data_in), 
              .oq(sram_data),

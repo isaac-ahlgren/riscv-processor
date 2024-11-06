@@ -95,14 +95,23 @@ module decode_register_select(
     pipeline_latch a2_latch3 [4:0] (.q(a2), .d(a2_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
 
     // Decode Logic
-    decode_logic dec (.a0(a0), .a1(a1), .a2(input_a2), .imm(input_imm), .func(input_func), 
-                      .en_jmp(input_en_jmp), .en_uncond_jmp(input_en_uncond_jmp), 
-                      .en_imm(en_imm), .en_reg_wr(input_en_reg_wr), .en_mem_wr(input_en_mem_wr), .en_mem_re(input_en_mem_re),
-                      .en_rel_reg_jmp(input_en_rel_reg_jmp), .ld_code(input_ld_code), .instr(instr));
+    decode_logic dec (.a0(a0), 
+                      .a1(a1), 
+                      .a2(input_a2), 
+                      .imm(input_imm), 
+                      .func(input_func), 
+                      .en_jmp(input_en_jmp), 
+                      .en_uncond_jmp(input_en_uncond_jmp), 
+                      .en_imm(en_imm), 
+                      .en_reg_wr(input_en_reg_wr), 
+                      .en_mem_wr(input_en_mem_wr), 
+                      .en_mem_re(input_en_mem_re),
+                      .en_rel_reg_jmp(input_en_rel_reg_jmp), 
+                      .ld_code(input_ld_code), 
+                      .instr(instr));
 
     assign a2_hazard = {5{~squash}} & input_a2;
     always @(*) begin
-
         // Determine which value to use for the second value in the ALU operation
         if (en_imm)
             alu_input_data2 <= input_imm;
