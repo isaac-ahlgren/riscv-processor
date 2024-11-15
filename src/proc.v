@@ -169,9 +169,6 @@ module proc(input [31:0] data_out,
     pipeline_latch alu_output_data_latch1 [31:0] (.q(alu_odata_as_addr), .d(ialu_odata), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch alu_output_data_latch2 [31:0] (.q(alu_odata_to_reg), .d(alu_odata_as_addr), .stall(stall), .clk(clk), .rst(rst));
 
-    wire [31:0] dmem_data_out_to_reg;
-    pipeline_latch dmem_data_out_latch [31:0] (.q(dmem_data_out_to_reg), .d(dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
-
     assign dmem_addr = alu_odata_as_addr;
 
     assign jump_taken = (en_jmp) & (en_rel_reg_jmp | en_uncond_jmp | en_branch);
@@ -184,7 +181,7 @@ module proc(input [31:0] data_out,
                  data_to_reg <= alu_odata_to_reg;
              end
             `MEM_LD: begin
-                 data_to_reg <= dmem_data_out_to_reg;
+                 data_to_reg <= dmem_data_out;
              end
             `IMM_LD: begin
                  data_to_reg <= imm_to_reg;

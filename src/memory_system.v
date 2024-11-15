@@ -27,6 +27,9 @@ module memory_system (
     wire dmem_use;
     wire dmem_use_delayed;
 
+    wire imem_use;
+    wire imem_use_delayed;
+
     wire imem_data_mask;
     wire dmem_data_mask;
 
@@ -35,7 +38,10 @@ module memory_system (
     wire [31:0] data_to_proc;
 
     wire full_imem_stall;
-    reg delayed_first_stage_stall;
+
+    reg data_consumed;
+    reg save_slot_hold;
+    wire save_slot_release;
 
     assign dmem_use = ien_mem_re | ien_mem_wr;
 
@@ -59,19 +65,21 @@ module memory_system (
     assign oen_mem_re = (ien_mem_re | 1'b1) & ~rst; // Always requesting read because instructions are needed and there is no cache yet
     assign oen_mem_wr = ien_mem_wr;
 
-    assign data_to_proc = delayed_first_stage_stall ? save_slot : data_out;
+    assign save_slot_release = (save_slot_hold & ~dmem_use_delayed & ~first_stage_stall & ~stall);
+
+    assign data_to_proc = (save_slot_release) ? save_slot : data_out;
     
     pipeline_latch dmem_use_latch1 (.q(dmem_use_delayed),
                                     .d(dmem_use),
                                     .stall(stall),
                                     .clk(clk),
-                                    .rst(rst));
+                                    .rst(rst));  
 
     pipeline_latch save_slot_latch [31:0] (.q(save_slot),
-                                    .d(data_out),
-                                    .stall(delayed_first_stage_stall),
-                                    .clk(clk),
-                                    .rst(rst));
+                                           .d(data_out),
+                                           .stall(save_slot_hold & ~save_slot_release),
+                                           .clk(clk),
+                                           .rst(rst));
 
     always @(dmem_use or dmem_addr or imem_addr or ien_mem_re or ien_mem_wr) begin
       if (dmem_use) begin
@@ -84,10 +92,10 @@ module memory_system (
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            delayed_first_stage_stall <= 1'b0;
+            save_slot_hold <= 1'b0;
         end
         else begin
-            delayed_first_stage_stall <= first_stage_stall;
+            save_slot_hold <= ~data_consumed & ((first_stage_stall & ~dmem_use_delayed) | stall);
         end
     end
 

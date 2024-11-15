@@ -45,7 +45,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    output  [31:0] data_out;
    output         ready;
    input [31:0]   data_in;
-   input [15:0]   addr;
+   input [13:0]   addr;
    input          enable;
    input          wr;
    input          createdump;
@@ -55,7 +55,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
 
    wire [31:0]    data_out;
 
-   reg [7:0]      mem [0:65535];
+   reg [31:0]      mem [0:16384];
    reg            loaded;
    reg [16:0]     largest;
    reg [31:0]     rand_pat;
@@ -65,7 +65,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
 
    assign         ready = enable & rand_pat[0];
    assign         err = ready & addr[0]; //word aligned; odd address is invalid
-   assign         data_out = (enable & (~wr))? {mem[addr+3],mem[addr+2],mem[addr+1],mem[addr]}: 0;
+   assign         data_out = (enable & (~wr))? {mem[addr]}: 0;
    integer        seed;
    
    initial begin
@@ -78,7 +78,7 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
       $display("rand_pat=%08x %32b", rand_pat, rand_pat);
       // initialize memories to 0 first
       for (i=0; i<=65535; i=i+1) begin
-         mem[i] = 8'd0;
+         mem[i] = 32'd0;
       end
          
    end
@@ -86,16 +86,13 @@ module stallmem (data_out, ready, data_in, addr, enable, wr, createdump, clk, rs
    always @(posedge clk) begin
       if (rst) begin
          if (!loaded) begin
-            $readmemh("../test_programs/risc_test_verilog.txt", mem);
+            $readmemh("../../test_programs/blinky.hex", mem);
             loaded = 1;
          end
       end
       else begin
          if (ready & wr & ~err) begin
-	        mem[addr+3] = data_in[31:24];  // The actual write
-	        mem[addr+2] = data_in[23:16];  // The actual write
-	        mem[addr+1] = data_in[15:8];   // The actual write
-	        mem[addr+0] = data_in[7:0];    // The actual write
+	        mem[addr] = data_in[31:24];  // The actual write
             if ({1'b0, addr} > largest) largest = addr;  // avoid negative numbers
          end
          if (createdump) begin
