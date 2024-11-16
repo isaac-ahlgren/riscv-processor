@@ -16,8 +16,11 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
     wire ready;
     wire err;
 
-    reg [31:0] test_mem;
+    wire stall;
+    wire [WORD_SIZE-1:0] data_out;
+    reg [WORD_SIZE-1:0] data_in;
     reg [31:0] addr;
+    wire [31:0] ext_addr;
     wire [31:0] data_to_ext_mem;
     reg wr;
     reg re;
@@ -32,7 +35,7 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
     stallmem mem (.data_out(data_from_ext_mem), 
                   .ready(ready), 
                   .data_in(data_to_ext_mem), 
-                  .addr(addr_to_ext_mem[15:2]), 
+                  .addr(ext_addr[15:2]), 
                   .enable(1'b1), 
                   .wr(ext_wr), 
                   .createdump(1'b1), 
@@ -40,30 +43,37 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
                   .rst(rst), 
                   .err(err));
 
-    cache_miss_controller cont (
-            .addr(addr),
-            .data_from_cache(test_mem),
-            .data_to_cache(data_to_cache),
-            .ext_data_in(data_from_ext_mem),
-            .ext_data_out(data_to_ext_mem),
-            .ext_addr(addr_to_ext_mem),
-            .ext_ack(ready),
-            .ext_re(ext_re),
-            .ext_wr(ext_wr),
-            .wr_ack(wr_ack),
-            .re_ack(re_ack),
-            .re(re),
-            .wr(wr),
-            .enable(1'b1),
-            .clk(clk),
-            .rst(rst));
+    write_through_cache #(.INDEX_BITS(INDEX_BITS),
+                          .CACHE_LINES(CACHE_LINES),
+                          .BLOCK_OFFSET(BLOCK_OFFSET),
+                          .DATA_LENGTH(DATA_LENGTH),
+                          .TAG_BITS(TAG_BITS),
+                          .STATUS_BITS(STATUS_BITS),
+                          .LINE_LENGTH(LINE_LENGTH),
+                          .WORD_SIZE(WORD_SIZE),
+                          .WORD_BYTES(BYTES_PER_WORD))
+            cache (.data_out(data_out), 
+              .data_in(data_in), 
+              .addr(addr),
+              .wr(wr),
+              .re(re),
+              .enable(enable),
+              .stall(stall),
+              .ext_data_out(data_to_ext_mem),
+              .ext_data_in(data_from_ext_mem),
+              .ext_addr(ext_addr),
+              .ext_wr(ext_wr),
+              .ext_re(ext_re),
+              .ext_ack(ready),
+              .clk(clk), 
+              .rst(rst));
 
     always #5 clk = ~clk;
 
     initial begin
         clk = 0;
         rst = 0;
-        test_mem = 32'b0;
+        data_in = 32'b0;
         addr = 32'h0;
         wr = 1'b0;
         re = 1'b0;
@@ -75,7 +85,7 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
         rst = 0;
 
         #10
-        test_mem = {32{1'b1}};
+        data_in = {32{1'b1}};
         addr = 32'hf0;
         wr = 1'b1;
         #10

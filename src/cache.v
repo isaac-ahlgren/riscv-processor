@@ -43,12 +43,13 @@ module cache #(parameter BYTES_PER_WORD = 4,
     end
 
    always @(posedge clk or posedge rst) begin
-      if (rst) begin
-         data_out <= {LINE_LENGTH{1'b0}};
+      if (rst | ~enable) begin
+         data_out <= {WORD_SIZE{1'b0}};
          hit <= 1'b1;
       end
       else begin
          if (full_line_wr) begin
+            data_out <= {WORD_SIZE{1'b0}};
             mem[index] <= new_cache_line;
          end
          else begin

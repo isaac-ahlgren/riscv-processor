@@ -31,6 +31,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     output reg re_ack,
     input re,
     input wr,
+    output reg full_line_wr,
     input enable,
     input clk,
     input rst
@@ -49,9 +50,9 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
 
     assign tag = addr[31:INDEX_BITS+BLOCK_OFFSET];
 
-    always @(posedge clk or posedge ctr_rst or posedge rst)
+    always @(posedge clk or posedge ctr_rst or posedge rst or posedge enable)
     begin
-        if (ctr_rst | rst) begin
+        if (ctr_rst | rst | ~enable) begin
             counter <= #1 8'b0;
             if (wr) begin
                 curr_addr <= #1 addr;
@@ -73,9 +74,9 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     end
     assign data_count   = (counter == (DATA_LENGTH >> 2));
 
-    always @(posedge clk or posedge rst)
+    always @(posedge clk or posedge rst or posedge enable)
     begin
-        if(rst == 1'b1)
+        if(rst | ~enable)
             state <= #1 `IDLE;
         else
             state <= #1 next_state;
@@ -151,6 +152,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b0;
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b0;
+            full_line_wr <= #1 1'b0;
             ext_addr <= #1 32'b0;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
@@ -164,6 +166,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b0;
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b1;
+            full_line_wr <= #1 1'b0;
             ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
@@ -177,6 +180,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b0;
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b0;
+            full_line_wr <= #1 1'b0;
             ext_addr <= #1 32'b0;
             wr_ack <= #1 1'b1;
             re_ack <= #1 1'b0;
@@ -190,6 +194,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b0;
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
+            full_line_wr <= #1 1'b0;
             ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
@@ -203,6 +208,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b1;
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
+            full_line_wr <= #1 1'b0;
             ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
@@ -216,6 +222,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             read_into_data <= #1 1'b0;
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
+            full_line_wr <= #1 1'b1;
             ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b1;
