@@ -35,14 +35,14 @@ module write_through_cache #(parameter INDEX_BITS = 5, // Index into cache
    wire full_line_wr;
    wire hit;
 
-   wire write_hit;
-   wire read_hit;
+   wire write_miss;
+   wire read_miss;
 
    wire wr_ack;
    wire re_ack;
 
-   assign write_miss = ~(hit & wr & ~re);
-   assign read_miss = ~(hit & ~wr & re);
+   assign write_miss = ~hit & wr & ~re;
+   assign read_miss = ~hit & ~wr & re;
 
    assign stall = read_miss;
 

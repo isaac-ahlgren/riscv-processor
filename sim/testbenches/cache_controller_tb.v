@@ -25,12 +25,8 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
     reg wr;
     reg re;
     wire [31:0] data_from_ext_mem;
-    wire [31:0] addr_to_ext_mem;
-    wire [LINE_LENGTH-1:0] data_to_cache;
     wire ext_re;
     wire ext_wr;
-    wire wr_ack;
-    wire re_ack;
 
     stallmem mem (.data_out(data_from_ext_mem), 
                   .ready(ready), 
@@ -57,7 +53,7 @@ module cache_controller_tb  #(parameter BYTES_PER_WORD = 4,
               .addr(addr),
               .wr(wr),
               .re(re),
-              .enable(enable),
+              .enable(1'b1),
               .stall(stall),
               .ext_data_out(data_to_ext_mem),
               .ext_data_in(data_from_ext_mem),

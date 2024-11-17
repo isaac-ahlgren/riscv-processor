@@ -23,7 +23,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     output reg [LINE_LENGTH-1:0] data_to_cache,
     input [WORD_SIZE-1:0] ext_data_in,
     output reg [WORD_SIZE-1:0] ext_data_out,
-    output reg [31:0] ext_addr,
+    output [31:0] ext_addr,
     input ext_ack,
     output reg ext_re,
     output reg ext_wr,
@@ -43,29 +43,42 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     reg read_into_data;
     reg [3:0] state;
     reg [3:0] next_state;
-    reg count;
+    reg update_addr;
     reg [7:0]  counter;
     reg [31:0] curr_addr;
     reg ctr_rst;
+    reg update_counter;
 
     assign tag = addr[31:INDEX_BITS+BLOCK_OFFSET];
+    assign ext_addr = curr_addr;
 
-    always @(posedge clk or posedge ctr_rst or posedge rst or posedge enable)
+    always @(posedge update_addr or posedge update_counter or posedge ctr_rst or posedge rst or posedge enable)
     begin
         if (ctr_rst | rst | ~enable) begin
             counter <= #1 8'b0;
-            if (wr) begin
-                curr_addr <= #1 addr;
-            end
-            else begin
-                curr_addr <= #1 addr & ~32'b111111;
-            end 
+            curr_addr <= #1 32'b0;
         end
         else begin
-            if(count) begin
-                counter <= #1 (counter + 1'b1);
-                curr_addr <= #1 curr_addr + 4;
-            end
+            if(update_addr) begin
+                if (update_counter) begin
+                    counter <= #1 (counter + 1'b1);
+                    curr_addr <= #1 curr_addr + 4;
+                end
+                else begin
+                    counter <= #1 counter;
+                    if (counter == 0) begin
+                        if (wr) begin
+                            curr_addr <= #1 addr;
+                        end
+                        else begin
+                            curr_addr <= #1 addr & ~32'b111111;
+                        end
+                    end
+                    else begin
+                        curr_addr <= #1 curr_addr;
+                    end 
+                end
+            end 
             else begin
                 counter <= #1 counter;
                 curr_addr <= #1 curr_addr; 
@@ -153,10 +166,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b0;
             full_line_wr <= #1 1'b0;
-            ext_addr <= #1 32'b0;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
-            count <= #1 1'b0;
+            update_addr <= #1 1'b0;
+            update_counter <= #1 1'b0;
             ctr_rst <= #1 1'b1;
         end
         `WRITE:
@@ -167,10 +180,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b1;
             full_line_wr <= #1 1'b0;
-            ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
-            count <= #1 1'b0;
+            update_addr <= #1 1'b1;
+            update_counter <= #1 1'b0;
             ctr_rst <= #1 1'b0;
         end
         `WRITE_FIN:
@@ -181,10 +194,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b0;
             ext_wr <= #1 1'b0;
             full_line_wr <= #1 1'b0;
-            ext_addr <= #1 32'b0;
             wr_ack <= #1 1'b1;
             re_ack <= #1 1'b0;
-            count <= #1 1'b0;
+            update_addr <= #1 1'b0;
+            update_counter <= #1 1'b0;
             ctr_rst <= #1 1'b0;
         end
         `READ:
@@ -195,10 +208,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
             full_line_wr <= #1 1'b0;
-            ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
-            count <= #1 1'b0;
+            update_addr <= #1 1'b1;
+            update_counter <= #1 1'b0;
             ctr_rst <= #1 1'b0;
         end
         `READING:
@@ -209,10 +222,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
             full_line_wr <= #1 1'b0;
-            ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b0;
-            count <= #1 1'b1;
+            update_addr <= #1 1'b1;
+            update_counter <= #1 1'b1;
             ctr_rst <= #1 1'b0;
         end
         `READ_FIN:
@@ -223,10 +236,10 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             ext_re <= #1 1'b1;
             ext_wr <= #1 1'b0;
             full_line_wr <= #1 1'b1;
-            ext_addr <= #1 curr_addr;
             wr_ack <= #1 1'b0;
             re_ack <= #1 1'b1;
-            count <= #1 1'b0;
+            update_addr <= #1 1'b0;
+            update_counter <= #1 1'b0;
             ctr_rst <= #1 1'b0;
         end
     endcase
