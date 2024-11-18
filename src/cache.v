@@ -29,11 +29,16 @@ module cache #(parameter BYTES_PER_WORD = 4,
     wire [INDEX_BITS-1:0] index;
     wire [BLOCK_OFFSET-3:0] offset;
 
+    wire valid;
+    wire [TAG_BITS-1:0] line_tag;
+
     reg [LINE_LENGTH-1:0]      mem [CACHE_LINES-1:0];
     
     assign index = addr[INDEX_BITS+BLOCK_OFFSET-1:BLOCK_OFFSET];
     assign tag = addr[31:INDEX_BITS+BLOCK_OFFSET];
     assign offset = addr[BLOCK_OFFSET-1:2];
+    assign valid = mem[index][0];
+    assign line_tag = mem[index][LINE_LENGTH-1:LINE_LENGTH-TAG_BITS];
 
     integer i;
     initial begin
@@ -49,11 +54,12 @@ module cache #(parameter BYTES_PER_WORD = 4,
       end
       else begin
          if (full_line_wr) begin
+            hit <= 1'b0;
             data_out <= {WORD_SIZE{1'b0}};
             mem[index] <= new_cache_line;
          end
          else begin
-            hit <= mem[index][0] == 1'b1 && mem[index][LINE_LENGTH-1:LINE_LENGTH-TAG_BITS-1] == tag; 
+            hit <= (valid == 1'b1) & (line_tag == tag); 
             if (hit & wr & ~re & enable) begin
                case (offset)
                   4'd0: 

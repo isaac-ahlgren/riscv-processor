@@ -101,7 +101,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             data <= #1 {DATA_LENGTH*8{1'b0}};
         end
         else begin
-            data <= #1 ((data << WORD_SIZE) | {{DATA_LENGTH*8-WORD_SIZE{1'b0}}, ext_data_in});
+            data <= #1 ((data >> WORD_SIZE) | {ext_data_in, {DATA_LENGTH*8-WORD_SIZE{1'b0}}});
         end
     end
 
