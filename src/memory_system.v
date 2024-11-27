@@ -6,8 +6,10 @@
 
 module memory_system #(parameter WORD_SIZE = 32)
                        (output reg [WORD_SIZE-1:0] imem_data_out, 
-                        output reg [WORD_SIZE-1:0] dmem_data_out, 
+                        output reg [WORD_SIZE-1:0] dmem_data_out,
+                        input [WORD_SIZE-1:0] dmem_data_in,
                         input [WORD_SIZE-1:0] data_out,
+                        output [WORD_SIZE-1:0] data_in,
                         output imem_stall, 
                         output dmem_stall,
                         output stall,
@@ -27,16 +29,7 @@ module memory_system #(parameter WORD_SIZE = 32)
                         input clk,
                         input rst);
 
-    wire imem_use;
-    wire imem_use_delayed;
-
-    wire imem_data_mask;
-    wire dmem_data_mask;
-
-    wire [31:0] save_slot;
-
     wire [WORD_SIZE-1:0] dmem_data;
-    wire [WORD_SIZE-1:0] data_to_dmem_cache;
     wire [WORD_SIZE-1:0] data_from_dmem_cache;
     wire [31:0] dmem_ext_addr_cache;
     wire dmem_ext_re_cache;
@@ -52,7 +45,6 @@ module memory_system #(parameter WORD_SIZE = 32)
     reg dmem_ext_mem_op;
 
     wire [WORD_SIZE-1:0] imem_data;
-    wire [WORD_SIZE-1:0] data_to_imem_cache;
     wire [WORD_SIZE-1:0] data_from_imem_cache;
     wire [31:0] imem_ext_addr_cache;
     wire imem_ext_re_cache;
@@ -92,7 +84,7 @@ module memory_system #(parameter WORD_SIZE = 32)
               .enable(imem_enable_cache),
               .stall(imem_ready_cache),
               .ext_data_out(data_from_imem_cache),
-              .ext_data_in(data_to_imem_cache),
+              .ext_data_in(data_out),
               .ext_addr(imem_ext_addr_cache),
               .ext_wr(imem_ext_wr_cache),
               .ext_re(imem_ext_re_cache),
@@ -109,7 +101,7 @@ module memory_system #(parameter WORD_SIZE = 32)
               .enable(dmem_enable_cache),
               .stall(dmem_ready_cache),
               .ext_data_out(data_from_dmem_cache),
-              .ext_data_in(data_to_dmem_cache),
+              .ext_data_in(data_out),
               .ext_addr(dmem_ext_addr_cache),
               .ext_wr(dmem_ext_wr_cache),
               .ext_re(dmem_ext_re_cache),
@@ -215,12 +207,14 @@ module memory_system #(parameter WORD_SIZE = 32)
         end
 
         if (dmem_enable_cache) begin
+            data_in <= data_from_dmem_cache;
             dmem_data_out <= dmem_data;
             dmem_ready <= dmem_ready_cache;
             imem_ext_re <= imem_ext_re_cache;
             imem_ext_wr <= imem_ext_wr_cache;
         end
         else begin
+            data_in <= dmem_data_in;
             dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
             dmem_ready <= dmem_ext_mem_ready;
             dmem_ext_re <= dmem_re_en;
