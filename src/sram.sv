@@ -31,7 +31,7 @@ module sram
 		integer i;
 		for(i = 0; i < 2**ADDR_WIDTH; i = i + 1)
 			ram[i] = {WIDTH{1'b1}};
-		$readmemh("../test_programs/blinky.hex", ram);
+		$readmemh("../../test_programs/blinky.hex", ram);
 	end 
     
 	always @(posedge clk)

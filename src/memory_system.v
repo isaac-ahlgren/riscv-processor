@@ -9,7 +9,7 @@ module memory_system #(parameter WORD_SIZE = 32)
                         output reg [WORD_SIZE-1:0] dmem_data_out,
                         input [WORD_SIZE-1:0] dmem_data_in,
                         input [WORD_SIZE-1:0] data_out,
-                        output [WORD_SIZE-1:0] data_in,
+                        output reg [WORD_SIZE-1:0] data_in,
                         output imem_stall, 
                         output dmem_stall,
                         output stall,

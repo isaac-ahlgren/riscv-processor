@@ -70,9 +70,13 @@ module proc(input [31:0] data_out,
     wire mem_wr;
     wire mem_re;
 
+    wire [31:0] data_to_cache;
+
     memory_system ms (.imem_data_out(imem_data_out), 
-                      .dmem_data_out(dmem_data_out), 
-                      .data_out(data_out), 
+                      .dmem_data_out(dmem_data_out),
+                      .dmem_data_in(data_to_cache),
+                      .data_out(data_out),
+                      .data_in(data_in),
                       .imem_stall(imem_stall), 
                       .dmem_stall(dmem_stall), 
                       .stall(stall),
@@ -136,7 +140,7 @@ module proc(input [31:0] data_out,
                                .ld_code(ld_code), 
                                .alu_data1(alu_data1), 
                                .alu_data2(alu_data2), 
-                               .data_to_mem(data_in),
+                               .data_to_mem(data_to_cache),
                                .en_reg_wr(en_reg_wr), 
                                .instr(instr), 
                                .d0(d0), 
