@@ -1,7 +1,8 @@
-CC := riscv32-unknown-elf-gcc
+DIR := ../xpacks/.bin
+CC := $(DIR)/riscv-none-elf-gcc
 PYTHON := python3
-OBJDUMP := riscv32-unknown-elf-objdump
-OBJCOPY := riscv32-unknown-elf-objcopy
+OBJDUMP := $(DIR)/riscv-none-elf-objdump
+OBJCOPY := $(DIR)/riscv-none-elf-objcopy
 MEM_WORD_LENGTH := 4
 
 CFLAGS := -O0 -ffunction-sections -Xlinker -g -Trisc.ld -mbig-endian -nostdlib -ffreestanding -fno-pie -fno-stack-protector -Wall -mno-fdiv -march=rv32i -mabi=ilp32
@@ -23,4 +24,3 @@ dump:
 clean:
 	rm risc_test risc_test.hex merge_sort merge_sort.hex blinky blinky.hex
 	
-

@@ -16,7 +16,7 @@ module write_through_cache #(parameter INDEX_BITS = 5, // Index into cache
               input wr,
               input re,
               input enable,
-              output reg stall,
+              output reg cache_miss_stall,
 
               output [WORD_SIZE-1:0] ext_data_out,
               input [WORD_SIZE-1:0] ext_data_in,
@@ -43,8 +43,6 @@ module write_through_cache #(parameter INDEX_BITS = 5, // Index into cache
 
    assign write_miss = ~hit & wr & ~re;
    assign read_miss = ~hit & ~wr & re;
-
-   assign stall = read_miss;
 
    cache_miss_controller #(
     .BYTES_PER_WORD(WORD_BYTES),
@@ -98,21 +96,21 @@ module write_through_cache #(parameter INDEX_BITS = 5, // Index into cache
        .clk(clk), 
        .rst(rst));
 
-    always @(posedge clk or posedge rst or posedge enable)
+    always @(rst or enable or wr_ack or re_ack or read_miss or wr)
     begin
-        if(rst | ~enable)
-            stall <= #1 1'b0;
+        if(rst | ~enable) // Reset or disabled defaults to no cache miss
+            cache_miss_stall <= 1'b0;
         else begin
-            if (stall) begin
-                if ((wr_ack & wr) | (re_ack & re)) begin
-                    stall <= #1 1'b0;
+            if (cache_miss_stall) begin 
+                if (wr_ack | re_ack) begin // If ACK signal recieved from cache controller, not in cache miss stall state anymore
+                    cache_miss_stall <= 1'b0;
                 end
                 else begin
-                    stall <= #1 stall;
+                    cache_miss_stall <= cache_miss_stall;
                 end
             end
-            else begin
-                stall <= #1 read_miss | wr;
+            else begin // If not in cache miss, check if a read miss happened or if a write through operation needs to happen
+                cache_miss_stall <= read_miss | wr;
             end
         end
     end

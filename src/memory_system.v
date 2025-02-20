@@ -29,6 +29,8 @@ module memory_system #(parameter WORD_SIZE = 32)
                         input clk,
                         input rst);
 
+    wire dmem_op;
+
     wire [WORD_SIZE-1:0] dmem_data;
     wire [WORD_SIZE-1:0] data_from_dmem_cache;
     wire [31:0] dmem_ext_addr_cache;
@@ -36,7 +38,7 @@ module memory_system #(parameter WORD_SIZE = 32)
     wire dmem_ext_wr_cache;
     reg dmem_ext_mem_ready;
     wire dmem_enable_cache;
-    wire dmem_ready_cache;
+    wire dmem_cache_miss_stall;
     reg dmem_ready;
     wire dmem_re_en;
     wire dmem_wr_en;
@@ -51,7 +53,7 @@ module memory_system #(parameter WORD_SIZE = 32)
     wire imem_ext_wr_cache;
     reg imem_ext_mem_ready;
     wire imem_enable_cache;
-    wire imem_ready_cache;
+    wire imem_cache_miss_stall;
     reg imem_ready;
     wire imem_re_en;
     wire imem_wr_en;
@@ -61,9 +63,13 @@ module memory_system #(parameter WORD_SIZE = 32)
 
     wire full_imem_stall; 
 
+    // Incoming read and write signals are always for dmem operations
     assign dmem_re_en = en_mem_re;
     assign dmem_wr_en = en_mem_wr;
+    // You know it is a dmem operation if there is a read or write signal, if it is not a dmem op, then it is implied that it is an imem op
+    assign dmem_op = dmem_re_en | dmem_wr_en;
 
+    // Imem will always read and never write
     assign imem_re_en = 1'b1;
     assign imem_wr_en = 1'b0;
 
@@ -82,7 +88,7 @@ module memory_system #(parameter WORD_SIZE = 32)
               .wr(imem_wr_en),
               .re(imem_re_en),
               .enable(imem_enable_cache),
-              .stall(imem_ready_cache),
+              .cache_miss_stall(imem_cache_miss_stall),
               .ext_data_out(data_from_imem_cache),
               .ext_data_in(data_out),
               .ext_addr(imem_ext_addr_cache),
@@ -99,7 +105,7 @@ module memory_system #(parameter WORD_SIZE = 32)
               .wr(dmem_wr_en),
               .re(dmem_re_en),
               .enable(dmem_enable_cache),
-              .stall(dmem_ready_cache),
+              .cache_miss_stall(dmem_cache_miss_stall),
               .ext_data_out(data_from_dmem_cache),
               .ext_data_in(data_out),
               .ext_addr(dmem_ext_addr_cache),
@@ -130,26 +136,24 @@ module memory_system #(parameter WORD_SIZE = 32)
      always @(state or dmem_ready or imem_ready) begin
         case(state)
             `IDLE:
-                if(~imem_ready | ~dmem_ready) begin
-                    if (~dmem_ready) begin
-                        next_state   <= `DMEM_OP;
-                    end
-                    else begin
-                        next_state   <= `IMEM_OP;
-                    end
+                if (dmem_ready & dmem_op) begin 
+                    next_state   <= `DMEM_OP;
+                end
+                else if (imem_ready) begin
+                    next_state   <= `IMEM_OP;
                 end
                 else begin
-                    next_state   <= `IDLE;
+                    next_state <= `IDLE;
                 end
             `DMEM_OP:
-                if (dmem_ready) begin
+                if (dmem_ready) begin // If stall finished during a dmem operation, operation is said to be finished
                     next_state <= `IDLE;
                 end
                 else begin
-                    next_state       <= `DMEM_OP;
+                    next_state <= `DMEM_OP;
                 end
             `IMEM_OP:
-                if (imem_ready) begin
+                if (imem_ready) begin // If stall finished during imem operations, operations is said to be finished
                     next_state <= `IDLE;
                 end
                 else begin
@@ -163,62 +167,79 @@ module memory_system #(parameter WORD_SIZE = 32)
         case(state)
             `IDLE:
             begin
-                mem_addr <= 32'b0;
-                en_ext_mem_re <= 1'b0;
-                en_ext_mem_wr <= 1'b0;
-                imem_ext_mem_ready <= 1'b1;
-                dmem_ext_mem_ready <= 1'b1;
-                imem_ext_mem_op <= 1'b0;
-                dmem_ext_mem_op <= 1'b0;
+                mem_addr <= #1 32'b0;
+                en_ext_mem_re <= #1 1'b0;
+                en_ext_mem_wr <= #1 1'b0;
+                imem_ext_mem_ready <= #1 1'b1;
+                dmem_ext_mem_ready <= #1 1'b1;
+                imem_ext_mem_op <= #1 1'b0;
+                dmem_ext_mem_op <= #1 1'b0;
             end
             `DMEM_OP:
             begin
-                mem_addr <= dmem_addr;
-                en_ext_mem_re <= dmem_ext_re;
-                en_ext_mem_wr <= dmem_ext_wr;
-                imem_ext_mem_ready <= 1'b0;
-                dmem_ext_mem_ready <= mem_ready;
-                imem_ext_mem_op <= 1'b0;
-                dmem_ext_mem_op <= 1'b1;
+                mem_addr <= #1 dmem_addr;
+                en_ext_mem_re <= #1 dmem_ext_re;
+                en_ext_mem_wr <= #1 dmem_ext_wr;
+                imem_ext_mem_ready <= #1 1'b0;
+                dmem_ext_mem_ready <= #1 mem_ready;
+                imem_ext_mem_op <= #1 1'b0;
+                dmem_ext_mem_op <= #1 1'b1;
             end
             `IMEM_OP:
             begin
-                mem_addr <= imem_addr;
-                en_ext_mem_re <= imem_ext_re;
-                en_ext_mem_wr <= dmem_ext_wr;
-                imem_ext_mem_ready <= mem_ready;
-                dmem_ext_mem_ready <= 1'b0;
-                imem_ext_mem_op <= 1'b1;
-                dmem_ext_mem_op <= 1'b0;
+                mem_addr <= #1 imem_addr;
+                en_ext_mem_re <= #1 imem_ext_re;
+                en_ext_mem_wr <= #1 dmem_ext_wr;
+                imem_ext_mem_ready <= #1 mem_ready;
+                dmem_ext_mem_ready <= #1 1'b0;
+                imem_ext_mem_op <= #1 1'b1;
+                dmem_ext_mem_op <= #1 1'b0;
             end
         endcase
 
-        if (imem_enable_cache) begin
-            imem_data_out <= imem_data;
-            imem_ready <= imem_ready_cache;
-            imem_ext_re <= imem_ext_re_cache;
-            imem_ext_wr <= imem_ext_wr_cache;
+        if (rst) begin
+            imem_data_out <= {WORD_SIZE{1'b0}};
+            imem_ready <= 1'b1;
+            imem_ext_re <= 1'b0;
+            imem_ext_wr <= 1'b0;
         end
         else begin
-            imem_data_out <= data_out & {32{mem_ready & (imem_re_en | imem_wr_en)}};
-            imem_ready <= imem_ext_mem_ready;
-            imem_ext_re <= imem_re_en;
-            imem_ext_wr <= imem_wr_en;
+            if (imem_enable_cache) begin
+                imem_data_out <= imem_data;
+                imem_ready <= ~imem_cache_miss_stall;
+                imem_ext_re <= imem_ext_re_cache;
+                imem_ext_wr <= imem_ext_wr_cache;
+            end
+            else begin
+                imem_data_out <= data_out & {32{mem_ready & (imem_re_en | imem_wr_en)}};
+                imem_ready <= imem_ext_mem_ready;
+                imem_ext_re <= imem_re_en;
+                imem_ext_wr <= imem_wr_en;
+            end
         end
 
-        if (dmem_enable_cache) begin
-            data_in <= data_from_dmem_cache;
-            dmem_data_out <= dmem_data;
-            dmem_ready <= dmem_ready_cache;
-            imem_ext_re <= imem_ext_re_cache;
-            imem_ext_wr <= imem_ext_wr_cache;
+        if (rst) begin
+            data_in <= {WORD_SIZE{1'b0}};
+            dmem_data_out <= {WORD_SIZE{1'b0}};
+            dmem_ready <= 1'b1;
+            dmem_ext_re <= 1'b0;
+            dmem_ext_wr <= 1'b0;
         end
         else begin
-            data_in <= dmem_data_in;
-            dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
-            dmem_ready <= dmem_ext_mem_ready;
-            dmem_ext_re <= dmem_re_en;
-            dmem_ext_wr <= dmem_wr_en;
+            if (dmem_enable_cache) begin
+                data_in <= data_from_dmem_cache;
+                dmem_data_out <= dmem_data;
+                dmem_ready <= ~dmem_cache_miss_stall;
+                dmem_ext_re <= imem_ext_re_cache;
+                dmem_ext_wr <= imem_ext_wr_cache;
+            end
+            else begin
+                data_in <= dmem_data_in;
+                dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
+                dmem_ready <= dmem_ext_mem_ready;
+                dmem_ext_re <= dmem_re_en;
+                dmem_ext_wr <= dmem_wr_en;
+            end
         end
     end
 endmodule
