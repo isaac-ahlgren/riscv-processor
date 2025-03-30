@@ -129,14 +129,13 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
         `WRITE_FIN:
             next_state <= `IDLE;
         `READ:
-            if (ext_ack) begin
-                if(data_count)
-                    next_state   <= `READ_FIN;
-                else
-                    next_state   <= `READING;
+            if (data_count) begin
+                next_state <= `READ_FIN;
             end
             else begin
-                next_state <= `READ;
+                if (ext_ack) begin
+                    next_state <= `READING
+                end
             end
         `READING:
             if (ext_ack) begin

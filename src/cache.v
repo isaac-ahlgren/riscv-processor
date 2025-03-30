@@ -1,3 +1,4 @@
+`timescale 1us/100ns
 
 module cache #(parameter BYTES_PER_WORD = 4,
                parameter WORD_SIZE = 32,
@@ -19,7 +20,7 @@ module cache #(parameter BYTES_PER_WORD = 4,
               input wr,
               input re,
               input enable,
-              output reg hit,
+              output hit,
 
               // Clock and reset
               input clk, 
@@ -47,19 +48,21 @@ module cache #(parameter BYTES_PER_WORD = 4,
        end
     end
 
+   assign hit = (valid == 1'b1) & (line_tag == tag);
+
    always @(posedge clk or posedge rst) begin
       if (rst | ~enable) begin
          data_out <= {WORD_SIZE{1'b0}};
-         hit <= 1'b1;
+         //hit <= 1'b1;
       end
       else begin
          if (full_line_wr) begin
-            hit <= 1'b0;
+            //hit <= 1'b0;
             data_out <= {WORD_SIZE{1'b0}};
             mem[index] <= new_cache_line;
          end
          else begin
-            hit <= (valid == 1'b1) & (line_tag == tag); 
+            //hit <= (valid == 1'b1) & (line_tag == tag); 
             if (hit & wr & ~re & enable) begin
                case (offset)
                   4'd0: 

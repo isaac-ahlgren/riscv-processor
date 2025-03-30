@@ -32,6 +32,7 @@ module memory_system #(parameter WORD_SIZE = 32)
     wire dmem_op;
 
     wire [WORD_SIZE-1:0] dmem_data;
+    reg [31:0] dmem_addr_out;
     wire [WORD_SIZE-1:0] data_from_dmem_cache;
     wire [31:0] dmem_ext_addr_cache;
     wire dmem_ext_re_cache;
@@ -47,6 +48,7 @@ module memory_system #(parameter WORD_SIZE = 32)
     reg dmem_ext_mem_op;
 
     wire [WORD_SIZE-1:0] imem_data;
+    reg [31:0] imem_addr_out;
     wire [WORD_SIZE-1:0] data_from_imem_cache;
     wire [31:0] imem_ext_addr_cache;
     wire imem_ext_re_cache;
@@ -133,7 +135,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             state <= #1 next_state;
     end
     
-     always @(state or dmem_ready or imem_ready) begin
+     always @(state) begin
         case(state)
             `IDLE:
                 if (dmem_ready & dmem_op) begin 
@@ -177,7 +179,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             end
             `DMEM_OP:
             begin
-                mem_addr <= #1 dmem_addr;
+                mem_addr <= #1 dmem_addr_out;
                 en_ext_mem_re <= #1 dmem_ext_re;
                 en_ext_mem_wr <= #1 dmem_ext_wr;
                 imem_ext_mem_ready <= #1 1'b0;
@@ -187,9 +189,9 @@ module memory_system #(parameter WORD_SIZE = 32)
             end
             `IMEM_OP:
             begin
-                mem_addr <= #1 imem_addr;
+                mem_addr <= #1 imem_addr_out;
                 en_ext_mem_re <= #1 imem_ext_re;
-                en_ext_mem_wr <= #1 dmem_ext_wr;
+                en_ext_mem_wr <= #1 imem_ext_wr;
                 imem_ext_mem_ready <= #1 mem_ready;
                 dmem_ext_mem_ready <= #1 1'b0;
                 imem_ext_mem_op <= #1 1'b1;
@@ -199,6 +201,7 @@ module memory_system #(parameter WORD_SIZE = 32)
 
         if (rst) begin
             imem_data_out <= {WORD_SIZE{1'b0}};
+            imem_addr_out <= 32'b0;
             imem_ready <= 1'b1;
             imem_ext_re <= 1'b0;
             imem_ext_wr <= 1'b0;
@@ -206,13 +209,15 @@ module memory_system #(parameter WORD_SIZE = 32)
         else begin
             if (imem_enable_cache) begin
                 imem_data_out <= imem_data;
+                imem_addr_out <= imem_ext_addr_cache;
                 imem_ready <= ~imem_cache_miss_stall;
                 imem_ext_re <= imem_ext_re_cache;
                 imem_ext_wr <= imem_ext_wr_cache;
             end
             else begin
                 imem_data_out <= data_out & {32{mem_ready & (imem_re_en | imem_wr_en)}};
-                imem_ready <= imem_ext_mem_ready;
+                imem_addr_out <= imem_addr;
+                imem_ready <= imem_addr;
                 imem_ext_re <= imem_re_en;
                 imem_ext_wr <= imem_wr_en;
             end
@@ -221,6 +226,7 @@ module memory_system #(parameter WORD_SIZE = 32)
         if (rst) begin
             data_in <= {WORD_SIZE{1'b0}};
             dmem_data_out <= {WORD_SIZE{1'b0}};
+            dmem_addr_out <= 32'b0;
             dmem_ready <= 1'b1;
             dmem_ext_re <= 1'b0;
             dmem_ext_wr <= 1'b0;
@@ -229,6 +235,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             if (dmem_enable_cache) begin
                 data_in <= data_from_dmem_cache;
                 dmem_data_out <= dmem_data;
+                dmem_addr_out <= dmem_ext_addr_cache;
                 dmem_ready <= ~dmem_cache_miss_stall;
                 dmem_ext_re <= imem_ext_re_cache;
                 dmem_ext_wr <= imem_ext_wr_cache;
@@ -236,6 +243,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             else begin
                 data_in <= dmem_data_in;
                 dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
+                dmem_addr_out <= dmem_addr;
                 dmem_ready <= dmem_ext_mem_ready;
                 dmem_ext_re <= dmem_re_en;
                 dmem_ext_wr <= dmem_wr_en;
