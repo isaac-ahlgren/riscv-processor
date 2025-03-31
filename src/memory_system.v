@@ -1,6 +1,5 @@
 `timescale 1us/100ns
 
-`define IDLE    2'b00
 `define IMEM_OP 2'b01
 `define DMEM_OP 2'b10
 
@@ -130,33 +129,23 @@ module memory_system #(parameter WORD_SIZE = 32)
     always @(posedge clk or posedge rst)
     begin
         if(rst)
-            state <= #1 `IDLE;
+            state <= #1 `IMEM_OP;
         else
             state <= #1 next_state;
     end
     
-     always @(state) begin
+     always @(state or dmem_ready or imem_ready) begin
         case(state)
-            `IDLE:
-                if (dmem_ready & dmem_op) begin 
-                    next_state   <= `DMEM_OP;
-                end
-                else if (imem_ready) begin
-                    next_state   <= `IMEM_OP;
-                end
-                else begin
-                    next_state <= `IDLE;
-                end
             `DMEM_OP:
                 if (dmem_ready) begin // If stall finished during a dmem operation, operation is said to be finished
-                    next_state <= `IDLE;
+                    next_state <= `IMEM_OP;
                 end
                 else begin
                     next_state <= `DMEM_OP;
                 end
             `IMEM_OP:
-                if (imem_ready) begin // If stall finished during imem operations, operations is said to be finished
-                    next_state <= `IDLE;
+                if (dmem_ready & dmem_op) begin 
+                    next_state   <= `DMEM_OP;
                 end
                 else begin
                     next_state <= `IMEM_OP;
@@ -167,16 +156,6 @@ module memory_system #(parameter WORD_SIZE = 32)
     always @(*)
     begin
         case(state)
-            `IDLE:
-            begin
-                mem_addr <= #1 32'b0;
-                en_ext_mem_re <= #1 1'b0;
-                en_ext_mem_wr <= #1 1'b0;
-                imem_ext_mem_ready <= #1 1'b1;
-                dmem_ext_mem_ready <= #1 1'b1;
-                imem_ext_mem_op <= #1 1'b0;
-                dmem_ext_mem_op <= #1 1'b0;
-            end
             `DMEM_OP:
             begin
                 mem_addr <= #1 dmem_addr_out;
@@ -217,7 +196,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             else begin
                 imem_data_out <= data_out & {32{mem_ready & (imem_re_en | imem_wr_en)}};
                 imem_addr_out <= imem_addr;
-                imem_ready <= imem_addr;
+                imem_ready <= imem_ext_mem_ready;
                 imem_ext_re <= imem_re_en;
                 imem_ext_wr <= imem_wr_en;
             end

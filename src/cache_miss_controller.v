@@ -105,7 +105,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
         end
     end
 
-    always @(state or wr or re or ext_ack or data_count) begin
+    always @(posedge clk) begin
     case(state)
         `IDLE:
             if(wr | re) begin
@@ -134,18 +134,23 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             end
             else begin
                 if (ext_ack) begin
-                    next_state <= `READING
+                    next_state <= `READING;
+                end
+                else begin
+                    next_state <= `READ;
                 end
             end
         `READING:
-            if (ext_ack) begin
-                if (data_count)
-                    next_state <= `READ_FIN;
-                else
-                    next_state <= `READING;
+            if (data_count) begin
+                next_state <= `READ_FIN;
             end
             else begin
-                next_state <= `READ;
+                if (ext_ack) begin
+                    next_state <= `READ;
+                end
+                else begin
+                    next_state <= `READING;
+                end
             end
         `READ_FIN:
             next_state <= `IDLE;
