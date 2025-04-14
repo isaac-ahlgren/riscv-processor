@@ -114,7 +114,7 @@ module memory_system #(parameter WORD_SIZE = 32)
               .ext_re(dmem_ext_re_cache),
               .ext_ack(dmem_ext_mem_ready),
               .clk(clk), 
-              .rst(clk));
+              .rst(rst));
 
     memory_map mm (
         .imem_addr(imem_addr),

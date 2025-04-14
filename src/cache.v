@@ -50,154 +50,152 @@ module cache #(parameter BYTES_PER_WORD = 4,
 
    assign hit = (valid == 1'b1) & (line_tag == tag);
 
-   always @(posedge clk or posedge rst) begin
+   always @(*) begin
       if (rst | ~enable) begin
          data_out <= {WORD_SIZE{1'b0}};
-         //hit <= 1'b1;
       end
       else begin
-         if (full_line_wr) begin
-            //hit <= 1'b0;
-            data_out <= {WORD_SIZE{1'b0}};
-            mem[index] <= new_cache_line;
-         end
-         else begin
-            //hit <= (valid == 1'b1) & (line_tag == tag); 
-            if (hit & wr & ~re & enable) begin
-               case (offset)
-                  4'd0: 
-                  begin
-                     mem[index][WORD_SIZE + STATUS_BITS : STATUS_BITS] <= data_in;
-                  end
-                  4'd1: 
-                  begin
-                     mem[index][2*WORD_SIZE + STATUS_BITS : WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd2: 
-                  begin
-                     mem[index][3*WORD_SIZE + STATUS_BITS : 2*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd3: 
-                  begin
-                     mem[index][4*WORD_SIZE + STATUS_BITS : 3*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd4: 
-                  begin
-                     mem[index][5*WORD_SIZE + STATUS_BITS : 4*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd5: 
-                  begin
-                     mem[index][6*WORD_SIZE + STATUS_BITS : 5*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd6: 
-                  begin
-                     mem[index][7*WORD_SIZE + STATUS_BITS : 6*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd7: 
-                  begin
-                     mem[index][8*WORD_SIZE + STATUS_BITS : 7*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd8: 
-                  begin
-                     mem[index][9*WORD_SIZE + STATUS_BITS : 8*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd9: 
-                  begin
-                     mem[index][10*WORD_SIZE + STATUS_BITS : 9*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd10: 
-                  begin
-                     mem[index][11*WORD_SIZE + STATUS_BITS : 10*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd11: 
-                  begin
-                     mem[index][12*WORD_SIZE + STATUS_BITS : 11*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd12: 
-                  begin
-                     mem[index][13*WORD_SIZE + STATUS_BITS : 12*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd13: 
-                  begin
-                     mem[index][14*WORD_SIZE + STATUS_BITS : 13*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd14: 
-                  begin
-                     mem[index][15*WORD_SIZE + STATUS_BITS : 14*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-                  4'd15: 
-                  begin
-                     mem[index][16*WORD_SIZE + STATUS_BITS : 15*WORD_SIZE + STATUS_BITS] <= data_in;
-                  end
-               endcase
-            end
+         case (offset)
+               4'd0: 
+               begin
+                  data_out <= mem[index][WORD_SIZE + STATUS_BITS : STATUS_BITS];
+               end
+               4'd1: 
+               begin
+                  data_out <= mem[index][2*WORD_SIZE + STATUS_BITS : WORD_SIZE + STATUS_BITS];
+               end
+               4'd2: 
+               begin
+                  data_out <= mem[index][3*WORD_SIZE + STATUS_BITS : 2*WORD_SIZE + STATUS_BITS];
+               end
+               4'd3: 
+               begin
+                  data_out <= mem[index][4*WORD_SIZE + STATUS_BITS : 3*WORD_SIZE + STATUS_BITS];
+               end
+               4'd4: 
+               begin
+                  data_out <= mem[index][5*WORD_SIZE + STATUS_BITS : 4*WORD_SIZE + STATUS_BITS];
+               end
+               4'd5: 
+               begin
+                  data_out <= mem[index][6*WORD_SIZE + STATUS_BITS : 5*WORD_SIZE + STATUS_BITS];
+               end
+               4'd6: 
+               begin
+                  data_out <= mem[index][7*WORD_SIZE + STATUS_BITS : 6*WORD_SIZE + STATUS_BITS];
+               end
+               4'd7: 
+               begin
+                  data_out <= mem[index][8*WORD_SIZE + STATUS_BITS : 7*WORD_SIZE + STATUS_BITS];
+               end
+               4'd8: 
+               begin
+                  data_out <= mem[index][9*WORD_SIZE + STATUS_BITS : 8*WORD_SIZE + STATUS_BITS];
+               end
+               4'd9: 
+               begin
+                  data_out <= mem[index][10*WORD_SIZE + STATUS_BITS : 9*WORD_SIZE + STATUS_BITS];
+               end
+               4'd10: 
+               begin
+                  data_out <= mem[index][11*WORD_SIZE + STATUS_BITS : 10*WORD_SIZE + STATUS_BITS];
+               end
+               4'd11: 
+               begin
+                  data_out <= mem[index][12*WORD_SIZE + STATUS_BITS : 11*WORD_SIZE + STATUS_BITS];
+               end
+               4'd12: 
+               begin
+                  data_out <= mem[index][13*WORD_SIZE + STATUS_BITS : 12*WORD_SIZE + STATUS_BITS];
+               end
+               4'd13: 
+               begin
+                  data_out <= mem[index][14*WORD_SIZE + STATUS_BITS : 13*WORD_SIZE + STATUS_BITS];
+               end
+               4'd14: 
+               begin
+                  data_out <= mem[index][15*WORD_SIZE + STATUS_BITS : 14*WORD_SIZE + STATUS_BITS];
+               end
+               4'd15: 
+               begin
+                  data_out <= mem[index][16*WORD_SIZE + STATUS_BITS : 15*WORD_SIZE + STATUS_BITS];
+               end
+         endcase
+      end
+   end
+
+   always @(posedge clk or posedge rst) begin
+      if (full_line_wr & enable) begin
+         mem[index] <= new_cache_line;
+      end
+
+      if (hit & wr & ~re & enable) begin
             case (offset)
-                  4'd0: 
-                  begin
-                     data_out <= mem[index][WORD_SIZE + STATUS_BITS : STATUS_BITS];
-                  end
-                  4'd1: 
-                  begin
-                     data_out <= mem[index][2*WORD_SIZE + STATUS_BITS : WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd2: 
-                  begin
-                     data_out <= mem[index][3*WORD_SIZE + STATUS_BITS : 2*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd3: 
-                  begin
-                     data_out <= mem[index][4*WORD_SIZE + STATUS_BITS : 3*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd4: 
-                  begin
-                     data_out <= mem[index][5*WORD_SIZE + STATUS_BITS : 4*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd5: 
-                  begin
-                     data_out <= mem[index][6*WORD_SIZE + STATUS_BITS : 5*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd6: 
-                  begin
-                     data_out <= mem[index][7*WORD_SIZE + STATUS_BITS : 6*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd7: 
-                  begin
-                     data_out <= mem[index][8*WORD_SIZE + STATUS_BITS : 7*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd8: 
-                  begin
-                     data_out <= mem[index][9*WORD_SIZE + STATUS_BITS : 8*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd9: 
-                  begin
-                     data_out <= mem[index][10*WORD_SIZE + STATUS_BITS : 9*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd10: 
-                  begin
-                     data_out <= mem[index][11*WORD_SIZE + STATUS_BITS : 10*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd11: 
-                  begin
-                     data_out <= mem[index][12*WORD_SIZE + STATUS_BITS : 11*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd12: 
-                  begin
-                     data_out <= mem[index][13*WORD_SIZE + STATUS_BITS : 12*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd13: 
-                  begin
-                     data_out <= mem[index][14*WORD_SIZE + STATUS_BITS : 13*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd14: 
-                  begin
-                     data_out <= mem[index][15*WORD_SIZE + STATUS_BITS : 14*WORD_SIZE + STATUS_BITS];
-                  end
-                  4'd15: 
-                  begin
-                     data_out <= mem[index][16*WORD_SIZE + STATUS_BITS : 15*WORD_SIZE + STATUS_BITS];
-                  end
+               4'd0: 
+               begin
+                  mem[index][WORD_SIZE + STATUS_BITS : STATUS_BITS] <= data_in;
+               end
+               4'd1: 
+               begin
+                  mem[index][2*WORD_SIZE + STATUS_BITS : WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd2: 
+               begin
+                  mem[index][3*WORD_SIZE + STATUS_BITS : 2*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd3: 
+               begin
+                  mem[index][4*WORD_SIZE + STATUS_BITS : 3*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd4: 
+               begin
+                  mem[index][5*WORD_SIZE + STATUS_BITS : 4*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd5: 
+               begin
+                  mem[index][6*WORD_SIZE + STATUS_BITS : 5*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd6: 
+               begin
+                  mem[index][7*WORD_SIZE + STATUS_BITS : 6*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd7: 
+               begin
+                  mem[index][8*WORD_SIZE + STATUS_BITS : 7*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd8: 
+               begin
+                  mem[index][9*WORD_SIZE + STATUS_BITS : 8*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd9: 
+               begin
+                  mem[index][10*WORD_SIZE + STATUS_BITS : 9*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd10: 
+               begin
+                  mem[index][11*WORD_SIZE + STATUS_BITS : 10*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd11: 
+               begin
+                  mem[index][12*WORD_SIZE + STATUS_BITS : 11*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd12: 
+               begin
+                  mem[index][13*WORD_SIZE + STATUS_BITS : 12*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd13: 
+               begin
+                  mem[index][14*WORD_SIZE + STATUS_BITS : 13*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd14: 
+               begin
+                  mem[index][15*WORD_SIZE + STATUS_BITS : 14*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
+               4'd15: 
+               begin
+                  mem[index][16*WORD_SIZE + STATUS_BITS : 15*WORD_SIZE + STATUS_BITS] <= data_in;
+               end
             endcase
          end
-      end
    end
 endmodule

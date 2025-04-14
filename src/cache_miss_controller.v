@@ -6,6 +6,7 @@
 `define WRITE       4'b0010
 `define READ_FIN    4'b0100
 `define WRITE_FIN   4'b1000
+`define CACHE_WRITE 4'b0111
 
 module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
                               parameter WORD_SIZE = 32,
@@ -42,7 +43,6 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     reg [DATA_LENGTH*8-1:0] data;
     reg read_into_data;
     reg [3:0] state;
-    reg [3:0] next_state;
     reg update_addr;
     reg [7:0]  counter;
     reg [31:0] curr_addr;
@@ -87,14 +87,6 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     end
     assign data_count   = (counter == (DATA_LENGTH >> 2));
 
-    always @(posedge clk or posedge rst or posedge enable)
-    begin
-        if(rst | ~enable)
-            state <= #1 `IDLE;
-        else
-            state <= #1 next_state;
-    end
-
     always @(posedge read_into_data or posedge rst)
     begin
         if (rst) begin
@@ -106,57 +98,64 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     end
 
     always @(posedge clk) begin
-    case(state)
-        `IDLE:
-            if(wr | re) begin
-                if (wr) begin
-                    next_state   <= `WRITE;
-                end
-                else begin
-                    next_state   <= `READ;
-                end
-            end
-            else begin
-                next_state   <= `IDLE;
-            end
-        `WRITE:
-            if (ext_ack) begin
-                next_state <= `WRITE_FIN;
-            end
-            else begin
-                next_state       <= `WRITE;
-            end
-        `WRITE_FIN:
-            next_state <= `IDLE;
-        `READ:
-            if (data_count) begin
-                next_state <= `READ_FIN;
-            end
-            else begin
-                if (ext_ack) begin
-                    next_state <= `READING;
-                end
-                else begin
-                    next_state <= `READ;
-                end
-            end
-        `READING:
-            if (data_count) begin
-                next_state <= `READ_FIN;
-            end
-            else begin
-                if (ext_ack) begin
-                    next_state <= `READ;
-                end
-                else begin
-                    next_state <= `READING;
-                end
-            end
-        `READ_FIN:
-            next_state <= `IDLE;
-        default:
-            next_state       <= `IDLE;
-    endcase
+        if (rst | ~enable) begin
+            state <= `IDLE;
+        end
+        else begin
+            case(state)
+                `IDLE:
+                    if(wr | re) begin
+                        if (wr) begin
+                            state   <= `WRITE;
+                        end
+                        else begin
+                            state   <= `READ;
+                        end
+                    end
+                    else begin
+                        state   <= `IDLE;
+                    end
+                `WRITE:
+                    if (ext_ack) begin
+                        state <= `WRITE_FIN;
+                    end
+                    else begin
+                        state       <= `WRITE;
+                    end
+                `WRITE_FIN:
+                    state <= `IDLE;
+                `READ:
+                    if (data_count) begin
+                        state <= `CACHE_WRITE;
+                    end
+                    else begin
+                        if (ext_ack) begin
+                            state <= `READING;
+                        end
+                        else begin
+                            state <= `READ;
+                        end
+                    end
+                `READING:
+                    if (data_count) begin
+                        state <= `CACHE_WRITE;
+                    end
+                    else begin
+                        if (ext_ack) begin
+                            state <= `READ;
+                        end
+                        else begin
+                            state <= `READING;
+                        end
+                    end
+                `CACHE_WRITE:
+                    state <= `READ_FIN;
+                `READ_FIN:
+                    state <= `IDLE;
+                default:
+                    state       <= `IDLE;
+            endcase
+        end
     end
 
     always @(state)
@@ -164,87 +163,101 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     case(state)
         `IDLE:
         begin
-            data_to_cache <= #1 {LINE_LENGTH{1'b0}};
-            ext_data_out  <= #1 {WORD_SIZE{1'b0}};
-            read_into_data <= #1 1'b0;
-            ext_re <= #1 1'b0;
-            ext_wr <= #1 1'b0;
-            full_line_wr <= #1 1'b0;
-            wr_ack <= #1 1'b0;
-            re_ack <= #1 1'b0;
-            update_addr <= #1 1'b0;
-            update_counter <= #1 1'b0;
-            ctr_rst <= #1 1'b1;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 {WORD_SIZE{1'b0}};
+            read_into_data <= #2 1'b0;
+            ext_re <= #2 1'b0;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b0;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b1;
         end
         `WRITE:
         begin
-            data_to_cache <= #1 {LINE_LENGTH{1'b0}};
-            ext_data_out  <= #1 data_from_cache;
-            read_into_data <= #1 1'b0;
-            ext_re <= #1 1'b0;
-            ext_wr <= #1 1'b1;
-            full_line_wr <= #1 1'b0;
-            wr_ack <= #1 1'b0;
-            re_ack <= #1 1'b0;
-            update_addr <= #1 1'b1;
-            update_counter <= #1 1'b0;
-            ctr_rst <= #1 1'b0;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 data_from_cache;
+            read_into_data <= #2 1'b0;
+            ext_re <= #2 1'b0;
+            ext_wr <= #2 1'b1;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b1;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b0;
         end
         `WRITE_FIN:
         begin
-            data_to_cache <= #1 {LINE_LENGTH{1'b0}};
-            ext_data_out  <= #1 data_from_cache;
-            read_into_data <= #1 1'b0;
-            ext_re <= #1 1'b0;
-            ext_wr <= #1 1'b0;
-            full_line_wr <= #1 1'b0;
-            wr_ack <= #1 1'b1;
-            re_ack <= #1 1'b0;
-            update_addr <= #1 1'b0;
-            update_counter <= #1 1'b0;
-            ctr_rst <= #1 1'b0;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 data_from_cache;
+            read_into_data <= #2 1'b0;
+            ext_re <= #2 1'b0;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b1;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b0;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b0;
         end
         `READ:
         begin
-            data_to_cache <= #1 {LINE_LENGTH{1'b0}};
-            ext_data_out  <= #1 {WORD_SIZE{1'b0}};
-            read_into_data <= #1 1'b0;
-            ext_re <= #1 1'b1;
-            ext_wr <= #1 1'b0;
-            full_line_wr <= #1 1'b0;
-            wr_ack <= #1 1'b0;
-            re_ack <= #1 1'b0;
-            update_addr <= #1 1'b1;
-            update_counter <= #1 1'b0;
-            ctr_rst <= #1 1'b0;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 {WORD_SIZE{1'b0}};
+            read_into_data <= #2 1'b0;
+            ext_re <= #2 1'b1;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b1;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b0;
         end
         `READING:
         begin
-            data_to_cache <= #1 {LINE_LENGTH{1'b0}};
-            ext_data_out  <= #1 {WORD_SIZE{1'b0}};
-            read_into_data <= #1 1'b1;
-            ext_re <= #1 1'b1;
-            ext_wr <= #1 1'b0;
-            full_line_wr <= #1 1'b0;
-            wr_ack <= #1 1'b0;
-            re_ack <= #1 1'b0;
-            update_addr <= #1 1'b1;
-            update_counter <= #1 1'b1;
-            ctr_rst <= #1 1'b0;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 {WORD_SIZE{1'b0}};
+            read_into_data <= #2 1'b1;
+            ext_re <= #2 1'b1;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b1;
+            update_counter <= #2 1'b1;
+            ctr_rst <= #2 1'b0;
+        end
+        `CACHE_WRITE:
+        begin
+            data_to_cache <= #2 {tag, data, 1'b1};
+            ext_data_out  <= #2 {WORD_SIZE{1'b0}};
+            read_into_data <= #2 1'b1;
+            ext_re <= #2 1'b0;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b1;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b0;
+            update_addr <= #2 1'b0;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b0;
         end
         `READ_FIN:
         begin
-            data_to_cache <= #1 {tag, data, 1'b1};
-            ext_data_out  <= #1 {WORD_SIZE{1'b0}};
-            read_into_data <= #1 1'b0;
-            ext_re <= #1 1'b1;
-            ext_wr <= #1 1'b0;
-            full_line_wr <= #1 1'b1;
-            wr_ack <= #1 1'b0;
-            re_ack <= #1 1'b1;
-            update_addr <= #1 1'b0;
-            update_counter <= #1 1'b0;
-            ctr_rst <= #1 1'b0;
+            data_to_cache <= #2 {LINE_LENGTH{1'b0}};
+            ext_data_out  <= #2 {WORD_SIZE{1'b0}};
+            read_into_data <= #2 1'b0;
+            ext_re <= #2 1'b0;
+            ext_wr <= #2 1'b0;
+            full_line_wr <= #2 1'b0;
+            wr_ack <= #2 1'b0;
+            re_ack <= #2 1'b1;
+            update_addr <= #2 1'b0;
+            update_counter <= #2 1'b0;
+            ctr_rst <= #2 1'b0;
         end
     endcase
     end
