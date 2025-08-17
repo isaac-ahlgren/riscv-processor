@@ -36,12 +36,10 @@ module fetch (
     wire [31:0] curr_addr_step_conn_latch1;
     wire [31:0] curr_addr_step_conn_latch2;
     wire [31:0] curr_addr_step_conn_latch3;
-    wire [31:0] curr_addr_step_conn_latch4;
     pipeline_latch curr_addr_step_latch1 [31:0] (.q(curr_addr_step_conn_latch1), .d(curr_addr_step), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_step_latch2 [31:0] (.q(curr_addr_step_conn_latch2), .d(curr_addr_step_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_step_latch3 [31:0] (.q(curr_addr_step_conn_latch3), .d(curr_addr_step_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch curr_addr_step_latch4 [31:0] (.q(curr_addr_step_conn_latch4), .d(curr_addr_step_conn_latch3), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch curr_addr_step_latch5 [31:0] (.q(ocurr_addr_step), .d(curr_addr_step_conn_latch4), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch curr_addr_step_latch4 [31:0] (.q(ocurr_addr_step), .d(curr_addr_step_conn_latch3), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for the current address plus the additional value
     wire [31:0] curr_addr_addval_conn_latch1;
@@ -51,12 +49,10 @@ module fetch (
     pipeline_latch curr_addr_addval_latch3 [31:0] (.q(ocurr_addr_reljmp), .d(curr_addr_addval_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for current 
-    wire [31:0] curr_addr_conn_latch2;
     wire [31:0] curr_addr_conn_latch1;
     wire [31:0] curr_addr_out;
     pipeline_latch curr_addr_latch1 [31:0] (.q(curr_addr_conn_latch1), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch curr_addr_latch2 [31:0] (.q(curr_addr_conn_latch2), .d(curr_addr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
-    pipeline_latch curr_addr_latch3 [31:0] (.q(curr_addr_out), .d(curr_addr_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch curr_addr_latch2 [31:0] (.q(curr_addr_out), .d(curr_addr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     assign curr_addr_step = curr_addr + 4;
     assign curr_addr_addval = curr_addr_out + imm;

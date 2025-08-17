@@ -5,7 +5,7 @@
 
 module memory_system #(parameter WORD_SIZE = 32)
                        (output reg [WORD_SIZE-1:0] imem_data_out, 
-                        output reg [WORD_SIZE-1:0] dmem_data_out,
+                        output [WORD_SIZE-1:0] dmem_data_out,
                         input [WORD_SIZE-1:0] dmem_data_in,
                         input [WORD_SIZE-1:0] data_out,
                         output reg [WORD_SIZE-1:0] data_in,
@@ -28,9 +28,12 @@ module memory_system #(parameter WORD_SIZE = 32)
                         input clk,
                         input rst);
 
+    wire imem_valid_addr;
+    wire dmem_valid_addr;
     wire dmem_op;
 
     wire [WORD_SIZE-1:0] dmem_data;
+    reg [WORD_SIZE-1:0]  input_dmem_data_out;
     reg [31:0] dmem_addr_out;
     wire [WORD_SIZE-1:0] data_from_dmem_cache;
     wire [31:0] dmem_ext_addr_cache;
@@ -64,23 +67,25 @@ module memory_system #(parameter WORD_SIZE = 32)
 
     wire full_imem_stall; 
 
-    // Incoming read and write signals are always for dmem operations
+    // Incoming read and write signals are always on for dmem operations except it is an invalid address
     assign dmem_re_en = en_mem_re;
     assign dmem_wr_en = en_mem_wr;
     // You know it is a dmem operation if there is a read or write signal, if it is not a dmem op, then it is implied that it is an imem op
     assign dmem_op = dmem_re_en | dmem_wr_en;
 
-    // Imem will always read and never write
+    // Imem will always read unless it is an invalid address and never write
     assign imem_re_en = 1'b1;
     assign imem_wr_en = 1'b0;
 
     assign full_imem_stall = imem_stall & ~dmem_ext_mem_op & jump_taken; // Full pipeline stall for the icache if there is not a miss in the dcache and jump is going to be taken
-    assign imem_stall = ~imem_ready & ~control_hazard;
-    assign dmem_stall = ~dmem_ready;
+    assign imem_stall = ~imem_ready & ~control_hazard & imem_valid_addr;
+    assign dmem_stall = ~dmem_ready & dmem_valid_addr;
     assign stall = dmem_stall | full_imem_stall;
     assign first_stage_stall = stall | data_hazard | (imem_stall & control_hazard); 
 
     assign squash = data_hazard | control_hazard;
+
+    pipeline_latch dmem_data_output_latch [31:0] (.q(dmem_data_out), .d(input_dmem_data_out), .stall(stall), .clk(clk), .rst(rst));
 
     write_through_cache imem_cache
              (.data_out(imem_data), 
@@ -101,7 +106,7 @@ module memory_system #(parameter WORD_SIZE = 32)
 
     write_through_cache dmem_cache
              (.data_out(dmem_data), 
-              .data_in(data_out), 
+              .data_in(dmem_data_in), 
               .addr(dmem_addr),
               .wr(dmem_wr_en),
               .re(dmem_re_en),
@@ -120,7 +125,9 @@ module memory_system #(parameter WORD_SIZE = 32)
         .imem_addr(imem_addr),
         .dmem_addr(dmem_addr),
         .imem_cache_enable(imem_enable_cache),
-        .dmem_cache_enable(dmem_enable_cache)
+        .dmem_cache_enable(dmem_enable_cache),
+        .imem_valid_addr(imem_valid_addr),
+        .dmem_valid_addr(dmem_valid_addr)
     );
 
     reg [1:0] state;
@@ -134,7 +141,7 @@ module memory_system #(parameter WORD_SIZE = 32)
             state <= #1 next_state;
     end
     
-     always @(state or dmem_ready or imem_ready) begin
+     always @(state or dmem_ready or imem_ready or dmem_op) begin
         case(state)
             `DMEM_OP:
                 if (dmem_ready) begin // If stall finished during a dmem operation, operation is said to be finished
@@ -144,8 +151,8 @@ module memory_system #(parameter WORD_SIZE = 32)
                     next_state <= `DMEM_OP;
                 end
             `IMEM_OP:
-                if (dmem_ready & dmem_op) begin 
-                    next_state   <= `DMEM_OP;
+                if (dmem_op & dmem_valid_addr) begin 
+                    next_state <= `DMEM_OP;
                 end
                 else begin
                     next_state <= `IMEM_OP;
@@ -158,27 +165,27 @@ module memory_system #(parameter WORD_SIZE = 32)
         case(state)
             `DMEM_OP:
             begin
-                mem_addr <= #1 dmem_addr_out;
-                en_ext_mem_re <= #1 dmem_ext_re;
-                en_ext_mem_wr <= #1 dmem_ext_wr;
+                mem_addr           <= #1 dmem_addr_out;
+                en_ext_mem_re      <= #1 dmem_ext_re;
+                en_ext_mem_wr      <= #1 dmem_ext_wr;
                 imem_ext_mem_ready <= #1 1'b0;
                 dmem_ext_mem_ready <= #1 mem_ready;
-                imem_ext_mem_op <= #1 1'b0;
-                dmem_ext_mem_op <= #1 1'b1;
+                imem_ext_mem_op    <= #1 1'b0;
+                dmem_ext_mem_op    <= #1 1'b1;
             end
             `IMEM_OP:
             begin
-                mem_addr <= #1 imem_addr_out;
-                en_ext_mem_re <= #1 imem_ext_re;
-                en_ext_mem_wr <= #1 imem_ext_wr;
+                mem_addr           <= #1 imem_addr_out;
+                en_ext_mem_re      <= #1 imem_ext_re;
+                en_ext_mem_wr      <= #1 imem_ext_wr;
                 imem_ext_mem_ready <= #1 mem_ready;
                 dmem_ext_mem_ready <= #1 1'b0;
-                imem_ext_mem_op <= #1 1'b1;
-                dmem_ext_mem_op <= #1 1'b0;
+                imem_ext_mem_op    <= #1 1'b1;
+                dmem_ext_mem_op    <= #1 1'b0;
             end
         endcase
 
-        if (rst) begin
+        if (rst & imem_valid_addr) begin
             imem_data_out <= {WORD_SIZE{1'b0}};
             imem_addr_out <= 32'b0;
             imem_ready <= 1'b1;
@@ -202,9 +209,9 @@ module memory_system #(parameter WORD_SIZE = 32)
             end
         end
 
-        if (rst) begin
+        if (rst & dmem_valid_addr) begin
             data_in <= {WORD_SIZE{1'b0}};
-            dmem_data_out <= {WORD_SIZE{1'b0}};
+            input_dmem_data_out <= {WORD_SIZE{1'b0}};
             dmem_addr_out <= 32'b0;
             dmem_ready <= 1'b1;
             dmem_ext_re <= 1'b0;
@@ -213,15 +220,15 @@ module memory_system #(parameter WORD_SIZE = 32)
         else begin
             if (dmem_enable_cache) begin
                 data_in <= data_from_dmem_cache;
-                dmem_data_out <= dmem_data;
+                input_dmem_data_out <= dmem_data;
                 dmem_addr_out <= dmem_ext_addr_cache;
                 dmem_ready <= ~dmem_cache_miss_stall;
-                dmem_ext_re <= imem_ext_re_cache;
-                dmem_ext_wr <= imem_ext_wr_cache;
+                dmem_ext_re <= dmem_ext_re_cache;
+                dmem_ext_wr <= dmem_ext_wr_cache;
             end
             else begin
                 data_in <= dmem_data_in;
-                dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
+                input_dmem_data_out <= data_out & {32{mem_ready & (dmem_re_en | dmem_wr_en)}};
                 dmem_addr_out <= dmem_addr;
                 dmem_ready <= dmem_ext_mem_ready;
                 dmem_ext_re <= dmem_re_en;

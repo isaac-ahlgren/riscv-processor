@@ -3,7 +3,7 @@
 int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num);
 int main(void)__attribute__ ((section (".text.start")));
 
-uint32_t nums[] = {1, 2, 1, 81}; // 21, 9, 98, 43}; // 8, 12, 13, 67, 19, 38, 34, 2};
+uint32_t nums[] = {1, 2, 1, 81};
 uint32_t wk_array[4];
 
 uint32_t copy(uint32_t* src, uint32_t* dst, uint32_t size) {

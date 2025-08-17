@@ -1,12 +1,12 @@
 `timescale 1us/100ns
 
-`define IDLE        4'b0000
-`define READ        4'b0001
-`define READING     4'b0011
-`define WRITE       4'b0010
-`define READ_FIN    4'b0100
-`define WRITE_FIN   4'b1000
-`define CACHE_WRITE 4'b0111
+`define CONTROLLER_IDLE        4'b0000
+`define CONTROLLER_READ        4'b0001
+`define CONTROLLER_READING     4'b0011
+`define CONTROLLER_WRITE       4'b0010
+`define CONTROLLER_READ_FIN    4'b0100
+`define CONTROLLER_WRITE_FIN   4'b1000
+`define CONTROLLER_CACHE_WRITE 4'b0111
 
 module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
                               parameter WORD_SIZE = 32,
@@ -99,61 +99,61 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
 
     always @(posedge clk) begin
         if (rst | ~enable) begin
-            state <= `IDLE;
+            state <= `CONTROLLER_IDLE;
         end
         else begin
             case(state)
-                `IDLE:
+                `CONTROLLER_IDLE:
                     if(wr | re) begin
                         if (wr) begin
-                            state   <= `WRITE;
+                            state   <= `CONTROLLER_WRITE;
                         end
                         else begin
-                            state   <= `READ;
+                            state   <= `CONTROLLER_READ;
                         end
                     end
                     else begin
-                        state   <= `IDLE;
+                        state   <= `CONTROLLER_IDLE;
                     end
-                `WRITE:
+                `CONTROLLER_WRITE:
                     if (ext_ack) begin
-                        state <= `WRITE_FIN;
+                        state <= `CONTROLLER_WRITE_FIN;
                     end
                     else begin
-                        state       <= `WRITE;
+                        state       <= `CONTROLLER_WRITE;
                     end
-                `WRITE_FIN:
-                    state <= `IDLE;
-                `READ:
+                `CONTROLLER_WRITE_FIN:
+                    state <= `CONTROLLER_IDLE;
+                `CONTROLLER_READ:
                     if (data_count) begin
-                        state <= `CACHE_WRITE;
+                        state <= `CONTROLLER_CACHE_WRITE;
                     end
                     else begin
                         if (ext_ack) begin
-                            state <= `READING;
+                            state <= `CONTROLLER_READING;
                         end
                         else begin
-                            state <= `READ;
+                            state <= `CONTROLLER_READ;
                         end
                     end
-                `READING:
+                `CONTROLLER_READING:
                     if (data_count) begin
-                        state <= `CACHE_WRITE;
+                        state <= `CONTROLLER_CACHE_WRITE;
                     end
                     else begin
                         if (ext_ack) begin
-                            state <= `READ;
+                            state <= `CONTROLLER_READ;
                         end
                         else begin
-                            state <= `READING;
+                            state <= `CONTROLLER_READING;
                         end
                     end
-                `CACHE_WRITE:
-                    state <= `READ_FIN;
-                `READ_FIN:
-                    state <= `IDLE;
+                `CONTROLLER_CACHE_WRITE:
+                    state <= `CONTROLLER_READ_FIN;
+                `CONTROLLER_READ_FIN:
+                    state <= `CONTROLLER_IDLE;
                 default:
-                    state       <= `IDLE;
+                    state       <= `CONTROLLER_IDLE;
             endcase
         end
     end
@@ -161,7 +161,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
     always @(state)
     begin
     case(state)
-        `IDLE:
+        `CONTROLLER_IDLE:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 {WORD_SIZE{1'b0}};
@@ -175,7 +175,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b0;
             ctr_rst <= #2 1'b1;
         end
-        `WRITE:
+        `CONTROLLER_WRITE:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 data_from_cache;
@@ -189,7 +189,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b0;
             ctr_rst <= #2 1'b0;
         end
-        `WRITE_FIN:
+        `CONTROLLER_WRITE_FIN:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 data_from_cache;
@@ -203,7 +203,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b0;
             ctr_rst <= #2 1'b0;
         end
-        `READ:
+        `CONTROLLER_READ:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 {WORD_SIZE{1'b0}};
@@ -217,7 +217,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b0;
             ctr_rst <= #2 1'b0;
         end
-        `READING:
+        `CONTROLLER_READING:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 {WORD_SIZE{1'b0}};
@@ -231,7 +231,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b1;
             ctr_rst <= #2 1'b0;
         end
-        `CACHE_WRITE:
+        `CONTROLLER_CACHE_WRITE:
         begin
             data_to_cache <= #2 {tag, data, 1'b1};
             ext_data_out  <= #2 {WORD_SIZE{1'b0}};
@@ -245,7 +245,7 @@ module cache_miss_controller#(parameter BYTES_PER_WORD = 4,
             update_counter <= #2 1'b0;
             ctr_rst <= #2 1'b0;
         end
-        `READ_FIN:
+        `CONTROLLER_READ_FIN:
         begin
             data_to_cache <= #2 {LINE_LENGTH{1'b0}};
             ext_data_out  <= #2 {WORD_SIZE{1'b0}};

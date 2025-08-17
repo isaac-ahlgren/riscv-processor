@@ -25,7 +25,6 @@ module proc_tb();
     wire vga_vs;
     wire [35:0]	gpio;
 
-
     sdram_model sdram (.in_CLK(clk),
                        .in_CS(dram_cs_n),           // CHIP SELECT
                        .in_write_en(dram_we_n),

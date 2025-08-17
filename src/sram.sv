@@ -1,12 +1,12 @@
 `timescale 1us/100ns
 
 module sram
-	#(parameter int
-		ADDR_WIDTH = 14,
-		BYTE_WIDTH = 8,
-		BYTES = 4,
-		WIDTH = BYTES * BYTE_WIDTH
-)
+	#(parameter int ADDR_WIDTH = 14,
+	  parameter int BYTE_WIDTH = 8,
+	  parameter int BYTES = 4,
+	  parameter int WIDTH = BYTES * BYTE_WIDTH,
+	  parameter INIT_PROGRAM = "./tests/hex/risc_test.hex"
+	)
 ( 
 	input [ADDR_WIDTH-1:0] addr,
 	input [BYTES-1:0] be,
@@ -31,13 +31,13 @@ module sram
 		integer i;
 		for(i = 0; i < 2**ADDR_WIDTH; i = i + 1)
 			ram[i] = {WIDTH{1'b1}};
-		$readmemh("../../test_programs/blinky.hex", ram);
+		$readmemh(INIT_PROGRAM, ram);
 	end 
     
 	always @(posedge clk)
 	begin
 		if (rst) begin
-            #(1) oq <= {WIDTH{0'b0}};           
+            #(1) oq <= {WIDTH{1'b0}};           
 		end
 		else begin
 			#(1) oq <= q & {WIDTH{re}};
@@ -57,10 +57,11 @@ module sram
 			if(be[3]) ram[addr][3] <= data[4*BYTE_WIDTH - 1:3*BYTE_WIDTH];
 	    end
 		q <= ram[addr];
+	end
 
-
-
-	    // synthesis translate_off
+    // synthesis translate_off
+	always @(posedge clk)
+	begin
         mcd = $fopen("sram_dumpfile", "w");
         for (i=0; i < WORDS*BYTES; i=i+1) begin
 			for (j=0; j < BYTES; j=j+1) begin
@@ -68,6 +69,6 @@ module sram
 			end
         end
         $fclose(mcd);
-        // synthesis translate_on
 	end
+	// synthesis translate_on
 endmodule : sram

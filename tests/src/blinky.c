@@ -3,7 +3,7 @@
 #define GPIO_REG (volatile uint32_t*) 0x400000
 
 void delay() {
-    for (int i = 0; i < 10000; i++)
+    for (int i = 0; i < 1; i++)
         asm volatile ("nop");
 }
 

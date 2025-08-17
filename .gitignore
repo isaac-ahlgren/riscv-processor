@@ -74,3 +74,7 @@ _output_files/
 PLLJ_PLLSPE_INFO.txt
 
 /xpacks
+/.vscode
+/sim_build/
+*.o
+/.pytest_cache
