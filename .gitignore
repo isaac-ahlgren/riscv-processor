@@ -75,6 +75,6 @@ PLLJ_PLLSPE_INFO.txt
 
 /xpacks
 /.vscode
-/sim_build/
+/build
 *.o
 /.pytest_cache

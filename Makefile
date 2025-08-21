@@ -28,8 +28,8 @@ test:
 	python3 -m pytest ./tests
 
 dump:
-	$(OBJDUMP) -D $(OBJ_DIR)/$(FILE)
+	$(OBJDUMP) -D --disassembler-options=no-aliases $(OBJ_DIR)/$(FILE)
 
 clean:
-	rm obj/* hex/*
+	rm -r tests/obj/* tests/hex/* build
 	
