@@ -24,8 +24,15 @@ module sram
 	// use a multi-dimensional packed array to model individual bytes within the word
 	logic [BYTES-1:0][BYTE_WIDTH-1:0] ram[0:WORDS-1];
 
+    reg rest;
+	reg rest_state;
     reg [WIDTH - 1:0] q;
 
+	wire mem_transaction;
+
+	assign mem_transaction = we | re;
+
+    // Initializing memory with initalization program
 	initial 
 	begin : INIT
 		integer i;
@@ -34,6 +41,8 @@ module sram
 		$readmemh(INIT_PROGRAM, ram);
 	end 
     
+
+	// Memory Control Logic
 	always @(posedge clk)
 	begin
 		if (rst) begin
@@ -44,7 +53,20 @@ module sram
 		end
 	end
 
-	assign omem_ready = 1'b1;
+	always @(posedge clk)
+	begin
+		if (rst) begin
+			rest <= 1'b0;
+		end
+		else begin
+			rest <= ~rest_state & mem_transaction;
+		end
+	end
+
+    assign #(1) rest_state = rest;
+
+	// Memory is ready to be read if there are not memory transactions happening or there is no transaction rest
+	assign omem_ready = ~mem_transaction | ~rest;
 
     // Memory read/write logic
 	always_ff@(posedge clk)

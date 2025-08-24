@@ -15,7 +15,6 @@ module de10_bus_controller(
     input rst);
 
     wire [9:0] tag;
-    reg [9:0] delayed_tag;
 
     reg en_sram;
     reg en_sdram;
@@ -28,15 +27,6 @@ module de10_bus_controller(
     assign oen_sdram = en_sdram;
     assign oen_peripherals = en_peripherals;
     assign omem_ready = mem_ready;
-
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
-            delayed_tag <= 10'b0;
-        end
-        else begin
-            delayed_tag <= tag;
-        end
-    end
 
     always @ (*) begin
         if (tag == 10'h0) begin
@@ -66,13 +56,13 @@ module de10_bus_controller(
     end
 
     always @ (*) begin
-        if (delayed_tag == 10'h0) begin
+        if (tag == 10'h0) begin
             odata <= sram_data;
         end
-        else if (delayed_tag == 10'h1) begin
+        else if (tag == 10'h1) begin
             odata <= peripheral_data;
         end
-        else if (delayed_tag == 10'h2) begin
+        else if (tag == 10'h2) begin
             odata <= sdram_data;
         end
         else begin

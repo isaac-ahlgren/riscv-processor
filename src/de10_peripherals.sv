@@ -21,19 +21,10 @@ module de10_peripherals(
     assign periph_addr = addr[21:0];
     assign LEDR = qn[0][9:0];
     assign GPIO = {qn[1][13:0], qn[0][31:10]};
-    assign #(1) odata = delayed_data;
+    assign #(1) odata = data;
 
     reg_dflop gpio1 [31:0] (.q(qn[0]), .d(idata), .we(we[0]),  .clk(clk), .rst(rst));
     reg_dflop gpio2 [31:0] (.q(qn[1]), .d(idata), .we(we[1]),  .clk(clk), .rst(rst));
-
-    always @ (posedge clk) begin
-        if (rst) begin
-          delayed_data <= 32'b0;
-        end
-        else begin
-          delayed_data <= data;
-        end
-    end
 
     always @ (*) begin
          case({periph_addr})

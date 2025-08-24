@@ -12,7 +12,7 @@ SRC_FILE_DIR = "./src/"
 NAME = "test_jump_instructions"
 
 @cocotb.test()
-async def stor_test(dut):
+async def jump_test(dut):
      
     register_file = dut.cpu.regs
 
