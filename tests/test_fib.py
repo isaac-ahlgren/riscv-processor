@@ -11,12 +11,12 @@ from cocotb_test.simulator import run
 SRC_FILE_DIR = "./src/"
 
 @cocotb.test()
-async def write_read_periph_test(dut):
+async def fib_test(dut):
      
-    expected_val = 0x3FF
-    write_addr = 0x100
+    expected_vals = [1, 2]
+    beginning_addr = 0x100
 
-    # # Create a 10ns period clock
+    # Create a 10ns period clock
     clock = Clock(dut.clk, 5, units="us")
     cocotb.start_soon(clock.start())
 
@@ -25,21 +25,29 @@ async def write_read_periph_test(dut):
     await RisingEdge(dut.clk)
     dut.rst.value = 0
 
-    # Wait 200 clock cycles
-    for i in range(200):
+    # Wait 800 clock cycles
+    for i in range(800):
          await RisingEdge(dut.clk)
 
-    sram_data = int(dut.sr.ram[write_addr >> 2].value)
-    peripheral_reg_val = int(dut.periph.qn[0].value)
+    received_vals = []
+    addr = beginning_addr
+    idx = 0
+    for exp_val in expected_vals:
+        print((addr >> 2) + idx)
+        sram_data = int(dut.sr.ram[(addr >> 2) + idx].value)
+        received_vals.append(sram_data)
+        idx += 1
 
-    assert sram_data == expected_val
-    assert peripheral_reg_val == expected_val
+    print(received_vals)
+
+    for exp_val, rec_val in zip(expected_vals, received_vals):
+        assert exp_val == rec_val
 
 def test():
     verilog_sources = [f"{SRC_FILE_DIR}{f}" for f in listdir(SRC_FILE_DIR) if isfile(join(SRC_FILE_DIR, f))]
     toplevel = "risc_de10"
     module_name = __file__.strip("/").split("/")[-1].removesuffix(".py")
-    test_file = os.getcwd() + "/tests/hex/read_write_to_peripheral_test.hex"
+    test_file = os.getcwd() + "/tests/hex/fib_test.hex"
 
     run(
         verilog_sources=verilog_sources,
@@ -49,7 +57,7 @@ def test():
         waves=True,
         simulator="icarus", 
         parameters={"INIT_PROGRAM" : f"\"{test_file}\""},
-        sim_build="build/write_to_peripheral"
+        sim_build="build/fib"
     )
 
 if __name__ == "__main__":

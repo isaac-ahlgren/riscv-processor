@@ -11,10 +11,12 @@ from cocotb_test.simulator import run
 SRC_FILE_DIR = "./src/"
 
 @cocotb.test()
-async def write_read_periph_test(dut):
+async def blink_test(dut):
      
-    expected_val = 0x3FF
-    write_addr = 0x100
+    expected_val_1 = 0x3FF
+    answer_1_addr = 0x100
+    expected_val_2 = 0x0
+    answer_2_addr = 0x200
 
     # # Create a 10ns period clock
     clock = Clock(dut.clk, 5, units="us")
@@ -25,21 +27,21 @@ async def write_read_periph_test(dut):
     await RisingEdge(dut.clk)
     dut.rst.value = 0
 
-    # Wait 200 clock cycles
-    for i in range(200):
+    # Wait 800 clock cycles
+    for i in range(800):
          await RisingEdge(dut.clk)
 
-    sram_data = int(dut.sr.ram[write_addr >> 2].value)
-    peripheral_reg_val = int(dut.periph.qn[0].value)
+    sram_data_1 = int(dut.sr.ram[answer_1_addr >> 2].value)
+    sram_data_2 = int(dut.sr.ram[answer_2_addr >> 2].value)
 
-    assert sram_data == expected_val
-    assert peripheral_reg_val == expected_val
+    assert sram_data_1 == expected_val_1
+    assert sram_data_2 == expected_val_2
 
 def test():
     verilog_sources = [f"{SRC_FILE_DIR}{f}" for f in listdir(SRC_FILE_DIR) if isfile(join(SRC_FILE_DIR, f))]
     toplevel = "risc_de10"
     module_name = __file__.strip("/").split("/")[-1].removesuffix(".py")
-    test_file = os.getcwd() + "/tests/hex/read_write_to_peripheral_test.hex"
+    test_file = os.getcwd() + "/tests/hex/blink_test.hex"
 
     run(
         verilog_sources=verilog_sources,
@@ -49,7 +51,7 @@ def test():
         waves=True,
         simulator="icarus", 
         parameters={"INIT_PROGRAM" : f"\"{test_file}\""},
-        sim_build="build/write_to_peripheral"
+        sim_build="build/blink"
     )
 
 if __name__ == "__main__":

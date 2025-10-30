@@ -9,7 +9,6 @@ from cocotb.triggers import RisingEdge, Timer
 from cocotb_test.simulator import run
 
 SRC_FILE_DIR = "./src/"
-NAME = "test_load_store_instructions"
 
 @cocotb.test()
 async def store_load_test(dut):

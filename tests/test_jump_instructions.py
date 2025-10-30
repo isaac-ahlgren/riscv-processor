@@ -9,7 +9,6 @@ from cocotb.triggers import RisingEdge, Timer
 from cocotb_test.simulator import run
 
 SRC_FILE_DIR = "./src/"
-NAME = "test_jump_instructions"
 
 @cocotb.test()
 async def jump_test(dut):
