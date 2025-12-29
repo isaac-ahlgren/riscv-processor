@@ -1,10 +1,12 @@
 #include <stdint.h>
 
-int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num);
-int main(void)__attribute__ ((section (".text.start")));
+#define ANSWER (uint32_t*) 0x100
 
-uint32_t nums[] = {1, 2, 1, 81};
-uint32_t wk_array[4];
+int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num);
+int main(void);
+
+uint32_t nums[] = {1};
+uint32_t wk_array[1];
 
 uint32_t copy(uint32_t* src, uint32_t* dst, uint32_t size) {
     for (uint32_t i = 0; i < size; i++) {
@@ -40,8 +42,13 @@ int merge_sort(uint32_t* numbers, uint32_t* work_array, uint32_t num) {
     return 1;
 }
 
+__attribute__((naked, section (".text.main")))
 int main() {
-    asm volatile ("lui sp, 0x8; addi sp,sp,-16; sw ra,12(sp); sw s0,8(sp)");
-    merge_sort(nums, wk_array, 4);
-    return 0;
+    asm volatile ("lui sp, 0x8");
+    uint32_t* answer_arr = ANSWER;
+    merge_sort(nums, wk_array, 1);
+    for (int i = 0; i < 1; i++) {
+        *(answer_arr+i) = nums[i];
+    }
+    while(1);
 } 

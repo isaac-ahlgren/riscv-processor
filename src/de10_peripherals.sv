@@ -26,6 +26,12 @@ module de10_peripherals(
     reg_dflop gpio1 [31:0] (.q(qn[0]), .d(idata), .we(we[0]),  .clk(clk), .rst(rst));
     reg_dflop gpio2 [31:0] (.q(qn[1]), .d(idata), .we(we[1]),  .clk(clk), .rst(rst));
 
+    wire [31:0] gpio1_debug;
+    wire [31:0] gpio2_debug;
+
+    assign gpio1_debug = qn[0];
+    assign gpio2_debug = qn[1];
+
     always @ (*) begin
          case({periph_addr})
              22'd0: begin
