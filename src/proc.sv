@@ -11,7 +11,7 @@ module proc(input [31:0] data_out,
 
     `include "proc_params.h"
 
-    // Intruction
+    // Instruction
     wire [31:0] instr;
     // Output from ALU operation
     wire [31:0] ialu_odata;
@@ -35,10 +35,8 @@ module proc(input [31:0] data_out,
     // Function Value (if there is one)
     wire [9:0] func;
 
-    // Stall from data memory
-    wire dmem_stall;
     // Stall from instruction memory
-    wire imem_stall;
+    wire pc_stall;
     // Enables if a jump can be taken
     wire en_jmp;
     // Enables unconditional jumps
@@ -55,7 +53,7 @@ module proc(input [31:0] data_out,
     wire [31:0] curr_addr_step;
     wire [31:0] curr_addr_addval;
     wire stall;
-    wire first_stage_stall;
+    wire stage_1_stall;
     wire jump_taken;
     wire control_hazard;
     wire data_hazard;
@@ -77,10 +75,9 @@ module proc(input [31:0] data_out,
                       .dmem_data_in(data_to_cache),
                       .data_out(data_out),
                       .data_in(data_in),
-                      .imem_stall(imem_stall), 
-                      .dmem_stall(dmem_stall), 
+                      .pc_stall(pc_stall), 
                       .stall(stall),
-                      .first_stage_stall(first_stage_stall),
+                      .stage_1_stall(stage_1_stall),
                       .squash(squash),
                       .mem_ready(mem_ready),
                       .jump_taken(jump_taken),
@@ -119,8 +116,9 @@ module proc(input [31:0] data_out,
                .en_branch(en_branch), 
                .en_jmp(en_jmp), 
                .imm(imm_to_addr), 
-               .stall(first_stage_stall), 
-               .imem_stall(imem_stall), 
+               .stall(stall), 
+               .first_stage_stall(stage_1_stall),
+               .pc_stall(pc_stall),
                .clk(clk), 
                .rst(rst));
 

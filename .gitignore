@@ -56,6 +56,7 @@ vsim.
 *.summary
 *.tcl
 *.txt # Explicitly add any text files used
+*.bin
 *~
 *example*
 *sopc_*

@@ -15,6 +15,38 @@ module reg_file(a0, a1, a2, din, reg_wr, d0, d1, clk, rst);
      output reg [31:0] d1;
      wire [31:0] qn [`REG_NUM-2:0];
      reg [`REG_NUM-2:0] we;
+
+     wire [31:0] x1_reg;
+     wire [31:0] x2_reg;
+     wire [31:0] x3_reg;
+     wire [31:0] x4_reg;
+     wire [31:0] x5_reg;
+     wire [31:0] x6_reg;
+     wire [31:0] x7_reg;
+     wire [31:0] x8_reg;
+     wire [31:0] x9_reg;
+     wire [31:0] x10_reg;
+     wire [31:0] x11_reg;
+     wire [31:0] x12_reg;
+     wire [31:0] x13_reg;
+     wire [31:0] x14_reg;
+     wire [31:0] x15_reg;
+     wire [31:0] x16_reg;
+     wire [31:0] x17_reg;
+     wire [31:0] x18_reg;
+     wire [31:0] x19_reg;
+     wire [31:0] x20_reg;
+     wire [31:0] x21_reg;
+     wire [31:0] x22_reg;
+     wire [31:0] x23_reg;
+     wire [31:0] x24_reg;
+     wire [31:0] x25_reg;
+     wire [31:0] x26_reg;
+     wire [31:0] x27_reg;
+     wire [31:0] x28_reg;
+     wire [31:0] x29_reg;
+     wire [31:0] x30_reg;
+     wire [31:0] x31_reg;
  
      // registers x1-x31, x0 is the zero register (always holds zero)
      reg_dflop x1  [31:0](.q(qn[0]),  .d(din), .we(we[0]),  .clk(clk), .rst(rst));
@@ -48,6 +80,38 @@ module reg_file(a0, a1, a2, din, reg_wr, d0, d1, clk, rst);
      reg_dflop x29 [31:0](.q(qn[28]), .d(din), .we(we[28]), .clk(clk), .rst(rst));
      reg_dflop x30 [31:0](.q(qn[29]), .d(din), .we(we[29]), .clk(clk), .rst(rst));
      reg_dflop x31 [31:0](.q(qn[30]), .d(din), .we(we[30]), .clk(clk), .rst(rst));
+
+     assign x1_reg = qn[0];
+     assign x2_reg = qn[1];
+     assign x3_reg = qn[2];
+     assign x4_reg = qn[3];
+     assign x5_reg = qn[4];
+     assign x6_reg = qn[5];
+     assign x7_reg = qn[6];
+     assign x8_reg = qn[7];
+     assign x9_reg = qn[8];
+     assign x10_reg = qn[9];
+     assign x11_reg = qn[10];
+     assign x12_reg = qn[11];
+     assign x13_reg = qn[12];
+     assign x14_reg = qn[13];
+     assign x15_reg = qn[14];
+     assign x16_reg = qn[15];
+     assign x17_reg = qn[16];
+     assign x18_reg = qn[17];
+     assign x19_reg = qn[18];
+     assign x20_reg = qn[19];
+     assign x21_reg = qn[20];
+     assign x22_reg = qn[21];
+     assign x23_reg = qn[22];
+     assign x24_reg = qn[23];
+     assign x25_reg = qn[24];
+     assign x26_reg = qn[25];
+     assign x27_reg = qn[26];
+     assign x28_reg = qn[27];
+     assign x29_reg = qn[28];
+     assign x30_reg = qn[29];
+     assign x31_reg = qn[30];
 
      // mux for reg value for d0
      always @ (*) begin

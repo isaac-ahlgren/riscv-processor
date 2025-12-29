@@ -9,10 +9,9 @@ module memory_system #(parameter WORD_SIZE = 32)
                         input [WORD_SIZE-1:0] dmem_data_in,
                         input [WORD_SIZE-1:0] data_out,
                         output reg [WORD_SIZE-1:0] data_in,
-                        output imem_stall, 
-                        output dmem_stall,
+                        output pc_stall, 
                         output stall,
-                        output first_stage_stall,
+                        output stage_1_stall,
                         output squash,
                         input mem_ready, 
                         input jump_taken,
@@ -77,12 +76,11 @@ module memory_system #(parameter WORD_SIZE = 32)
     assign imem_re_en = 1'b1;
     assign imem_wr_en = 1'b0;
 
-    assign full_imem_stall = imem_stall & ~dmem_ext_mem_op & jump_taken; // Full pipeline stall for the icache if there is not a miss in the dcache and jump is going to be taken
-    assign imem_stall = ~imem_ready & ~control_hazard & imem_valid_addr;
-    assign dmem_stall = ~dmem_ready & dmem_valid_addr;
-    assign stall = dmem_stall | full_imem_stall;
-    assign first_stage_stall = stall | data_hazard | (imem_stall & control_hazard); 
-
+    assign pc_stall = (~imem_ready & ~control_hazard & imem_valid_addr) | (control_hazard & imem_cache_miss_stall); // Stall for specifcally the PC counter
+    assign stage_1_stall = stall | data_hazard;  // Stall for specifically the first stage
+    assign full_dmem_stall = ~dmem_ready & dmem_valid_addr; // will only data mem stall if address if valid and dmem is not ready
+    assign full_imem_stall = pc_stall & ~dmem_ext_mem_op & jump_taken; // Full pipeline stall for the icache if there is not a miss in the dcache and jump is going to be taken
+    assign stall = full_dmem_stall | full_imem_stall; // Stall whole pipeline
     assign squash = data_hazard | control_hazard;
 
     pipeline_latch dmem_data_output_latch [31:0] (.q(dmem_data_out), .d(input_dmem_data_out), .stall(stall), .clk(clk), .rst(rst));

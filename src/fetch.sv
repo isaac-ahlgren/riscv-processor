@@ -14,7 +14,8 @@ module fetch (
               input en_jmp,                      // Signal that enables jumps
               input [31:0] imm,                  // The immediate value from the instruction
               input stall,                       // Signal for a full pipeline a stall is occuring
-              input imem_stall,                  // Signal for specifcally a stall due to instruction cache
+              input first_stage_stall,           // Signal for which the first stage is stalling
+              input pc_stall,                  // Signal for specifcally a stall due to instruction cache
               input clk,                         // Clock
               input rst);                        // Reset
  
@@ -27,16 +28,16 @@ module fetch (
     reg  [31:0] next_addr;
 
     // Program Counter
-    pipeline_latch pc [31:0] (.q(curr_addr), .d(next_addr), .stall(stall | imem_stall), .clk(clk), .rst(rst)); 
+    pipeline_latch pc [31:0] (.q(curr_addr), .d(next_addr), .stall(stall | pc_stall | first_stage_stall), .clk(clk), .rst(rst)); 
        
     // Instruction Latch
-    pipeline_latch instr_latch [31:0] (.q(oinstr), .d(iinstr), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch instr_latch [31:0] (.q(oinstr), .d(iinstr), .stall(stall | first_stage_stall), .clk(clk), .rst(rst));
 
     // Latch for the current address plus four bytes
     wire [31:0] curr_addr_step_conn_latch1;
     wire [31:0] curr_addr_step_conn_latch2;
     wire [31:0] curr_addr_step_conn_latch3;
-    pipeline_latch curr_addr_step_latch1 [31:0] (.q(curr_addr_step_conn_latch1), .d(curr_addr_step), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch curr_addr_step_latch1 [31:0] (.q(curr_addr_step_conn_latch1), .d(curr_addr_step), .stall(stall | first_stage_stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_step_latch2 [31:0] (.q(curr_addr_step_conn_latch2), .d(curr_addr_step_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_step_latch3 [31:0] (.q(curr_addr_step_conn_latch3), .d(curr_addr_step_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_step_latch4 [31:0] (.q(ocurr_addr_step), .d(curr_addr_step_conn_latch3), .stall(stall), .clk(clk), .rst(rst));
@@ -44,14 +45,14 @@ module fetch (
     // Latch for the current address plus the additional value
     wire [31:0] curr_addr_addval_conn_latch1;
     wire [31:0] curr_addr_addval_conn_latch2;
-    pipeline_latch curr_addr_addval_latch1 [31:0] (.q(curr_addr_addval_conn_latch1), .d(curr_addr_addval), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch curr_addr_addval_latch1 [31:0] (.q(curr_addr_addval_conn_latch1), .d(curr_addr_addval), .stall(stall | first_stage_stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_addval_latch2 [31:0] (.q(curr_addr_addval_conn_latch2), .d(curr_addr_addval_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_addval_latch3 [31:0] (.q(ocurr_addr_reljmp), .d(curr_addr_addval_conn_latch2), .stall(stall), .clk(clk), .rst(rst));
 
     // Latch for current 
     wire [31:0] curr_addr_conn_latch1;
     wire [31:0] curr_addr_out;
-    pipeline_latch curr_addr_latch1 [31:0] (.q(curr_addr_conn_latch1), .d(curr_addr), .stall(stall), .clk(clk), .rst(rst));
+    pipeline_latch curr_addr_latch1 [31:0] (.q(curr_addr_conn_latch1), .d(curr_addr), .stall(stall | first_stage_stall), .clk(clk), .rst(rst));
     pipeline_latch curr_addr_latch2 [31:0] (.q(curr_addr_out), .d(curr_addr_conn_latch1), .stall(stall), .clk(clk), .rst(rst));
 
     assign curr_addr_step = curr_addr + 4;
